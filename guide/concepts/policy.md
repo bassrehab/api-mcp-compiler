@@ -80,6 +80,37 @@ than on any overlap with a secret vocabulary. `accessToken` and `clientSecret` a
 Redacting on containment removed the service's answer and reported HTTP 200 with no indication
 that anything had been withheld.
 
+## Retrying, and when not to
+
+`retry` is derived from the idempotency inferred at ingestion, and the generated server acts
+on it rather than merely carrying it.
+
+| Policy | Derived when | The server then |
+|---|---|---|
+| `safe` | The operation is a read, or is idempotent | Retries up to three attempts in total |
+| `with_idempotency_key` | The operation is not idempotent | Retries, sending an idempotency key |
+| `never` | Idempotency could not be determined | Makes one attempt |
+
+**What is retried** is deliberately narrow: 429, the gateway codes 502, 503 and 504, and
+transport failures where nothing was answered at all. A 4xx is the service rejecting the
+request, and repeating it changes nothing but the load.
+
+**500 is never retried**, on any policy. A server error may mean the effect happened and the
+answer was lost, and repeating that is exactly what a retry policy exists to prevent.
+
+**The idempotency key is generated per invocation and held across that invocation's retries.**
+A fresh key per attempt would make every retry a new operation, which defeats the point. A key
+derived from the arguments would make two deliberate identical calls collide, which is worse:
+the second would silently return the first one's result.
+
+`Retry-After` is honoured over the backoff curve, because a service that names its window
+knows more about it than any curve written here. Attempts are bounded so that a wedged
+upstream is reported rather than hammered.
+
+The SOAP path retries on the same transport codes and sends no idempotency key. WSDL declares
+nothing equivalent, so a key here would be a header this compiler invented that no service was
+built to honour.
+
 ## What the compiler cannot enforce, it says so
 
 Server-side authorization, protection against confused-deputy designs, and end-user identity

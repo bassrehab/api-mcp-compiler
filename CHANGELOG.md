@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
+
+Released 2026-08-13. The generated server acts on the retry policy the manifest derives.
+
+Minor rather than patch because a server emitted by 0.2.0 behaves differently: it made one
+attempt regardless of policy, and now a `safe` tool retries a rate limit or a gateway failure.
+No contract changed, so an artifact written by 0.2.0 still validates.
 
 ### Safety
 
@@ -547,7 +553,13 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
 
-## Unreleased
+## 0.3.0
+
+Released 2026-08-13. The generated server acts on the retry policy the manifest derives.
+
+Minor rather than patch because a server emitted by 0.2.0 behaves differently: it made one
+attempt regardless of policy, and now a `safe` tool retries a rate limit or a gateway failure.
+No contract changed, so an artifact written by 0.2.0 still validates.
 
 ### Safety
 
