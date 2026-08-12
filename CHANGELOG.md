@@ -59,6 +59,24 @@
 - Verified against the live Swagger 2 Petstore: 20 operations, no blocking ambiguities, 13
   tools executable, and a runnable MCP server emitted.
 
+### Safety
+
+- **A confirmation token expired nothing.** The policy manifest set `token_ttl_seconds` on
+  every destructive tool, the emitter wrote it into the file, and the generated server kept
+  confirmations in a set with no timestamps: a token issued once stayed valid for the life of
+  the process. Both emitters now hold a deadline per token, refuse a lapsed one with a reason
+  rather than silently asking again, and drop expired tokens so a long-running server does not
+  accumulate them.
+- **The generated governance logic is now executed by tests, not read.** Every existing test
+  of the emitted server asserts against its source text, which is exactly why a value that was
+  passed and ignored survived. The new tests load the emitted module with the SDK and HTTP
+  client stubbed and check the decision that matters: an expired confirmation must not reach
+  the upstream service.
+- **A stale installed copy can no longer fake a green run.** `pip install .` beside an
+  editable install wins the import and freezes the code under test, so the suite passes while
+  describing a snapshot. It happened here. A test now asserts the package under test is this
+  working tree.
+
 ### Documentation
 
 - **A documentation site**, built from `guide/` with MkDocs Material and published to GitHub

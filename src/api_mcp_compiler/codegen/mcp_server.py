@@ -104,6 +104,11 @@ def _tool_function(
     }
     policy = manifest.policy_for(tool.tool_id) if manifest else None
     confirm = policy is not None and policy.confirmation is not None
+    confirmation_ttl = (
+        policy.confirmation.token_ttl_seconds
+        if policy is not None and policy.confirmation is not None
+        else 0
+    )
     max_bytes = policy.output.max_bytes if policy else None
     redact = sorted(policy.output.redact_fields) if policy else []
     destructive = tool.risk is RiskClass.DESTRUCTIVE
@@ -120,6 +125,7 @@ async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
         schema=_SCHEMAS[{tool.name!r}],
         bindings={_binding_map(tool)!r},
         requires_confirmation={confirm!r},
+        confirmation_ttl_seconds={confirmation_ttl!r},
         destructive={destructive!r},
         max_output_bytes={max_bytes!r},
         redact_fields={redact!r},
@@ -144,6 +150,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from typing import Any
 
 import httpx
@@ -157,8 +164,10 @@ mcp = FastMCP({service_id!r})
 
 _SCHEMAS: dict[str, dict[str, Any]] = json.loads({schemas!r})
 _WITHHELD: dict[str, str] = json.loads({withheld!r})
-#: Confirmation tokens issued in this process, keyed by tool and argument digest.
-_CONFIRMED: set[str] = set()
+#: Confirmation tokens issued in this process, keyed by tool and argument digest, each
+#: holding the monotonic deadline after which it is no longer accepted. A token is single
+#: use: it is removed when it is spent, and an expired one is refused rather than renewed.
+_CONFIRMED: dict[str, float] = {{}}
 
 
 def _digest(tool_name: str, arguments: dict[str, Any]) -> str:
@@ -213,6 +222,7 @@ async def _invoke(
     schema: dict[str, Any],
     bindings: dict[str, tuple[str, str, str | None]],
     requires_confirmation: bool,
+    confirmation_ttl_seconds: int,
     destructive: bool,
     max_output_bytes: int | None,
     redact_fields: list[str],
@@ -235,19 +245,33 @@ async def _invoke(
 
     if requires_confirmation:
         token = _digest(tool_name, arguments)
-        if token not in _CONFIRMED:
-            _CONFIRMED.add(token)
+        now = time.monotonic()
+        deadline = _CONFIRMED.pop(token, None)
+        lapsed = deadline is not None and deadline <= now
+        if deadline is None or lapsed:
+            # Anything already past its deadline is dropped here, so a long-running server
+            # does not accumulate tokens nobody will ever spend.
+            for stale in [key for key, limit in _CONFIRMED.items() if limit <= now]:
+                del _CONFIRMED[stale]
+            _CONFIRMED[token] = now + confirmation_ttl_seconds
             return {{
                 "status": "confirmation_required",
                 "tool": tool_name,
                 "destructive": destructive,
                 "confirmation_token": token,
+                "expires_in_seconds": confirmation_ttl_seconds,
                 "detail": (
-                    "Call again with identical arguments to proceed. The token is bound to "
+                    (
+                        "The previous confirmation for these arguments expired before it was "
+                        "used, so a new one is required. "
+                        if lapsed
+                        else ""
+                    )
+                    + "Call again with identical arguments within "
+                    f"{{confirmation_ttl_seconds}} seconds to proceed. The token is bound to "
                     "these arguments, so confirming this call cannot authorise another."
                 ),
             }}
-        _CONFIRMED.discard(token)
 
     carried = dict(arguments)
     responses: list[Any] = []

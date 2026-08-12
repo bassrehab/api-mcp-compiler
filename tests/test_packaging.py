@@ -31,6 +31,20 @@ DECLARED = sorted(
 )
 
 
+def test_the_package_under_test_is_this_working_tree() -> None:
+    """Otherwise the whole suite can pass against a copy nobody edited.
+
+    `pip install .` beside an editable install puts a real copy in site-packages, which wins
+    the import and freezes the code under test at whatever it was that day. Every test then
+    passes, describing a snapshot. This is not hypothetical: it happened here, and it took a
+    behaviour change that stubbornly refused to appear in the generated output to notice.
+    """
+    assert Path(__file__).resolve().parents[1] / "src" / "api_mcp_compiler" == PACKAGE_ROOT, (
+        f"tests are importing {PACKAGE_ROOT}, not the source tree. Reinstall with "
+        "`pip install -e '.[dev]'`."
+    )
+
+
 def test_schemas_are_declared() -> None:
     """The constants exist at all; an empty set would make the rest of this module vacuous."""
     assert len(DECLARED) == 8
