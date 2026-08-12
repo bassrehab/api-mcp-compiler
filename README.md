@@ -10,7 +10,7 @@
 [![Licence](https://img.shields.io/badge/licence-Apache--2.0-blue.svg)](https://github.com/bassrehab/api-mcp-compiler/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/downloads/)
 [![Typed](https://img.shields.io/badge/mypy-strict-blue.svg)](https://mypy.readthedocs.io/en/stable/)
-[![Contracts](https://img.shields.io/badge/contracts-JSON%20Schema%202020--12-blue.svg)](https://github.com/bassrehab/api-mcp-compiler/blob/main/src/api_mcp_compiler/schemas)
+[![Contracts](https://img.shields.io/badge/contracts-JSON%20Schema%202020--12-blue.svg)](https://github.com/bassrehab/api-mcp-compiler/tree/main/src/api_mcp_compiler/schemas)
 [![Results](https://img.shields.io/badge/results-pre--registered-8A2BE2.svg)](https://github.com/bassrehab/api-mcp-compiler/tree/main/preregistrations)
 
 [Documentation](https://api-mcp.subhadipmitra.com/) &middot;
