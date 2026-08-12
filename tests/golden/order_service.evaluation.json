@@ -28,6 +28,10 @@
         }
       ],
       "run_successes": [],
+      "selected_operations": [
+        "getCustomer"
+      ],
+      "selection_rate": 1.0,
       "success": true,
       "task_id": "look-up-a-customer",
       "token_cost": null,
@@ -77,6 +81,10 @@
         }
       ],
       "run_successes": [],
+      "selected_operations": [
+        "createRefund"
+      ],
+      "selection_rate": 1.0,
       "success": false,
       "task_id": "create-a-refund-request",
       "token_cost": null,
@@ -116,6 +124,11 @@
         }
       ],
       "run_successes": [],
+      "selected_operations": [
+        "createRefund",
+        "approveRefund"
+      ],
+      "selection_rate": 1.0,
       "success": false,
       "task_id": "refund-requires-approval-step",
       "token_cost": null,
@@ -156,7 +169,7 @@
       "unsafe_actions": 0
     }
   ],
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "service_id": "synthetic-order-and-refund-service",
   "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935"
 }

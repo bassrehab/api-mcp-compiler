@@ -91,6 +91,20 @@ def _method_and_route(ir: ApiSemanticIR, operation_id: str) -> tuple[str, str]:
     return operation.source_pointer.rsplit("/", 1)[-1].upper(), operation.route
 
 
+def _path_parameters(tool: ToolDescriptor) -> list[str]:
+    """The arguments a resource's address carries, named as the template names them.
+
+    The template's placeholders are wire names taken from the route, while the tool's
+    arguments carry the compiler's names for them. The generated function has to be callable
+    by the template, so it takes the wire names and hands the argument names to `_invoke`.
+    """
+    return [
+        binding.wire_name
+        for binding in tool.argument_bindings
+        if binding.location is ParameterLocation.PATH
+    ]
+
+
 def _tool_function(
     ir: ApiSemanticIR,
     tool: ToolDescriptor,
@@ -121,6 +135,33 @@ def _tool_function(
     max_bytes = policy.output.max_bytes if policy else None
     redact = sorted(policy.output.redact_fields) if policy else []
     destructive = tool.risk is RiskClass.DESTRUCTIVE
+
+    if tool.uri_template is not None:
+        # A resource is read by address, so it is registered as one. Emitting it with
+        # `@mcp.tool` would discard the planner's reclassification at the last step and spend
+        # a tool slot on a lookup, which is the thing reclassifying it was for.
+        parameters = ", ".join(f"{name}: str" for name in _path_parameters(tool))
+        forwarded = ", ".join(f"{name!r}: {name}" for name in _path_parameters(tool))
+        return f'''
+@mcp.resource({tool.uri_template!r}, name={tool.name!r}, description={tool.description!r})
+async def {tool.name}({parameters}) -> dict[str, Any]:
+    """{tool.description}"""
+    return await _invoke(
+        tool_name={tool.name!r},
+        steps={[(method, route, operation) for method, route, operation in steps]!r},
+        threading={threading!r},
+        arguments={{{forwarded}}},
+        schema=_SCHEMAS[{tool.name!r}],
+        bindings={_binding_map(tool)!r},
+        requires_confirmation=False,
+        confirmation_ttl_seconds=0,
+        retry={retry!r},
+        idempotency_key_required=False,
+        destructive=False,
+        max_output_bytes={max_bytes!r},
+        redact_fields={redact!r},
+    )
+'''
 
     return f'''
 @mcp.tool(name={tool.name!r}, description={tool.description!r})

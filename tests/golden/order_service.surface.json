@@ -1,6 +1,6 @@
 {
   "planner": "baseline",
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "service_id": "synthetic-order-and-refund-service",
   "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935",
   "tools": [
@@ -153,7 +153,8 @@
       "source_operations": [
         "getCustomer"
       ],
-      "tool_id": "tool:getCustomer"
+      "tool_id": "tool:getCustomer",
+      "uri_template": null
     },
     {
       "argument_bindings": [
@@ -277,7 +278,8 @@
       "source_operations": [
         "listCustomerOrders"
       ],
-      "tool_id": "tool:listCustomerOrders"
+      "tool_id": "tool:listCustomerOrders",
+      "uri_template": null
     },
     {
       "argument_bindings": [
@@ -456,7 +458,8 @@
       "source_operations": [
         "createRefund"
       ],
-      "tool_id": "tool:createRefund"
+      "tool_id": "tool:createRefund",
+      "uri_template": null
     },
     {
       "argument_bindings": [
@@ -596,7 +599,8 @@
       "source_operations": [
         "approveRefund"
       ],
-      "tool_id": "tool:approveRefund"
+      "tool_id": "tool:approveRefund",
+      "uri_template": null
     }
   ]
 }

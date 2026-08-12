@@ -22,6 +22,7 @@ from api_mcp_compiler.models import (
     Ambiguity,
     ApiSemanticIR,
     ArgumentBinding,
+    ArtifactKind,
     ConfirmationPolicy,
     DecisionKind,
     DecisionOrigin,
@@ -29,6 +30,7 @@ from api_mcp_compiler.models import (
     EmissionBlocker,
     EmissionStatus,
     OperationIR,
+    ParameterLocation,
     PolicyManifest,
     Provenance,
     ReviewStatus,
@@ -103,6 +105,7 @@ def _document_level_blockers(ir: ApiSemanticIR) -> list[Ambiguity]:
 
 
 def _descriptor(
+    service_id: str,
     artifact: ToolArtifact,
     operations: list[OperationIR],
     blocking: list[Ambiguity],
@@ -207,6 +210,17 @@ def _descriptor(
             )
         )
 
+    template = uri_template(service_id, artifact, operation)
+    if template is not None:
+        records.append(
+            Provenance(
+                field="uri_template",
+                source_pointer=operation.source_pointer,
+                derivation=Derivation.NORMALIZED,
+                rule="codegen.tool.uri_template",
+            )
+        )
+
     return ToolDescriptor(
         tool_id=artifact.artifact_id,
         name=artifact.name,
@@ -219,9 +233,31 @@ def _descriptor(
         input_schema=input_schema,
         output_schema=output_schema,
         argument_bindings=bindings,
+        uri_template=template,
         source_operations=list(artifact.source_operations),
         provenance=records,
     )
+
+
+def uri_template(service_id: str, artifact: ToolArtifact, operation: OperationIR) -> str | None:
+    """The addressable form of a resource, or None for anything else.
+
+    The scheme is the service identifier, so two surfaces mounted alongside each other cannot
+    collide, and the path is the route with its parameters left as placeholders.
+
+    Only a read whose inputs are all path parameters is reclassified as a resource, so the
+    template covers every input. The check is repeated here rather than assumed: an overlay
+    can record a reclassification the planner would not have proposed, and a resource whose
+    address cannot express its inputs is unreadable.
+    """
+    if artifact.kind is not ArtifactKind.RESOURCE or operation.route is None:
+        # A SOAP operation has no route, so it has no addressable form. Every operation is a
+        # POST to one endpoint and what distinguishes them is the envelope, which is not a
+        # thing a URI can carry.
+        return None
+    if any(item.location is not ParameterLocation.PATH for item in operation.inputs):
+        return None
+    return f"{service_id}://{operation.route.lstrip('/')}"
 
 
 def generate_surface(
@@ -291,6 +327,7 @@ def generate_surface(
         ]
         tools.append(
             _descriptor(
+                plan.service_id,
                 artifact,
                 sources,
                 related,

@@ -18,11 +18,11 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 IR_SCHEMA_VERSION = "0.5.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
-TOOL_SURFACE_SCHEMA_VERSION = "0.2.0"
+TOOL_SURFACE_SCHEMA_VERSION = "0.3.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
 POLICY_MANIFEST_SCHEMA_VERSION = "0.3.0"
 EVAL_CORPUS_SCHEMA_VERSION = "0.3.0"
-EVALUATION_RUN_SCHEMA_VERSION = "0.1.0"
+EVALUATION_RUN_SCHEMA_VERSION = "0.2.0"
 BENCHMARK_MANIFEST_SCHEMA_VERSION = "0.1.0"
 PREREGISTRATION_SCHEMA_VERSION = "0.1.0"
 
@@ -801,6 +801,12 @@ class ToolDescriptor(ProvenanceBearing):
     input_schema: dict[str, Any]
     output_schema: dict[str, Any] | None = None
     argument_bindings: list[ArgumentBinding] = Field(default_factory=list)
+    uri_template: str | None = Field(
+        default=None,
+        description="For a resource, the addressable form a client reads it by. A resource "
+        "without one is a tool wearing the word: the planner reclassified an addressable "
+        "read and nothing downstream could express the address.",
+    )
     source_operations: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
@@ -1261,6 +1267,20 @@ class TaskResult(BaseModel):
     calls: int = Field(default=0, ge=0)
     unnecessary_calls: int = Field(default=0, ge=0)
     unmapped_operations: list[str] = Field(default_factory=list)
+    selected_operations: list[str] = Field(
+        default_factory=list,
+        description="Distinct source operations the agent actually reached for, in the order "
+        "it first reached for each. Recorded against operations rather than tool names so a "
+        "baseline and a semantic surface can be compared without favouring either.",
+    )
+    selection_rate: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=1.0,
+        description="Proportion of calls that selected an operation the task permits. Null "
+        "when the task declares no permitted set, because a rate over an unstated constraint "
+        "would be an invented number rather than a measured one.",
+    )
     invalid_argument_calls: int = Field(default=0, ge=0)
     unsafe_actions: int = Field(
         default=0, ge=0, description="Prohibited operations invoked, or disabled tools called."

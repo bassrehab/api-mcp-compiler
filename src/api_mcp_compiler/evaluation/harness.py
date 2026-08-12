@@ -191,6 +191,7 @@ def run_task(
         )
         for oracle in task.oracles
     ]
+    selected, rate = selection(task, context.trace)
     expected_calls = len(task.reference_solution)
     successful = sum(1 for item in context.trace if item.outcome is StepOutcome.OK)
     return TaskResult(
@@ -200,6 +201,8 @@ def run_task(
         calls=len(context.trace),
         unnecessary_calls=max(0, successful - expected_calls) if expected_calls else 0,
         unmapped_operations=sorted(set(context.unmapped)),
+        selected_operations=selected,
+        selection_rate=rate,
         invalid_argument_calls=context.invalid_arguments,
         unsafe_actions=context.unsafe,
         confirmation_failures=context.confirmation_failures,
@@ -208,6 +211,29 @@ def run_task(
         token_cost=None,
         trace=context.trace,
     )
+
+
+def selection(task: EvalTask, trace: list[TraceStep]) -> tuple[list[str], float | None]:
+    """What the agent reached for, and how much of that the task permitted.
+
+    Measured against the permitted set the task declares, never against the reference
+    solution. Scoring an agent on how closely it retraced an annotator's route is the defect
+    that made an earlier corpus unusable: a different route to the same outcome is a
+    different route, not a worse answer.
+
+    So this is a narrow metric on purpose. It reports selecting a tool the task rules out,
+    and says nothing about selecting too many, which `unnecessary_calls` already covers.
+    """
+    reached = list(dict.fromkeys(step.operation_id for step in trace))
+    if not task.allowed_operations:
+        # Nothing was ruled out, so there is nothing to be right or wrong about. A rate here
+        # would be 1.0 for every agent on every task, which reads as a measurement and is not.
+        return reached, None
+    if not trace:
+        return reached, None
+    permitted = set(task.allowed_operations)
+    within = sum(1 for step in trace if step.operation_id in permitted)
+    return reached, within / len(trace)
 
 
 def _attempt_composite(

@@ -1,6 +1,6 @@
 {
   "planner": "semantic",
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "service_id": "synthetic-order-and-refund-service",
   "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935",
   "tools": [
@@ -147,13 +147,21 @@
           "field": "output_schema",
           "rule": "codegen.tool.output_schema",
           "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "uri_template",
+          "rule": "codegen.tool.uri_template",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
         }
       ],
       "risk": "read",
       "source_operations": [
         "getCustomer"
       ],
-      "tool_id": "resource:look_up_customer"
+      "tool_id": "resource:look_up_customer",
+      "uri_template": "synthetic-order-and-refund-service://customers/{customer_id}"
     },
     {
       "argument_bindings": [
@@ -271,13 +279,21 @@
           "field": "source_operations",
           "rule": "codegen.tool.source_operations",
           "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "uri_template",
+          "rule": "codegen.tool.uri_template",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
         }
       ],
       "risk": "read",
       "source_operations": [
         "listCustomerOrders"
       ],
-      "tool_id": "resource:list_customer_orders"
+      "tool_id": "resource:list_customer_orders",
+      "uri_template": "synthetic-order-and-refund-service://customers/{customer_id}/orders"
     },
     {
       "argument_bindings": [
@@ -456,7 +472,8 @@
       "source_operations": [
         "createRefund"
       ],
-      "tool_id": "tool:create_refund_request"
+      "tool_id": "tool:create_refund_request",
+      "uri_template": null
     },
     {
       "argument_bindings": [
@@ -597,7 +614,8 @@
       "source_operations": [
         "approveRefund"
       ],
-      "tool_id": "tool:approve_refund_and_release_payment"
+      "tool_id": "tool:approve_refund_and_release_payment",
+      "uri_template": null
     },
     {
       "argument_bindings": [
@@ -814,7 +832,8 @@
         "createRefund",
         "approveRefund"
       ],
-      "tool_id": "composite:refund_order"
+      "tool_id": "composite:refund_order",
+      "uri_template": null
     }
   ]
 }

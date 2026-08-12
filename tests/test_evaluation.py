@@ -31,6 +31,7 @@ from api_mcp_compiler.evaluation.harness import (
     bind_operations,
     run_corpus,
     run_task,
+    selection,
 )
 from api_mcp_compiler.evaluation.state import EffectKind, ServiceStore, derive_effect
 from api_mcp_compiler.ingest.openapi import parse_openapi
@@ -450,3 +451,82 @@ def test_a_driver_that_stops_early_ends_the_run() -> None:
     )
     result = run_task(task, ir, surface, None, _Immediate())
     assert result.calls == 0
+
+
+def test_selection_reports_reaching_for_something_the_task_rules_out() -> None:
+    """The metric has to be able to come out below 1.0, or it measures nothing."""
+    task = EvalTask(
+        task_id="t",
+        goal="look up a customer",
+        allowed_operations=["getCustomer"],
+        oracles=[
+            TaskOracle(kind=OracleKind.NO_MUTATION, description="nothing changes"),
+        ],
+    )
+    trace = [
+        TraceStep(index=0, operation_id="getCustomer", outcome=StepOutcome.OK),
+        TraceStep(index=1, operation_id="listCustomerOrders", outcome=StepOutcome.OK),
+    ]
+
+    reached, rate = selection(task, trace)
+
+    assert reached == ["getCustomer", "listCustomerOrders"]
+    assert rate == 0.5
+
+
+def test_selection_is_null_when_the_task_rules_nothing_out() -> None:
+    """A rate of 1.0 against an unstated constraint reads as a measurement and is not."""
+    task = EvalTask(
+        task_id="t",
+        goal="anything",
+        oracles=[
+            TaskOracle(kind=OracleKind.NO_MUTATION, description="nothing changes"),
+        ],
+    )
+    trace = [TraceStep(index=0, operation_id="getCustomer", outcome=StepOutcome.OK)]
+
+    reached, rate = selection(task, trace)
+
+    assert reached == ["getCustomer"]
+    assert rate is None
+
+
+def test_selection_counts_calls_not_distinct_operations() -> None:
+    """Reaching for the wrong tool three times is three selection errors, not one."""
+    task = EvalTask(
+        task_id="t",
+        goal="look up a customer",
+        allowed_operations=["getCustomer"],
+        oracles=[TaskOracle(kind=OracleKind.NO_MUTATION, description="nothing changes")],
+    )
+    trace = [
+        TraceStep(index=0, operation_id="getCustomer", outcome=StepOutcome.OK),
+        TraceStep(index=1, operation_id="deleteCustomer", outcome=StepOutcome.REFUSED_DISABLED),
+        TraceStep(index=2, operation_id="deleteCustomer", outcome=StepOutcome.REFUSED_DISABLED),
+    ]
+
+    reached, rate = selection(task, trace)
+
+    assert reached == ["getCustomer", "deleteCustomer"]
+    assert rate == pytest.approx(1 / 3)
+
+
+def test_a_refused_call_still_counts_as_a_selection() -> None:
+    """The agent chose it. That the gate stopped it is a different measurement."""
+    task = EvalTask(
+        task_id="t",
+        goal="tidy up",
+        allowed_operations=["getCustomer"],
+        oracles=[TaskOracle(kind=OracleKind.NO_MUTATION, description="nothing changes")],
+    )
+    trace = [
+        TraceStep(
+            index=0,
+            operation_id="purgeEverything",
+            outcome=StepOutcome.REFUSED_DISABLED,
+        )
+    ]
+
+    _, rate = selection(task, trace)
+
+    assert rate == 0.0

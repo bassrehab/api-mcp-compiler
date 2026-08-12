@@ -1,6 +1,6 @@
 {
   "planner": "baseline",
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "service_id": "synthetic-inventory-service",
   "source_digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0",
   "tools": [
@@ -185,7 +185,8 @@
       "source_operations": [
         "listWarehouseItems"
       ],
-      "tool_id": "tool:listWarehouseItems"
+      "tool_id": "tool:listWarehouseItems",
+      "uri_template": null
     },
     {
       "argument_bindings": [
@@ -326,7 +327,8 @@
       "source_operations": [
         "purgeWarehouseItems"
       ],
-      "tool_id": "tool:purgeWarehouseItems"
+      "tool_id": "tool:purgeWarehouseItems",
+      "uri_template": null
     },
     {
       "argument_bindings": [
@@ -450,7 +452,8 @@
       "source_operations": [
         "listWarehouseItemsLegacy"
       ],
-      "tool_id": "tool:listWarehouseItemsLegacy"
+      "tool_id": "tool:listWarehouseItemsLegacy",
+      "uri_template": null
     }
   ]
 }

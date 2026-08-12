@@ -14,7 +14,7 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": "0.2.0"
+      "const": "0.3.0"
     },
     "service_id": {
       "type": "string"
@@ -213,6 +213,13 @@
             "composite",
             "omitted"
           ]
+        },
+        "uri_template": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "For a resource, the addressable form a client reads it by, as a URI template whose placeholders are the operation's path parameters. Null for a tool."
         }
       },
       "allOf": [

@@ -1,5 +1,34 @@
 # Changelog
 
+## Unreleased
+
+### Evaluation
+
+- **Tool selection is measured.** A run records the operations the agent reached for and the
+  proportion of its calls that selected an operation the task permits. Measured against the
+  permitted set the task declares, never against the reference solution: scoring an agent on
+  how closely it retraced an annotator's route is the defect that made an earlier corpus
+  unusable.
+- The rate is `null` when a task rules nothing out, because a rate over an unstated constraint
+  would be 1.0 for every agent on every task, which reads like a measurement and is not. It is
+  also 1.0 by construction under the replay driver, and only carries information under the
+  model-backed one.
+- `evaluation_run` schema version raised to `0.2.0`.
+
+### Resources
+
+- **A reclassified read is now addressable.** The planner has always been able to propose that
+  an addressable read become a resource, and code generation emitted a tool anyway, so the
+  reclassification survived as far as the plan and was discarded at the last step.
+- The surface records a `uri_template` whose placeholders are the operation's path parameters,
+  and the generated server registers it with `@mcp.resource` rather than `@mcp.tool`. The
+  scheme is the service identifier, so two surfaces mounted alongside each other cannot
+  collide on a shared path.
+- An operation whose inputs the address cannot express stays a tool, and so does every SOAP
+  operation, since they are all a POST to one endpoint and what distinguishes them is the
+  envelope.
+- `mcp_tool_surface` schema version raised to `0.3.0`.
+
 ## 0.3.0
 
 Released 2026-08-13. The generated server acts on the retry policy the manifest derives.
@@ -552,6 +581,35 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Pinned ruff and mypy to exact versions and declared an explicit lint rule selection, so
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
+
+## Unreleased
+
+### Evaluation
+
+- **Tool selection is measured.** A run records the operations the agent reached for and the
+  proportion of its calls that selected an operation the task permits. Measured against the
+  permitted set the task declares, never against the reference solution: scoring an agent on
+  how closely it retraced an annotator's route is the defect that made an earlier corpus
+  unusable.
+- The rate is `null` when a task rules nothing out, because a rate over an unstated constraint
+  would be 1.0 for every agent on every task, which reads like a measurement and is not. It is
+  also 1.0 by construction under the replay driver, and only carries information under the
+  model-backed one.
+- `evaluation_run` schema version raised to `0.2.0`.
+
+### Resources
+
+- **A reclassified read is now addressable.** The planner has always been able to propose that
+  an addressable read become a resource, and code generation emitted a tool anyway, so the
+  reclassification survived as far as the plan and was discarded at the last step.
+- The surface records a `uri_template` whose placeholders are the operation's path parameters,
+  and the generated server registers it with `@mcp.resource` rather than `@mcp.tool`. The
+  scheme is the service identifier, so two surfaces mounted alongside each other cannot
+  collide on a shared path.
+- An operation whose inputs the address cannot express stays a tool, and so does every SOAP
+  operation, since they are all a POST to one endpoint and what distinguishes them is the
+  envelope.
+- `mcp_tool_surface` schema version raised to `0.3.0`.
 
 ## 0.3.0
 

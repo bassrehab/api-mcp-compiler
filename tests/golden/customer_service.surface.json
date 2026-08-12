@@ -1,6 +1,6 @@
 {
   "planner": "baseline",
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "service_id": "customerservice",
   "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554",
   "tools": [
@@ -153,7 +153,8 @@
       "source_operations": [
         "GetCustomer"
       ],
-      "tool_id": "tool:GetCustomer"
+      "tool_id": "tool:GetCustomer",
+      "uri_template": null
     }
   ]
 }

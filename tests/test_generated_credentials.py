@@ -99,8 +99,14 @@ def _load(scheme: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, scopes: 
 
 
 def _call(namespace: dict[str, Any]) -> Any:
-    tool = namespace["list_widget"]
-    return asyncio.run(tool({}))
+    """Invoke the generated entry point.
+
+    `GET /widgets` takes no parameters, so the planner reclassifies it as an addressable read
+    and the server registers it as a resource. A resource is called by its address, so the
+    generated function takes the template's placeholders rather than an arguments mapping,
+    and this one has none.
+    """
+    return asyncio.run(namespace["list_widget"]())
 
 
 def test_an_api_key_goes_in_the_header_the_service_named(

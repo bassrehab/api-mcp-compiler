@@ -16,7 +16,7 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": "0.1.0"
+      "const": "0.2.0"
     },
     "corpus_id": {
       "type": "string"
@@ -208,6 +208,22 @@
           "items": {
             "type": "boolean"
           }
+        },
+        "selected_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Distinct source operations the agent reached for, in the order it first reached for each. Recorded against operations rather than tool names so two surfaces can be compared without favouring either."
+        },
+        "selection_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Proportion of calls that selected an operation the task permits, or null when the task declares no permitted set."
         }
       }
     }

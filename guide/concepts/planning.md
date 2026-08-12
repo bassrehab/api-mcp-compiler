@@ -16,9 +16,27 @@ a kind, a target, a rationale written for a person, and a confidence.
 | `group` | Groups by the first path segment, the coarsest grouping the specification states rather than one the planner invents. |
 | `project` | Withholds arguments that are transport rather than task, such as pagination cursors that are optional and have server defaults. |
 | `describe` | Rewrites the description for an agent reading a tool list, dropping formatting written for a rendered page and stating the side effect where a model is actually looking. The source text is unchanged in the IR. |
-| `reclassify` | Turns an addressable read into a resource, so a lookup does not spend a tool slot. |
+| `reclassify` | Turns an addressable read into a resource, so a lookup does not spend a tool slot. The resource carries the address it is read by. |
 | `omit` | Drops a deprecated operation, so agent attention is not spent on a surface the provider intends to withdraw. |
 | `compose` | Proposes a composite workflow tool over a lookup-then-act chain. |
+
+## A resource is addressable, or it is not a resource
+
+Reclassification only applies to a read whose inputs all identify what to fetch. The generated
+surface records the address such a read is available at, as a URI template whose placeholders
+are the operation's path parameters, and the server registers it as a resource rather than a
+tool:
+
+```
+synthetic-inventory-service://warehouses/{warehouse_id}/items-v1
+```
+
+The scheme is the service identifier, so two surfaces mounted alongside each other cannot
+collide on a shared path like `warehouses/{id}`.
+
+An operation whose inputs the address cannot express stays a tool. So does every SOAP
+operation: they are all a POST to one endpoint, and what distinguishes them is the envelope,
+which is not something a URI can carry.
 
 ## Names have to be unique, and summaries do not guarantee that
 
