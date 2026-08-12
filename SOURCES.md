@@ -14,7 +14,7 @@ behaviour.
 | WSDL 1.1 (W3C Note, 15 March 2001) | Document structure: `portType`, `binding`, `service`/`port`, `message`/`part`, and the SOAP binding extension elements `soap:binding`, `soap:operation`, `soap:address`. `src/api_mcp_compiler/ingest/wsdl.py`. |
 | WSDL 2.0 (W3C Recommendation) | Namespace identification only, so that a WSDL 2.0 document is rejected explicitly rather than parsed into an empty result. |
 | XPath 1.0 | Location step and predicate syntax, and the absence of an escape sequence inside string literals, which is why `xpath_literal` falls back to `concat()`. |
-| JSON Schema Draft 2020-12 | Contract schemas under `schemas/`. |
+| JSON Schema Draft 2020-12 | Contract schemas shipped as package data under `src/api_mcp_compiler/schemas/`. |
 | Model Context Protocol specification | Target artifact vocabulary: tools, resources and prompts. Not yet integrated; the MCP Python SDK is deliberately not a dependency until the tool plan and policy models are stable. |
 
 ## Prior and related work

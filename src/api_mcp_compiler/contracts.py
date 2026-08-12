@@ -1,7 +1,8 @@
 """Loading, validation and canonical serialization of versioned contract artifacts.
 
-Pydantic enforces the contracts inside Python. The JSON Schemas in `schemas/` are the
-language-independent statement of the same contracts, and the two can drift. Everything
+Pydantic enforces the contracts inside Python. The JSON Schemas shipped alongside this
+module are the language-independent statement of the same contracts, and the two can drift.
+Everything
 this compiler emits is therefore validated against the schema as well as the model, and a
 test asserts that the two agree.
 """
@@ -35,14 +36,19 @@ class ContractViolation(Exception):
 def schema_dir() -> Path:
     """Return the directory holding the versioned JSON Schemas.
 
-    The schemas live at the repository root rather than inside the package, so an override
-    is provided for callers that relocate them. Bundling them into the distribution is a
-    packaging concern.
+    The schemas ship inside the package rather than beside it, so an installed distribution
+    can validate its own artifacts with no repository checkout present. They were briefly
+    kept at the repository root, which worked in development and shipped a wheel that could
+    not validate anything; `scripts/check_packaging.py` now proves the built distribution
+    carries them.
+
+    The override exists for callers who need to validate against a different revision of the
+    contracts than the one they have installed.
     """
     override = os.environ.get(SCHEMA_DIR_ENV_VAR)
     if override:
         return Path(override)
-    return Path(__file__).resolve().parents[2] / "schemas"
+    return Path(__file__).resolve().parent / "schemas"
 
 
 def load_schema(name: str) -> dict[str, Any]:

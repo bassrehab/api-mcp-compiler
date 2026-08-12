@@ -59,6 +59,21 @@
 - Verified against the live Swagger 2 Petstore: 20 operations, no blocking ambiguities, 13
   tools executable, and a runnable MCP server emitted.
 
+### Packaging
+
+- **The distribution shipped none of the contract schemas.** They were kept at the repository
+  root, so every check passed against the source tree while an installed copy could not
+  validate a single artifact it produced. They are now package data inside
+  `api_mcp_compiler/schemas/`, and `schema_dir()` resolves against the package rather than
+  against a directory two levels up.
+- **The verification gate now builds the wheel and the sdist and exercises them.** It reads
+  both archives for every declared schema, unpacks the wheel elsewhere and makes it validate
+  an artifact with no source tree on the path — then makes it reject an invalid one, since a
+  validator that accepted everything would pass the first half. Building happens from a clean
+  copy of the source: setuptools reuses `build/`, and the first version of this check
+  certified a wheel built from a stale tree after the declaration that produced it was
+  deleted.
+
 ### Fixed
 
 - **A request body offered in several media types was unbuildable.** It produced one input per

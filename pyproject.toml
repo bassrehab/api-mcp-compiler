@@ -18,6 +18,10 @@ dependencies = ["pydantic>=2.7", "typer>=0.12", "PyYAML>=6.0", "lxml>=5.2", "jso
 # deliberate, reviewed change.
 dev = [
   "pytest>=8",
+  # Required by `scripts/check_packaging.py`, which builds the distribution without
+  # isolation so the gate needs no network. A 3.12 virtual environment has neither.
+  "setuptools>=68",
+  "wheel>=0.43",
   "ruff==0.16.2",
   "mypy==2.3.0",
   "types-PyYAML>=6.0.12",
@@ -30,6 +34,12 @@ api-mcp-compiler = "api_mcp_compiler.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+# Decision: the contract schemas are package data, not repository files. An installed
+# distribution has to be able to validate the artifacts it produces, and a wheel that ships
+# only the code cannot. `scripts/check_packaging.py` builds the wheel and proves it.
+[tool.setuptools.package-data]
+api_mcp_compiler = ["schemas/*.schema.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
