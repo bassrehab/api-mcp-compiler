@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:api-mcp-compiler:schema:evaluation-run:0.1.0",
+  "title": "Agent Evaluation Run",
+  "description": "The result of running one corpus against one surface with one driver. Latency and token cost are null unless a driver that consumes a model produced them; they are never inferred, because a fabricated number placed beside measured ones is indistinguishable from a measured one.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "corpus_id",
+    "service_id",
+    "source_digest",
+    "planner",
+    "driver",
+    "results"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "corpus_id": {
+      "type": "string"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "source_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "planner": {
+      "enum": [
+        "baseline",
+        "semantic"
+      ]
+    },
+    "driver": {
+      "type": "string"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/taskResult"
+      }
+    },
+    "preregistration_digest": {
+      "description": "The hypothesis this run was produced under. Required for any run that consumes a model, so a result cannot be attached to a hypothesis written afterwards.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "traceStep": {
+      "description": "One attempted call, recorded for evaluation. Kept separate from an audit event, which records digests and never values.",
+      "type": "object",
+      "required": [
+        "index",
+        "operation_id",
+        "outcome"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "operation_id": {
+          "type": "string"
+        },
+        "tool": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "arguments": {
+          "type": "object"
+        },
+        "outcome": {
+          "enum": [
+            "ok",
+            "refused_disabled",
+            "refused_arguments",
+            "refused_confirmation",
+            "refused_output",
+            "unmapped"
+          ]
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "confirmed": {
+          "type": "boolean"
+        },
+        "response_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "response": {
+          "description": "What the call returned, so retrieval can be checked."
+        }
+      }
+    },
+    "oracleResult": {
+      "type": "object",
+      "required": [
+        "kind",
+        "passed",
+        "detail"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "final_state",
+            "retrieval",
+            "no_mutation",
+            "confirmation_adherence",
+            "prohibited_operations"
+          ]
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "taskResult": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "success"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "oracle_results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/oracleResult"
+          }
+        },
+        "calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unnecessary_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmapped_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "invalid_argument_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unsafe_actions": {
+          "description": "Prohibited operations invoked, or disabled tools called.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "confirmation_failures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "context_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "latency_ms": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "token_cost": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "trace": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/traceStep"
+          }
+        },
+        "run_successes": {
+          "description": "Per-run outcomes when several runs are collapsed under a success definition.",
+          "type": "array",
+          "items": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

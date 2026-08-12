@@ -1,0 +1,918 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:api-mcp-compiler:schema:api-semantic-ir:0.5.0",
+  "title": "API Semantic IR",
+  "description": "Provider-independent intermediate representation of one service, produced by an ingestion adapter and consumed by every downstream planner.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "service",
+    "operations"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "description": "Pinned contract version. A document written against a different version fails validation loudly rather than being silently misread.",
+      "const": "0.5.0"
+    },
+    "service": {
+      "$ref": "#/$defs/service"
+    },
+    "operations": {
+      "description": "Operations in source document order. Order is part of the contract and is never sorted.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/operation"
+      }
+    },
+    "ambiguities": {
+      "description": "Constructs the adapter could not resolve and keys it did not consume, recorded rather than silently dropped.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ambiguity"
+      }
+    }
+  },
+  "$defs": {
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "jsonSchemaFragment": {
+      "description": "A source schema fragment with references resolved in place. A reference that is recursive, refused or missing is left unexpanded and reported as an ambiguity.",
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "provenance": {
+      "description": "Records explaining where each informative field came from. Every field carrying information must be covered.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "source_pointer",
+          "derivation",
+          "rule"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "description": "Dotted path of the field this record explains, relative to its owning object.",
+            "type": "string"
+          },
+          "source_pointer": {
+            "description": "Scheme-prefixed pointer into the source document: an RFC 6901 JSON Pointer for OpenAPI, an XPath 1.0 expression for WSDL.",
+            "type": "string",
+            "pattern": "^(openapi|wsdl):"
+          },
+          "derivation": {
+            "description": "source and normalized are facts at confidence 1.0; inferred is a proposal below 1.0; default records that the source held no evidence.",
+            "enum": [
+              "source",
+              "normalized",
+              "inferred",
+              "default"
+            ]
+          },
+          "rule": {
+            "description": "Stable identifier of the deterministic rule that produced the value.",
+            "type": "string"
+          },
+          "confidence": {
+            "$ref": "#/$defs/confidence"
+          }
+        }
+      }
+    },
+    "ambiguity": {
+      "type": "object",
+      "required": [
+        "code",
+        "field",
+        "source_pointer",
+        "detail",
+        "blocking"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "description": "Stable machine-readable ambiguity code.",
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        },
+        "source_pointer": {
+          "type": "string",
+          "pattern": "^(openapi|wsdl):"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "blocking": {
+          "description": "True when no executable artifact may be generated from the affected operation until the construct is resolved or waived by a human reviewer.",
+          "type": "boolean"
+        }
+      }
+    },
+    "server": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "authScheme": {
+      "description": "An authentication scheme declared by the source. One object with a closed type and conditional requirements, rather than a discriminated union, so the contract stays flat and readable across languages.",
+      "type": "object",
+      "required": [
+        "scheme_id",
+        "type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "scheme_id": {
+          "type": "string"
+        },
+        "type": {
+          "description": "`other` covers a scheme this version does not model, so a specification using a future scheme still compiles.",
+          "enum": [
+            "http",
+            "apiKey",
+            "oauth2",
+            "openIdConnect",
+            "mutualTLS",
+            "other"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "http_scheme": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bearer_format": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "api_key_in": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "api_key_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "open_id_connect_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "detail": {
+          "description": "The source object verbatim, so nothing is lost to normalization.",
+          "type": "object"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "http"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "http_scheme"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "apiKey"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "api_key_in",
+              "api_key_name"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "openIdConnect"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "open_id_connect_url"
+            ]
+          }
+        }
+      ]
+    },
+    "field": {
+      "type": "object",
+      "required": [
+        "name",
+        "location",
+        "required"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "location": {
+          "enum": [
+            "path",
+            "query",
+            "header",
+            "cookie",
+            "body",
+            "soap_header",
+            "soap_body"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "media_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type_schema": {
+          "$ref": "#/$defs/jsonSchemaFragment"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "style": {
+          "description": "Serialization style. The set is closed by the OpenAPI specification; a value outside it is a source defect and is reported rather than carried.",
+          "oneOf": [
+            {
+              "enum": [
+                "matrix",
+                "label",
+                "form",
+                "simple",
+                "spaceDelimited",
+                "pipeDelimited",
+                "deepObject"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "explode": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "allow_reserved": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "deprecated": {
+          "type": "boolean"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/example"
+          }
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "media_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type_schema": {
+          "$ref": "#/$defs/jsonSchemaFragment"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/header"
+          }
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/example"
+          }
+        }
+      }
+    },
+    "fault": {
+      "type": "object",
+      "required": [
+        "code"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "media_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type_schema": {
+          "$ref": "#/$defs/jsonSchemaFragment"
+        },
+        "retryable": {
+          "description": "Null unless the source states it. Retryability is never guessed, because a wrong guess drives unsafe agent retry behaviour.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/header"
+          }
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/example"
+          }
+        }
+      }
+    },
+    "soapBinding": {
+      "description": "SOAP binding surface present in the WSDL document itself. XSD types are resolved into JSON Schema; typed faults, SOAP headers, WS-Security and MTOM are not, and are recorded as ambiguities rather than omitted.",
+      "type": "object",
+      "required": [
+        "target_namespace",
+        "port_type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "target_namespace": {
+          "type": "string"
+        },
+        "port_type": {
+          "type": "string"
+        },
+        "binding": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "port": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "style": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transport": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "soap_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "endpoint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "input_message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "output_message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "required": [
+        "operation_id",
+        "protocol",
+        "source_pointer",
+        "intent",
+        "side_effect"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "protocol": {
+          "enum": [
+            "http",
+            "soap"
+          ]
+        },
+        "source_pointer": {
+          "type": "string",
+          "pattern": "^(openapi|wsdl):"
+        },
+        "intent": {
+          "type": "string"
+        },
+        "side_effect": {
+          "description": "Effect on server-side state. Authorization sensitivity is a tool-surface property and lives in the tool plan risk enumeration instead.",
+          "enum": [
+            "read",
+            "write",
+            "destructive",
+            "unknown"
+          ]
+        },
+        "idempotency": {
+          "enum": [
+            "idempotent",
+            "non_idempotent",
+            "conditional",
+            "unknown"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/response"
+          }
+        },
+        "faults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fault"
+          }
+        },
+        "soap": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/soapBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "description": "Aggregate agent-suitability confidence, assigned by the semantic planner. Ingestion leaves it null rather than fabricating a value; per-field confidence lives in provenance records.",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/confidence"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "deprecated": {
+          "type": "boolean"
+        },
+        "authentication": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/authRequirement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "servers": {
+          "description": "Overrides the service endpoints when the operation or its path declares its own.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/server"
+          }
+        },
+        "pagination": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/pagination"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "route": {
+          "description": "Request path for HTTP operations. Null for SOAP, where the port type plays the grouping role instead.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "required": [
+        "service_id",
+        "title",
+        "source_format",
+        "source_digest"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "service_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_format": {
+          "enum": [
+            "openapi",
+            "swagger",
+            "wsdl"
+          ]
+        },
+        "source_uri": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_digest": {
+          "description": "Prefixed sha256 digest of the root document's raw bytes.",
+          "$ref": "#/$defs/digest"
+        },
+        "servers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/server"
+          }
+        },
+        "auth_schemes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/authScheme"
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "spec_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Version declared by the source document, such as 3.1.0."
+        },
+        "source_documents": {
+          "description": "Every document loaded during the compile. An artifact is reproducible when this whole list matches, not merely the root.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceDocument"
+          }
+        }
+      }
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "sourceDocument": {
+      "description": "One document loaded during a compile. Reference resolution can pull in documents beyond the root, so the root digest alone no longer identifies the input.",
+      "type": "object",
+      "required": [
+        "uri",
+        "digest",
+        "role"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "role": {
+          "enum": [
+            "root",
+            "referenced"
+          ]
+        }
+      }
+    },
+    "authRequirement": {
+      "description": "What an operation requires in order to authenticate. `alternatives` keeps each requirement object separately rather than only their union, because the union over-approximates and least-privilege selection needs to compare them.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "disabled": {
+          "type": "boolean"
+        },
+        "scheme_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Union across alternatives, for convenience only."
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/securityRequirement"
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "example": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Key in the `examples` map; null for a singular `example`."
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "description": "The example value, of whatever JSON type the source declared."
+        },
+        "external_value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "header": {
+      "description": "One response header. Headers carry the clearest pagination and async-job signals a specification offers.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "deprecated": {
+          "type": "boolean"
+        },
+        "type_schema": {
+          "$ref": "#/$defs/jsonSchemaFragment"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "pagination": {
+      "description": "A proposed pagination mechanism. Always inferred, never asserted, and each populated field names the evidence the guess came from.",
+      "type": "object",
+      "required": [
+        "style"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "style": {
+          "enum": [
+            "cursor",
+            "page_number",
+            "offset_limit",
+            "link_header"
+          ]
+        },
+        "cursor_parameter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page_parameter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "size_parameter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "offset_parameter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "next_cursor_field": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "next_link_header": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "securityRequirement": {
+      "description": "One security requirement object: a set of schemes that together satisfy access.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scheme_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    }
+  }
+}

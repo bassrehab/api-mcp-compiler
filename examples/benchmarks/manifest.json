@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1.0",
+  "sources": [
+    {
+      "attribution": "Spotify Web API OpenAPI document, from the RestGPT repository by Yifan Song and colleagues, MIT licensed. Fetched, never redistributed by this project. If it is ever vendored, this notice must travel with the file.",
+      "description": "Spotify Web API, OpenAPI 3.0.3, roughly 30 paths across GET, POST, PUT and DELETE, with an OAuth2 authorization-code scheme and extensive $ref use. Distributed with RestBench, whose 57 instructions carry human-annotated solution paths. Chosen because neither the specification nor the instructions were written by this project, and because its write and delete operations exercise the approval gate, confirmation protocol and least-privilege scope selection that a read-only benchmark would leave untouched.",
+      "licence": "MIT (RestGPT repository)",
+      "pinned_ref": "87677a7e129276b0e57f8d889fab01975ebf6f4d",
+      "sha256": "sha256:7cfaf223ea373d8aa7429e6d62d9085b4678617556865cf23496ab2c4bf44c54",
+      "source_id": "restbench-spotify",
+      "target": "restbench/spotify_oas.json",
+      "url": "https://raw.githubusercontent.com/Yifan-Song793/RestGPT/87677a7e129276b0e57f8d889fab01975ebf6f4d/specs/spotify_oas.json"
+    },
+    {
+      "attribution": "RestBench Spotify task set, from the RestGPT repository by Yifan Song and colleagues, MIT licensed. Fetched, never redistributed by this project.",
+      "description": "RestBench's Spotify task set: 60 natural-language user goals, each with a human-annotated solution path expressed as HTTP method and templated path. Authored by the RestGPT team, not by this project, which is what removes circularity from the goals as well as from the specification.",
+      "licence": "MIT (RestGPT repository)",
+      "pinned_ref": "87677a7e129276b0e57f8d889fab01975ebf6f4d",
+      "sha256": "sha256:c99ae90a78f9f275d8a7376e59cc4747d4dda41eb424c7d23d05772b70a31bd8",
+      "source_id": "restbench-spotify-tasks",
+      "target": "restbench/spotify_tasks.json",
+      "url": "https://raw.githubusercontent.com/Yifan-Song793/RestGPT/87677a7e129276b0e57f8d889fab01975ebf6f4d/datasets/spotify.json"
+    },
+    {
+      "attribution": "TMDB OpenAPI document from the RestGPT repository by Yifan Song and colleagues, MIT licensed. Fetched, never redistributed by this project.",
+      "description": "The TMDB OpenAPI document distributed with RestBench. Held out: it is the benchmark this project will use to judge composition, and its task set has deliberately not been read here.",
+      "licence": "MIT (RestGPT repository)",
+      "pinned_ref": "87677a7e129276b0e57f8d889fab01975ebf6f4d",
+      "sha256": "sha256:6e5a3c4ebdf2e3deeada3331ad65c7b802b0aeb58c6167704db700be49b00017",
+      "source_id": "restbench-tmdb",
+      "target": "restbench/tmdb_oas.json",
+      "url": "https://raw.githubusercontent.com/Yifan-Song793/RestGPT/87677a7e129276b0e57f8d889fab01975ebf6f4d/specs/tmdb_oas.json"
+    },
+    {
+      "attribution": "RestBench TMDB task set, from the RestGPT repository by Yifan Song and colleagues, MIT licensed. Fetched, never redistributed by this project.",
+      "description": "RestBench's TMDB task set. Only the natural-language goals are ever read here; the annotated solution paths are withheld by the importer so a composition rule cannot be fitted to them.",
+      "licence": "MIT (RestGPT repository)",
+      "pinned_ref": "87677a7e129276b0e57f8d889fab01975ebf6f4d",
+      "sha256": "sha256:f417429f06a9b064f9d455e8c1952d7006fec17cce9347abd0e3067d32ab9f52",
+      "source_id": "restbench-tmdb-tasks",
+      "target": "restbench/tmdb_tasks.json",
+      "url": "https://raw.githubusercontent.com/Yifan-Song793/RestGPT/87677a7e129276b0e57f8d889fab01975ebf6f4d/datasets/tmdb.json"
+    },
+    {
+      "attribution": "TextCasing sample web service, Data Access Worldwide. Fetched, never redistributed by this project.",
+      "description": "A live public SOAP service published by Data Access Worldwide as a sample, document/literal, with more operations than any WSDL this project has parsed. It is here to test emission against a document nobody here wrote, which the SAWSDL corpus cannot do because it is entirely Section 5 encoded.",
+      "licence": "Published by Data Access Worldwide as a free public sample service.",
+      "pinned_ref": null,
+      "sha256": "sha256:a99ae3023643b918b2ee55afbddb0627e24a1887cc9fb495259c6957c98425c8",
+      "source_id": "dataaccess-textcasing",
+      "target": "soap/textcasing.wsdl",
+      "url": "https://www.dataaccess.com/webservicesserver/TextCasing.wso?WSDL"
+    },
+    {
+      "attribution": "NumberConversion sample web service, Data Access Worldwide. Fetched, never redistributed by this project.",
+      "description": "A second live document/literal service from the same publisher, small enough to read end to end when a failure needs explaining.",
+      "licence": "Published by Data Access Worldwide as a free public sample service.",
+      "pinned_ref": null,
+      "sha256": "sha256:c544123d2d3e6ccca67ce79e9f659fb5d191f40c35e68cc15d9746534721e454",
+      "source_id": "dataaccess-numberconversion",
+      "target": "soap/numberconversion.wsdl",
+      "url": "https://www.dataaccess.com/webservicesserver/NumberConversion.wso?WSDL"
+    }
+  ]
+}

@@ -1,0 +1,969 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "tool:list_items_held_warehouse",
+      "confidence": 1.0,
+      "description": "Returns one page of stocked items.",
+      "group": "warehouses",
+      "kind": "tool",
+      "name": "list_items_held_warehouse",
+      "omitted_arguments": [
+        "page"
+      ],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "semantic.artifact.artifact_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.artifact.kind",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "semantic.artifact.name",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "semantic.artifact.description",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "semantic.artifact.source_operations",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "semantic.artifact.risk",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "review_status",
+          "rule": "semantic.artifact.review_status",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.artifact.rationale",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.artifact.confidence",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "group",
+          "rule": "semantic.artifact.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "omitted_arguments",
+          "rule": "semantic.artifact.omitted_arguments",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'List items held in a warehouse' rather than the source identifier 'listWarehouseItems', which names a tool after the API instead of the task. Meets 6 of 6 readiness signals.",
+      "review_status": "proposed",
+      "risk": "read",
+      "source_operations": [
+        "listWarehouseItems"
+      ]
+    },
+    {
+      "artifact_id": "tool:permanently_remove_item_record_warehouse",
+      "confidence": 0.6667,
+      "description": "Permanently remove every item record for a warehouse. This removes data and cannot be undone.",
+      "group": "warehouses",
+      "kind": "tool",
+      "name": "permanently_remove_item_record_warehouse",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "semantic.artifact.artifact_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.artifact.kind",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "semantic.artifact.name",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "semantic.artifact.description",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "semantic.artifact.source_operations",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "semantic.artifact.risk",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "review_status",
+          "rule": "semantic.artifact.review_status",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.artifact.rationale",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.artifact.confidence",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "group",
+          "rule": "semantic.artifact.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'Permanently remove every item record for a warehouse' rather than the source identifier 'purgeWarehouseItems', which names a tool after the API instead of the task. Meets 4 of 6 readiness signals. Missing: has a description, declares a success schema.",
+      "review_status": "rejected",
+      "risk": "destructive",
+      "source_operations": [
+        "purgeWarehouseItems"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "applied": true,
+      "confidence": 0.75,
+      "kind": "rename",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "listWarehouseItems",
+      "proposed_value": "list_items_held_warehouse",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'List items held in a warehouse' rather than the source identifier 'listWarehouseItems', which names a tool after the API instead of the task.",
+      "target": "listWarehouseItems"
+    },
+    {
+      "applied": true,
+      "confidence": 0.65,
+      "kind": "group",
+      "members": [],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": "warehouses",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        }
+      ],
+      "rationale": "Grouped by the first path segment 'warehouses', which is the coarsest grouping the specification states rather than one this planner invents.",
+      "target": "listWarehouseItems"
+    },
+    {
+      "applied": true,
+      "confidence": 0.7,
+      "kind": "project",
+      "members": [
+        "page"
+      ],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "members",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        }
+      ],
+      "rationale": "Withholds page carry transport rather than task concerns. Each is optional and is left off the wire, so the service applies its own value. Confirm no caller needs to set them explicitly.",
+      "target": "listWarehouseItems"
+    },
+    {
+      "applied": true,
+      "confidence": 0.75,
+      "kind": "rename",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "purgeWarehouseItems",
+      "proposed_value": "permanently_remove_item_record_warehouse",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'Permanently remove every item record for a warehouse' rather than the source identifier 'purgeWarehouseItems', which names a tool after the API instead of the task.",
+      "target": "purgeWarehouseItems"
+    },
+    {
+      "applied": true,
+      "confidence": 0.65,
+      "kind": "group",
+      "members": [],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": "warehouses",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        }
+      ],
+      "rationale": "Grouped by the first path segment 'warehouses', which is the coarsest grouping the specification states rather than one this planner invents.",
+      "target": "purgeWarehouseItems"
+    },
+    {
+      "applied": true,
+      "confidence": 0.7,
+      "kind": "describe",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "Permanently remove every item record for a warehouse",
+      "proposed_value": "Permanently remove every item record for a warehouse. This removes data and cannot be undone.",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        }
+      ],
+      "rationale": "Rewrites the description for an agent reading it in a tool list, dropping formatting written for a rendered page, and states the side effect where the model is actually looking. The source text is unchanged in the IR.",
+      "target": "purgeWarehouseItems"
+    },
+    {
+      "applied": true,
+      "confidence": 0.75,
+      "kind": "rename",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "listWarehouseItemsLegacy",
+      "proposed_value": "list_items_using_retired_v1",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'List items using the retired v1 projection' rather than the source identifier 'listWarehouseItemsLegacy', which names a tool after the API instead of the task.",
+      "target": "listWarehouseItemsLegacy"
+    },
+    {
+      "applied": true,
+      "confidence": 0.6,
+      "kind": "reclassify",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "tool",
+      "proposed_value": "resource",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        }
+      ],
+      "rationale": "A read whose only inputs identify what to fetch is addressable, so a resource avoids spending a tool slot on a lookup.",
+      "target": "listWarehouseItemsLegacy"
+    },
+    {
+      "applied": true,
+      "confidence": 0.65,
+      "kind": "group",
+      "members": [],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": "warehouses",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        }
+      ],
+      "rationale": "Grouped by the first path segment 'warehouses', which is the coarsest grouping the specification states rather than one this planner invents.",
+      "target": "listWarehouseItemsLegacy"
+    },
+    {
+      "applied": true,
+      "confidence": 0.7,
+      "kind": "describe",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "List items using the retired v1 projection",
+      "proposed_value": "List items using the retired v1 projection.",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        }
+      ],
+      "rationale": "Rewrites the description for an agent reading it in a tool list, dropping formatting written for a rendered page, and states the side effect where the model is actually looking. The source text is unchanged in the IR.",
+      "target": "listWarehouseItemsLegacy"
+    },
+    {
+      "applied": true,
+      "confidence": 0.6,
+      "kind": "omit",
+      "members": [],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        }
+      ],
+      "rationale": "The specification marks this operation deprecated, so exposing it spends agent attention on a surface the provider intends to withdraw.",
+      "target": "listWarehouseItemsLegacy"
+    },
+    {
+      "applied": true,
+      "confidence": 1.0,
+      "kind": "omit",
+      "members": [],
+      "origin": "human",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.omit",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        }
+      ],
+      "rationale": "Omission accepted by a reviewer in the overlay.",
+      "target": "listWarehouseItemsLegacy"
+    }
+  ],
+  "planner": "semantic",
+  "schema_version": "0.4.0",
+  "service_id": "synthetic-inventory-service",
+  "source_digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0"
+}

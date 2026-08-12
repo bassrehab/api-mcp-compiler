@@ -1,0 +1,378 @@
+{
+  "policies": [
+    {
+      "allowed_environments": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "approval": "none",
+      "artifact_id": "tool:list_items_held_warehouse",
+      "confirmation": null,
+      "idempotency_key_required": false,
+      "log_class": "standard",
+      "output": {
+        "max_bytes": 32768,
+        "projected_fields": [],
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_bytes",
+            "rule": "policy.output.max_bytes",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          }
+        ],
+        "redact_fields": []
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_name",
+          "rule": "policy.tool.tool_name",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.tool.approval",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.tool.retry",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "idempotency_key_required",
+          "rule": "policy.tool.idempotency_key_required",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "allowed_environments",
+          "rule": "policy.tool.allowed_environments",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.tool.log_class",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.tool.sensitivity",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "required_scopes",
+          "rule": "policy.tool.required_scopes",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.rationale.approval: A read requires no approval once validated.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "required_scopes",
+          "rule": "policy.rationale.scopes: A single security requirement, so its scopes are exactly what is needed.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.rationale.sensitivity: No financial or personal vocabulary was found, so the default internal classification stands. Confirm before treating the output as public.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.rationale.retry: Reads are safe to retry.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.rationale.log: No sensitive vocabulary was detected.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.rate: Reads are cheap to repeat, so the budget is generous.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        }
+      ],
+      "rate": {
+        "calls_per_minute": 60,
+        "daily_call_budget": 5000,
+        "max_concurrent": 4,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "calls_per_minute",
+            "rule": "policy.rate.calls_per_minute",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_concurrent",
+            "rule": "policy.rate.max_concurrent",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "daily_call_budget",
+            "rule": "policy.rate.daily_call_budget",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          }
+        ]
+      },
+      "required_scopes": [
+        "inventory.read"
+      ],
+      "retry": "safe",
+      "rollback_guidance": null,
+      "sensitivity": "internal",
+      "tool_name": "list_items_held_warehouse",
+      "unresolved": []
+    },
+    {
+      "allowed_environments": [
+        "development",
+        "staging"
+      ],
+      "approval": "user_confirmation",
+      "artifact_id": "tool:permanently_remove_item_record_warehouse",
+      "confirmation": {
+        "effect_summary": "permanently_remove_item_record_warehouse performs a destructive action that may not be reversible.",
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "required",
+            "rule": "policy.confirmation.required",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "effect_summary",
+            "rule": "policy.confirmation.effect_summary",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "token_ttl_seconds",
+            "rule": "policy.confirmation.token_ttl_seconds",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          }
+        ],
+        "required": true,
+        "token_ttl_seconds": 300
+      },
+      "idempotency_key_required": false,
+      "log_class": "standard",
+      "output": {
+        "max_bytes": 32768,
+        "projected_fields": [],
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_bytes",
+            "rule": "policy.output.max_bytes",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          }
+        ],
+        "redact_fields": []
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_name",
+          "rule": "policy.tool.tool_name",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.tool.approval",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.tool.retry",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "idempotency_key_required",
+          "rule": "policy.tool.idempotency_key_required",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "allowed_environments",
+          "rule": "policy.tool.allowed_environments",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.tool.log_class",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.tool.sensitivity",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "required_scopes",
+          "rule": "policy.tool.required_scopes",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rollback_guidance",
+          "rule": "policy.tool.rollback_guidance",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.rationale.approval: Destructive actions require explicit confirmation before they run.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "required_scopes",
+          "rule": "policy.rationale.scopes: Narrowest of 3 alternatives, using inventoryOAuth. The union across alternatives would have granted inventory.admin, inventory.write; rejected inventoryOAuth(inventory.admin, inventory.write); inventoryAdminKey(no scopes).",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.rationale.sensitivity: No financial or personal vocabulary was found, so the default internal classification stands. Confirm before treating the output as public.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.rationale.retry: The operation is idempotent, so repeating it has the same effect.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.rationale.log: No sensitive vocabulary was detected.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.rate: A destructive action is budgeted tightly and serialised, so a loop cannot cascade.",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        }
+      ],
+      "rate": {
+        "calls_per_minute": 2,
+        "daily_call_budget": 20,
+        "max_concurrent": 1,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "calls_per_minute",
+            "rule": "policy.rate.calls_per_minute",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_concurrent",
+            "rule": "policy.rate.max_concurrent",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "daily_call_budget",
+            "rule": "policy.rate.daily_call_budget",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          }
+        ]
+      },
+      "required_scopes": [
+        "inventory.write"
+      ],
+      "retry": "safe",
+      "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
+      "sensitivity": "internal",
+      "tool_name": "permanently_remove_item_record_warehouse",
+      "unresolved": []
+    }
+  ],
+  "schema_version": "0.2.0",
+  "service_id": "synthetic-inventory-service",
+  "source_digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0"
+}

@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:api-mcp-compiler:schema:eval-corpus:0.2.0",
+  "title": "Agent Evaluation Corpus",
+  "description": "A versioned set of benchmark tasks for one service. Tasks name source operations, never tool names: a task naming a tool could describe one planner's output and would be unable to describe the other, which defeats the comparison the corpus exists to make.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "corpus_id",
+    "service_id",
+    "source_digest",
+    "authoring_note",
+    "tasks"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.3.0"
+    },
+    "corpus_id": {
+      "type": "string"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "source_digest": {
+      "description": "Specification revision the tasks were written against. A corpus describing other bytes cannot judge this service.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "authoring_note": {
+      "description": "How the tasks were authored, so a reader can judge their independence from the surface they score.",
+      "type": "string"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/task"
+      }
+    }
+  },
+  "$defs": {
+    "stateAssertion": {
+      "description": "One deterministic claim about the service state a task should leave behind.",
+      "type": "object",
+      "required": [
+        "collection"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "collection": {
+          "type": "string"
+        },
+        "count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "record_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "exists": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "field": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "equals": {},
+        "contains": {
+          "description": "Assert the value references this, rather than equals it. A service names things in more than one form, and an agent that sends the fuller one is right, so equality would fail a correct call.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "oracle": {
+      "description": "One check applied to a completed run. `final_state` is the criterion the acceptance rules single out: success is judged by the state the service ends in, not by whether the trace resembled an expected one. `retrieval` exists because a read changes no state, so every other check is negative and an agent that does nothing satisfies them all.",
+      "type": "object",
+      "required": [
+        "kind",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "final_state",
+            "retrieval",
+            "no_mutation",
+            "confirmation_adherence",
+            "prohibited_operations"
+          ]
+        },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/stateAssertion"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "retrieval_assertions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/retrievalAssertion"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "retrieval"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "retrieval_assertions"
+            ],
+            "properties": {
+              "retrieval_assertions": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "referenceStep": {
+      "description": "One step of a solution the author asserts is correct. Not a scoring key: a run is judged by its oracles, so replaying these steps can still fail if the resulting state is wrong.",
+      "type": "object",
+      "required": [
+        "operation_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object"
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "goal",
+        "oracles"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string"
+        },
+        "goal": {
+          "description": "Natural-language user goal.",
+          "type": "string"
+        },
+        "fixture": {
+          "description": "Starting service state, as collection to record identifier to record.",
+          "type": "object"
+        },
+        "identity": {
+          "type": "object"
+        },
+        "allowed_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prohibited_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "oracles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/oracle"
+          }
+        },
+        "reference_solution": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/referenceStep"
+          }
+        },
+        "max_calls": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "retrievalAssertion": {
+      "description": "One claim that a value was actually returned. Checked against the recorded response, never by a judge.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "operation_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Restrict the check to responses from this operation. Usually a mistake: a goal asks for an outcome, and pinning the operation asserts a route instead, so an agent that reaches the same outcome by a better route is marked wrong."
+        },
+        "field": {
+          "description": "Dotted path into the response; null searches anywhere.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "equals": {},
+        "contains": {
+          "description": "Assert the value references this, rather than equals it. A service names things in more than one form, and an agent that sends the fuller one is right, so equality would fail a correct call.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:api-mcp-compiler:schema:mcp-tool-surface:0.1.0",
+  "title": "Generated MCP Tool Surface",
+  "description": "A transport-independent tool surface generated from an API Semantic IR and a reviewed tool plan. It binds to no SDK: a tool is a name, a description, a composed input schema and an emission decision. Executable status is a safety gate, not a formality.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "service_id",
+    "planner",
+    "source_digest",
+    "tools"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "planner": {
+      "description": "Which planner produced the plan this surface was generated from.",
+      "enum": [
+        "baseline",
+        "semantic"
+      ]
+    },
+    "source_digest": {
+      "description": "Digest shared with the IR and the plan, so a surface can never be silently applied to a different revision of the specification.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/tool"
+      }
+    }
+  },
+  "$defs": {
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "source_pointer",
+          "derivation",
+          "rule"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "source_pointer": {
+            "type": "string",
+            "pattern": "^(openapi|wsdl):"
+          },
+          "derivation": {
+            "enum": [
+              "source",
+              "normalized",
+              "inferred",
+              "default"
+            ]
+          },
+          "rule": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "argumentBinding": {
+      "description": "How one flat tool argument maps back onto the wire. The input schema is flat so an agent never has to reason about transport; this is what a runtime uses to put each value back in the right place.",
+      "type": "object",
+      "required": [
+        "argument",
+        "location",
+        "wire_name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "argument": {
+          "type": "string"
+        },
+        "location": {
+          "enum": [
+            "path",
+            "query",
+            "header",
+            "cookie",
+            "body",
+            "soap_header",
+            "soap_body"
+          ]
+        },
+        "wire_name": {
+          "type": "string"
+        },
+        "media_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "source_operation": {
+          "description": "Which of a composite's steps this value belongs to. A flat schema cannot say that two steps each take a body, so the argument is disambiguated by name and this records which request it belongs on.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "required": [
+        "tool_id",
+        "name",
+        "description",
+        "risk",
+        "emission",
+        "input_schema"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "tool_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "risk": {
+          "enum": [
+            "read",
+            "write",
+            "destructive",
+            "privileged",
+            "unknown"
+          ]
+        },
+        "emission": {
+          "description": "A tool is executable only when its source operation carries no blocking ambiguity, its risk is classified, and any write, destructive or privileged artifact has been approved by a human.",
+          "enum": [
+            "executable",
+            "disabled"
+          ]
+        },
+        "blockers": {
+          "description": "Why executable status was refused. A disabled tool is still emitted, carrying its blockers, so the surface stays auditable rather than silently shrinking.",
+          "type": "array",
+          "items": {
+            "enum": [
+              "blocking_ambiguity",
+              "awaiting_approval",
+              "rejected",
+              "unclassified_risk",
+              "argument_name_collision",
+              "composite_pending_confirmation",
+              "policy_unresolved"
+            ]
+          }
+        },
+        "blocker_detail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "input_schema": {
+          "description": "A flat JSON Schema object. Unknown arguments are rejected, so a tool never silently accepts an argument it will not send.",
+          "type": "object"
+        },
+        "output_schema": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "argument_bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/argumentBinding"
+          }
+        },
+        "source_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "kind": {
+          "enum": [
+            "tool",
+            "resource",
+            "prompt",
+            "composite",
+            "omitted"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "emission": {
+                "const": "executable"
+              }
+            },
+            "required": [
+              "emission"
+            ]
+          },
+          "then": {
+            "properties": {
+              "blockers": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "emission": {
+                "const": "disabled"
+              }
+            },
+            "required": [
+              "emission"
+            ]
+          },
+          "then": {
+            "required": [
+              "blockers"
+            ],
+            "properties": {
+              "blockers": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

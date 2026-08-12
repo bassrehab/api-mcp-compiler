@@ -1,0 +1,437 @@
+# Changelog
+
+## Unreleased
+
+### Research validity
+
+- **Three registered comparisons run and reported, all inconclusive.** Baseline 20 of 24 and
+  semantic 21 of 24 on the repaired instrument, with one discordant pair in every run and the
+  direction alternating. A registered prediction that repairing the store would favour the
+  semantic arm was not confirmed.
+- Earlier runs, before the instrument was repaired: both inconclusive, with the nominal
+  direction reversing between them — the clearest available evidence that the one-task gap in
+  either was noise. After correcting the corpus, baseline 17 of 24 and semantic 16 of 24.
+- First registered comparison, on the uncorrected corpus: Baseline 13 of 24, semantic
+  14 of 24, one discordant pair against a pre-registered threshold of six, p = 1.0. Recorded
+  with the registration's digest on both runs so the result cannot be detached from the
+  hypothesis it was produced under.
+
+- A **pre-registration** contract, document and analysis. The hypothesis, corpus, arms, model,
+  success definition, equal-budget conditions, primary test, threshold, falsification
+  condition and the list of things that may not change afterwards are all fixed in a committed
+  document before any model-backed run.
+- The document is digested and an evaluation run records that digest, so a result cannot be
+  attached to a hypothesis written after the fact, and a model cannot be swapped between arms
+  without it showing as a mismatch.
+- The registered test is implemented rather than described. With 24 paired tasks, McNemar's
+  exact test at two-sided alpha 0.05 requires at least 6 discordant pairs all favouring the
+  same surface. Fewer is pre-committed as inconclusive whatever the raw difference, which is
+  the expected outcome at this corpus size.
+
+### Benchmarks
+
+- A 24-task corpus over the Spotify Web API, selected from RestBench by a rule fixed before
+  any behaviour was inspected. Goals and specification are third-party and fetched; fixtures
+  and oracles are authored here and committed in a sidecar pinned to each goal by digest, so
+  an upstream reordering cannot silently attach an oracle to a different goal.
+
+- Third-party benchmark documents are **fetched and verified, never stored here**. A manifest
+  records the upstream URL pinned to a commit, an expected sha256, the licence and the
+  attribution that would have to travel with the file if it were ever redistributed. Fetching
+  downloads, verifies, and only then writes, so a mismatch refuses and leaves nothing behind.
+  An unrecorded source is refused before any request is made. Certificate verification is
+  never disabled.
+- First run against a real third-party specification, the Spotify Web API from RestBench:
+  40 operations parsed with no blocking ambiguities, 23 of 40 tools executable with the rest
+  held for approval, and least-privilege scopes derived correctly from a real OAuth2 surface.
+
+### Swagger 2.0
+
+- **Swagger 2 documents are ingested**, translated at load into the OpenAPI 3 shape so no
+  later stage learns there are two input formats. Servers are reassembled from `host`,
+  `basePath` and `schemes`; body and formData parameters become a request body, with a file
+  field forcing multipart; `definitions` move under components and their references are
+  rewritten, never followed; `type: file` becomes a binary string; `collectionFormat` becomes
+  style and explode; and OAuth2 flows are renamed to their OpenAPI 3 names.
+- What has no equivalent is reported rather than guessed: an unknown flow or collection
+  format, and an operation declaring both a body and form fields, which cannot both be the
+  request body.
+- Verified against the live Swagger 2 Petstore: 20 operations, no blocking ambiguities, 13
+  tools executable, and a runnable MCP server emitted.
+
+### Fixed
+
+- **A request body offered in several media types was unbuildable.** It produced one input per
+  media type, all named `body`, and the tool refused to compose. This affected OpenAPI 3
+  documents equally; translating a real Swagger 2 document is only what made it visible.
+
+### SOAP
+
+- **Verified end to end against live third-party services.** Two public document/literal SOAP
+  services were fetched, classified by a reviewer, compiled and served, and the generated
+  server made real calls: `4207` came back as "four thousand two hundred and seven", and
+  `"a<b & c>d"` round-tripped through the envelope intact.
+- Two defects only a real service could show. A document body carries the element the message
+  part *references*, not the part's own name — using the part name produced a fault from
+  every real service, while every fixture here would have passed. And redaction removed a
+  service's answer because the field name contained "token", where it meant a delimiter.
+
+- **A SOAP service can now be served.** `serve` emits an MCP server that posts a SOAP 1.1
+  envelope to the service endpoint, in document or rpc shape as the binding declares, carrying
+  the SOAPAction and target namespace the specification named. Faults are reported as faults
+  rather than transport errors, arguments are XML-escaped, and policy travels with the tool as
+  it does over HTTP.
+- **A reviewer can now record a side effect.** WSDL carries no signal equivalent to an HTTP
+  method, so the compiler required a classification and gave nobody a way to express it: every
+  SOAP operation was blocked with no route to unblocking it. The overlay carries the decision,
+  and it is recorded as a human decision with the operation it applies to.
+
+- **RPC bindings are ingested.** RPC and document differ in how the body is shaped, not in
+  what the parameters are, so the tool schema is derivable either way. Refusing the style
+  discarded documents whose surface was perfectly describable.
+- **Section 5 encoding is what actually blocks**, and it now says so. Encoded bodies serialise
+  values as a reference graph, which this compiler does not write, so the operation is
+  described in full and cannot be served. That is a transport limit, reported as one, rather
+  than a description limit.
+
+- **XSD types resolve into JSON Schema.** Until this existed every WSDL was blocked and
+  nothing SOAP could reach a tool schema. Measured over 40 third-party WSDL documents:
+  unresolved types fell from 88 to 7, and 37 documents gained both an input and an output
+  schema where none had either.
+- The translation is deliberately narrow. A choice, an `xsd:any`, a named group, a
+  self-referential type and a union are each reported as an ambiguity rather than
+  approximated, because a tool whose schema quietly disagrees with the service is worse than
+  one that says what it could not express. An imported schema is recorded, never fetched.
+- A type that resolves with a caveat no longer blocks: the schema is usable and the caveat
+  says what it does not capture. Only a type that produced no schema at all still does.
+
+### Composition measured
+
+- **The distinctive claim has been tested and did not show.** On TMDB, whose every goal is a
+  lookup-then-use chain, baseline and semantic both scored 28 of 34 with **zero** discordant
+  pairs. The agent reached for a composite on 29 of 34 tasks and used 18 of the 29 offered.
+- Calls fell 7.4 percent, so the registration's second falsification condition — equal success
+  with no reduction in calls — is not met. Composition changed what the agent did without
+  changing what it achieved.
+- Context bytes rose 20 percent: a composite returns the last step's payload where the
+  baseline agent often stopped at the smaller one it needed.
+
+### Held-out benchmark
+
+- TMDB fetched and verified. **54 operations, every one a read**, which forced the composite
+  rule to stop asking about side effects: needing a value the goal cannot supply is a property
+  of the route. A companion constraint — a composite must begin with something a goal can
+  reach on its own — keeps the read-to-read rule from proposing every detail endpoint against
+  every other.
+- `read_goals_only` drops annotated solution paths inside the loader, so a composition rule
+  cannot be fitted to them and no reviewer has to take a promise on trust.
+- A 34-task corpus authored from those goals alone. Every oracle asserts the answer rather
+  than the route, and the build checks that no oracle pins an operation or names a field, and
+  that every asserted answer is present in its own fixture.
+- A composite may now **supersede its steps** rather than joining them, when a reviewer says
+  so. It defaults to joining, because approving a tool should never silently remove others.
+
+### Composition, executable
+
+- **A composite runs as one call.** The harness performs its steps in order and records a
+  single trace step; charging them separately would bill the surface for the coupling
+  composing removed. The emitter writes one tool that makes several requests and stops at the
+  first failure rather than acting on a resource an earlier step did not create.
+- **A threaded argument leaves the caller's schema and keeps its binding.** A composite exists
+  because the value cannot come from the goal, so asking for it would restore the coupling.
+  `create_playlist_with_tracks` takes no `playlist_id` and still sends one.
+- **Two steps may each carry a body.** A flat schema cannot say that, so the gate was refusing
+  composites of two writes — the interesting case — as an argument collision. The later
+  argument is now qualified by its step, and `ArgumentBinding` records `source_operation` so
+  each value reaches the right request.
+- Confirmation is taken once, against the composite's own arguments.
+
+### Planning
+
+- **Argument projection.** Optional arguments that declare a default, or that carry transport
+  rather than task concerns, are withheld from the agent's input schema and left off the wire
+  so the service applies its own value. On the benchmark API this halves what an agent must
+  reason about: **92 arguments become 46**. A required argument is never withheld, so a
+  projection cannot make a call invalid.
+- **Description rewriting.** Descriptions are rewritten for the audience that reads them —
+  a model inside a tool list, which cannot follow a link and pays for every token. Source-site
+  links and markup are dropped, prose is cut to what the call does, and the side effect is
+  stated in the text: a destructive tool now says so where the model is actually looking.
+- Both are recorded as decisions with a rationale, and the source text stays unchanged in
+  the IR.
+
+### Planning
+
+- **Composite proposals from route structure.** A write whose route carries a templated
+  identifier cannot be called from a goal alone: the value has to come from a read, and the
+  route names which resource. Pairing the write with the read that yields that resource uses
+  only what the specification states, and needs no reference to how anybody solved a task.
+- On the benchmark API it proposes six pairs; on this repository's own fixtures it proposes
+  none, which is the check that matters — it is no more shaped to the examples written here
+  than to the benchmark's annotated paths.
+- It complements rather than replaces the existing action-verb rule: that one fires on the
+  enterprise approve-then-commit shape and not on a consumer API, this one the other way round.
+- Composites remain proposals. Nothing composes without a reviewer recording it.
+
+### The human path
+
+- **`report`** writes the conversion report a reviewer actually reads: one self-contained HTML
+  file saying what was read, what is proposed, what the gate is holding, and what needs a
+  decision. **Reports are never overwritten** — a decision made against one set of proposals is
+  not evidence about a different set — so each run writes a new file named for the source
+  digest it describes.
+- **`approve`** records approval for a class of tools and writes the overlay, so nobody
+  hand-edits JSON. A selection must name what it covers, by risk, by group or by name; there is
+  deliberately no flag that approves a surface without saying what class of thing it is. An
+  existing overlay is extended rather than replaced, and what the selection did not cover is
+  reported back.
+- The intended path is `report`, `approve`, `serve`. The project instructions now say so, and
+  say why the granularity of a gate is a safety property rather than a convenience: a reviewer
+  clicking through twenty-three read tools individually is doing data entry, not governance.
+
+### Code generation
+
+- **A runnable MCP server.** `serve` writes a Python module that registers the approved
+  surface over MCP and calls the upstream service. Only tools that cleared the emission gate
+  are registered; the rest are named by a `surface://withheld` resource with the reason, so a
+  deployment cannot pick up the tools and leave the decision behind.
+- Policy is written into the server rather than documented beside it: arguments validated
+  before the request is made, confirmation bound by digest to the exact arguments, output
+  ceilings, and redaction. Credentials are read from the environment and never written into
+  the generated file.
+- The generated module needs `mcp` and `httpx`. The compiler depends on neither.
+
+### Evaluation
+
+- A bulk delete naming identifiers now removes those and leaves the rest. It previously
+  cleared the whole collection, so an agent asked to remove one track was scored against a
+  store that removed all of them.
+- Merged multi-run results keep per-run outcomes and report against a run that failed, so a
+  task recorded as failed can no longer show every oracle passing.
+- Three corpus checks run in the build: no oracle may assert a record identifier the agent
+  could not know, pin the operation a goal must be reached by, or count records in a
+  collection an agent writes into.
+
+- A **model-backed driver**. It sees the goal and the tools and nothing else — never the
+  oracles, the fixture, or the reference solution. Both arms get the same model, decoding
+  settings, system prompt, budget and starting state; the only difference permitted is the
+  tool list.
+- The driver protocol is now **turn-based**. It previously asked for a whole plan before any
+  call ran, which no agent can supply: a goal like "add the first track of an artist's newest
+  album to a playlist" cannot name the track until a lookup has returned it.
+
+### Fixed
+
+- **Generated tool schemas were never checked for being valid schemas.** The compiler
+  validated arguments *against* them but never validated them, and the source specification
+  writes `"maximum": "50"` and `"additionalProperties": "true"` as strings — so **22 of 40
+  tools in both arms carried schemas the API rejects outright**. Schema keywords are now
+  interpreted like any other source value, and a composed schema that is still invalid is
+  refused rather than emitted.
+
+- **Boolean fields were coerced rather than interpreted.** A real specification writes
+  `"required": "false"` as a string, and `bool("false")` is `True`, so **every optional
+  parameter of the benchmark API became required**: 92 of 92 inputs, where the truth is 31.
+  A generated tool would have demanded values the service never wanted. Booleans are now
+  interpreted strictly, a string that spells a boolean is accepted and reported as a
+  `malformed_boolean` ambiguity, and anything else defaults to false and is reported.
+- A singleton `PUT` mutated nothing, and arguments outside a request body never reached the
+  stored record, so a value like `volume_percent` could not be asserted on.
+- The evaluation store keyed collections by the last path segment, so `/me/tracks` and
+  `/playlists/{id}/tracks` were the same collection and a final-state assertion could not
+  tell saving a track to a library from adding one to a playlist.
+- A `PUT` with no record identifier created a record instead of setting a singleton.
+- Reads returned nothing from the store even when the fixture held the answer, so no
+  retrieval oracle could pass regardless of what an agent did.
+- Name derivation split possessives, turning "Get an Artist's Albums" into
+  `get_artist_s_albums`. Single-letter tokens are now dropped. Found only by running against
+  a specification nobody here wrote.
+
+
+### Evaluation harness
+
+**Fixed before release:** a read task could be passed by an agent that made no calls at all.
+Every read-side oracle was negative, asking only whether something bad had happened, so an
+idle agent satisfied all of them. A positive `retrieval` oracle now checks that the
+information asked for was actually returned, evaluated against the recorded response rather
+than by a judge, and the contract refuses a retrieval oracle carrying no assertion.
+
+- New contracts: evaluation corpus `0.2.0` and evaluation run `0.1.0`. The previous
+  single-task schema is removed; it had no envelope, so nothing recorded which service a task
+  addressed or which revision it was written against.
+- **Tasks name source operations, never tool names**, so one corpus can score both the
+  baseline and the semantic surface. The harness resolves each operation to whichever tool a
+  surface exposes, and reports an operation a surface omits rather than skipping it.
+- **A stateful mock service**, seeded per task and discarded afterwards, so success can be
+  judged by the state the service ends in rather than by whether the trace looked right.
+- **Deterministic oracles** for final state, absence of mutation, prohibited operations and
+  confirmation adherence. No oracle consults a model, and none can.
+- **Evaluation traces** recorded separately from audit events, since an audit event carries
+  digests and never values while an evaluator needs the values.
+- Metrics for calls, unnecessary calls, unmapped operations, argument validity, unsafe
+  actions, confirmation failures and context size. Latency and token cost are present and
+  null, because neither has a source without a model in the loop.
+- CLI gains `evaluate`.
+
+**This phase produced no comparison and no findings, deliberately.** The only driver replays
+the solution a task records, so it is correct by construction and scores every surface
+identically; a test asserts exactly that. Nothing here is evidence about surface quality.
+
+
+### Security and governance synthesis
+
+- Policy manifest raised to `0.2.0` with Python models, a producer and golden artifacts. It
+  was previously the only contract in the repository that nothing generated.
+- **Data sensitivity** is a separate axis from the side-effect class, carrying public,
+  internal, confidential, personal and financial. A read of financial data is still
+  financial, so folding the label into read/write/destructive would hide it on exactly the
+  operations that leak such data.
+- **Least privilege.** Security requirement alternatives are now kept separately in the IR
+  (`0.5.0`) rather than only as their union, and policy selects the narrowest requirement
+  that grants access. A scopeless credential such as an admin key is not treated as
+  narrowest, because it looks smallest by count while granting the most.
+- **Two-call confirmation.** A prepare call issues a token naming the effect, bound to a
+  digest of the arguments; the execute call refuses without it. Confirming one action cannot
+  authorise another. This is what lifts the blocker on a composite spanning a change.
+- **Fail closed.** A tool whose policy cannot be derived is disabled with `policy_unresolved`
+  rather than emitted with defaults.
+- **Output ceilings and redaction** enforced at invocation. Exceeding the ceiling returns a
+  structured refusal rather than truncated data.
+- **Structured audit events** that record digests of arguments and never their values, so
+  enabling auditing cannot become a way of logging the data policy protects.
+- Retry policy derived from inferred idempotency; rate and concurrency budgets scaled by
+  risk; writes excluded from production environments by default.
+- CLI gains `policy`; `generate` gains `--enforce-policy`.
+
+### Fixed
+
+- Duplicate mapping keys were silently dropped by both `yaml.safe_load` and `json.loads`,
+  so a specification with two `get` entries under one path lost one with no record. This
+  defeated the completeness sweep, because the dropped key never reached the parser to be
+  swept. Both formats now refuse the document and name the key and line.
+
+
+### Semantic tool-surface planning
+
+- New contract `tool_overlay.schema.json` at `0.1.0`. The overlay is where human decisions
+  live, and it is what makes semantic judgement compatible with deterministic regeneration:
+  the planner proposes, the overlay records what was accepted, and rebuilding is a pure
+  function of specification plus overlay. It is digest-bound, so decisions made about other
+  bytes are refused rather than silently applied.
+- API Semantic IR to `0.4.0` (adds `route`); tool plan to `0.3.0` (adds `decisions`, and
+  `group` and `output_fields` on an artifact).
+- **Semantic planner.** Task-oriented names derived from summaries rather than operation
+  identifiers, surface-kind selection across tool and resource, grouping by path prefix,
+  output projection, omission proposals for deprecated operations, and prepare-then-execute
+  composite proposals.
+- **Decision records.** Every rename, reclassification, omission, grouping, projection,
+  composite and approval carries a rationale, a confidence and provenance. A planner
+  decision must sit below confidence 1.0 and a recorded human decision at exactly 1.0.
+- **Agent-suitability scoring** on plan artifacts, as an average of named readiness signals
+  rather than an opaque number, with the missing signals listed.
+- **Human review report**, rendered deterministically as Markdown. This is the artifact the
+  approval gate depends on.
+- Composites are represented end to end and refused executable with a named blocker until
+  confirmation semantics exist.
+- CLI gains `review` and `overlay-restamp`; `plan` and `generate` gain `--planner` and
+  `--overlay`.
+
+
+### Baseline tool-surface generation
+
+- New contract `mcp_tool_surface.schema.json` at `0.1.0`, with `ToolSurface` and
+  `ToolDescriptor` models. The surface binds to no MCP SDK and performs no I/O, because the
+  SDK ordering constraint requires stable policy models that do not exist yet.
+- **Emission gate.** A tool is executable only when its source operation carries no blocking
+  ambiguity, its risk is classified, and any write, destructive or privileged artifact has
+  been approved. Refused tools are still emitted carrying their blockers, so the surface
+  stays auditable. The contract itself rejects a descriptor that is executable while
+  carrying blockers, or disabled without a reason.
+- **Flat input schemas.** One property per argument whatever its wire location, with
+  `additionalProperties: false`, plus explicit argument bindings recording how each value
+  returns to the wire. An agent produces a flat argument object and should not have to reason
+  about transport.
+- **Deterministic mock runtime.** Responses are synthesised from declared response schemas,
+  seeded so runs are byte-identical, and a declared example is always preferred. Invocation
+  refuses disabled tools, unknown tools, and arguments that fail the input schema.
+- A generated surface cannot be built from a plan whose `source_digest` disagrees with the
+  IR, so a plan reviewed against one revision cannot be applied to another.
+- CLI gains `generate`; `validate` now also validates the surface and lists disabled tools.
+
+### OpenAPI ingestion
+
+- API Semantic IR raised to `0.3.0`. The tool plan contract is unchanged and stays at
+  `0.2.0`; the two are versioned independently.
+- **Reference resolution.** Local pointers always resolve. External files resolve only
+  inside an explicitly allowed directory, checked against real paths so `../` cannot escape.
+  Remote references are refused unconditionally and never fetched. A recursive schema keeps
+  its innermost `$ref` and is reported rather than rejected; an over-deep chain raises.
+- **Completeness sweep.** Every key an adapter does not consume is now reported as
+  `unconsumed_key`, or `vendor_extension` for `x-` prefixed keys. "Nothing is dropped
+  silently" is a structural guarantee rather than a per-construct promise.
+- **Multi-document provenance.** `ServiceIR.source_documents` records the URI, digest and
+  role of every document loaded, so reproducibility does not weaken when refs span files.
+- **Typed authentication.** `AuthSchemeIR` carries a closed type with conditional field
+  validation. `AuthRequirementIR` replaces `required_scopes` and distinguishes an explicit
+  `security: []`, which disables authentication, from no security declared at all.
+- **Language-based side-effect escalation.** Whole-token destructive verbs in an
+  `operationId` or `summary` raise a write to destructive, carrying their own provenance
+  record. Escalation never lowers a class, and a read described destructively is flagged as
+  a blocking conflict rather than reclassified.
+- **Pagination hints.** Cursor, page-number, offset-limit and link-header shapes are
+  proposed from parameter, response-field and header evidence, always `inferred`.
+- **Coverage.** Parameter `content`, `style`, `explode`, `allowReserved` and `deprecated`;
+  response headers and examples; operation `deprecated`; path-level and operation-level
+  servers; the declared spec version.
+
+### Fixed
+
+- The parser raised on any OpenAPI parameter that omitted `required`, which is legal and
+  normal for query parameters. Provenance for the defaulted value was not emitted, so the
+  contract rejected the instance. Every committed fixture happened to declare `required`
+  explicitly, so the case was untested.
+- `README.md` and the OpenAPI adapter docstring claimed "nothing is dropped silently" when
+  the guarantee held only for recognized-but-unresolvable constructs.
+
+### Contracts
+
+- API Semantic IR and tool plan schemas raised to `0.2.0`. Breaking: typed inputs, outputs
+  and faults replace free-form objects, per-field provenance is required, and the version
+  is pinned with `const` so a document written against another version fails loudly.
+- Split `SideEffectClass` (IR operations) from `RiskClass` (plan artifacts). Only the plan
+  may express `privileged`, and the baseline planner never assigns it.
+- Added `ToolPlan`, the previously missing Python model for the tool-plan document.
+- Added `Ambiguity`: unresolved constructs are recorded rather than silently dropped, with
+  a `blocking` flag that gates later code generation.
+- Added `ServiceIR.source_digest`, tying every generated artifact to the exact
+  specification bytes it was compiled from.
+
+### Ingestion
+
+- OpenAPI: request bodies, path-item parameter inheritance with operation override,
+  response and fault separation, servers, security schemes and required scopes. Request
+  bodies and path-item parameters were previously dropped entirely.
+- OpenAPI: source pointers are now RFC 6901 JSON Pointers with correct escaping. The
+  previous form was ambiguous for any templated path.
+- WSDL: ports, bindings, style, transport, SOAPAction, endpoint addresses and message
+  parts. The previous adapter read operation names only.
+- WSDL: WSDL 2.0 and malformed documents are rejected explicitly instead of returning an
+  empty operation list; external entity resolution, network access and DTD loading are
+  disabled.
+- Method-derived side-effect and idempotency classes are marked `inferred` with confidence
+  below 1.0, so they are distinguishable from source facts. SOAP operations are never
+  classified by inference and carry a blocking ambiguity until a human classifies them.
+
+### Tooling
+
+- `scripts/verify_repo.py` runs every check and reports all failures, and now covers
+  `scripts/` with ruff and mypy plus a new example schema-validation step. It previously
+  exited 1 on a clean checkout.
+- Added `scripts/validate_examples.py` and `scripts/regen_golden.py`.
+- Pinned ruff and mypy to exact versions and declared an explicit lint rule selection, so
+  the gate does not change meaning between machines.
+- CLI: added `plan` and `validate` commands alongside `inspect`.
+
+## 0.1.0
+
+- Initial build.

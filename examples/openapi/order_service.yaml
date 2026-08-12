@@ -1,0 +1,76 @@
+openapi: 3.1.0
+info:
+  title: Synthetic Order and Refund Service
+  version: 1.0.0
+servers:
+  - url: https://api.example.invalid
+paths:
+  /customers/{customer_id}:
+    get:
+      operationId: getCustomer
+      summary: Get a customer
+      parameters:
+        - in: path
+          name: customer_id
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: Customer
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, name]
+                properties:
+                  id: {type: string}
+                  name: {type: string}
+                  email: {type: string}
+                  internal_account_ref: {type: string}
+  /customers/{customer_id}/orders:
+    get:
+      operationId: listCustomerOrders
+      summary: List customer orders
+      parameters:
+        - in: path
+          name: customer_id
+          required: true
+          schema: {type: string}
+      responses:
+        '200': {description: Orders}
+  /refunds:
+    post:
+      operationId: createRefund
+      summary: Create a refund request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [order_id, reason]
+              properties:
+                order_id: {type: string}
+                reason: {type: string}
+      responses:
+        '202':
+          description: Refund request created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [refund_id]
+                properties:
+                  refund_id: {type: string}
+                  status: {type: string}
+  /refunds/{refund_id}/approve:
+    post:
+      operationId: approveRefund
+      summary: Approve a refund and release the payment
+      parameters:
+        - in: path
+          name: refund_id
+          required: true
+          schema: {type: string}
+      responses:
+        '200': {description: Refund approved}

@@ -1,0 +1,43 @@
+{
+  "arms": [
+    "baseline",
+    "semantic"
+  ],
+  "corpus_id": "restbench-spotify",
+  "corpus_source_digest": "sha256:7cfaf223ea373d8aa7429e6d62d9085b4678617556865cf23496ab2c4bf44c54",
+  "equal_budget_conditions": [
+    "Identical model and decoding settings in both arms.",
+    "Identical system prompt in both arms, describing the job and never the shape of the surface, so no hint about grouping or composition can advantage one arm.",
+    "Identical maximum tool calls per task, taken from the task's own max_calls.",
+    "Identical fixtures and identical starting state per task and per run.",
+    "Both arms approved identically, so the emission gate cannot advantage either.",
+    "Only executable tools offered in both arms."
+  ],
+  "falsification": "Six or more discordant pairs with the majority favouring the baseline falsifies the hypothesis. So does a higher unsafe-action or invalid-argument count for the semantic surface at equal task success, since the claim is about safety as well as success.",
+  "hypothesis": "A semantically designed tool surface produces a higher end-to-end task success rate than one-operation-per-tool conversion, on the same specification, the same tasks, the same model and the same budget. On this API the design consists of renaming, grouping, description rewriting and argument projection. It does not include composition, which fires nowhere on this specification, so the hypothesis under test is narrower than the project's full claim and the result must be reported as such.",
+  "inconclusive_condition": "Fewer than 6 discordant pairs. The result is then inconclusive whatever the raw success-rate difference, and must be reported as inconclusive rather than as a trend. This is a likely outcome for a corpus this size and is not a failure of the run. If it occurs, the pre-committed response is to author the remaining 31 oracle sets and re-register at 55 tasks; it is not to re-analyse these 24.",
+  "model": "claude-sonnet-5",
+  "null_hypothesis": "The two surfaces produce the same task success rate; any observed difference is consistent with run-to-run variation.",
+  "primary_metric": "Task success rate over the 24-task corpus.",
+  "primary_test": "McNemar's exact test on discordant pairs. The design is paired: every task is run against both surfaces, so an unpaired test would discard the pairing and lose power.",
+  "prohibited_after_seeing_results": [
+    "Promoting a secondary metric to primary.",
+    "Adding, removing or re-authoring any task or oracle.",
+    "Changing either planner, the model, the budget, or the success definition.",
+    "Expanding the corpus without a new pre-registration stating the rule in advance.",
+    "Reporting a sub-group of tasks as though it were the pre-registered comparison.",
+    "Describing a result as evidence about composition, which this treatment does not test."
+  ],
+  "registration_id": "spotify-baseline-vs-semantic-002",
+  "runs_per_task": 3,
+  "schema_version": "0.1.0",
+  "secondary_metrics": [
+    "Unsafe actions, being prohibited operations invoked.",
+    "Invalid-argument calls.",
+    "Calls made, and unnecessary calls beyond the reference solution length.",
+    "Context bytes returned.",
+    "Tokens consumed, as a cost of the surface rather than of the task."
+  ],
+  "significance_threshold": "Two-sided, alpha 0.05. With 24 paired tasks this requires at least 6 discordant pairs all favouring the same surface; 6 gives p = 0.031 and 5 gives p = 0.0625. Computed before the run, not chosen to fit it.",
+  "success_definition": "A task counts as a success only when all three runs satisfy every one of its oracles. A surface that works twice in three attempts is not one to expose write operations through, so the stricter definition is the honest one for this claim."
+}

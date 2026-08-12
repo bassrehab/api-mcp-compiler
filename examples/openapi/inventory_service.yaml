@@ -1,0 +1,96 @@
+# Synthetic fixture. Not derived from any real service.
+#
+# This example exists to exercise the constructs ingestion records
+# as ambiguities rather than resolves: a $ref under paths, a `default` response, path-item
+# level parameters shared across methods, and alternative security requirements. Removing
+# any of them silently reduces test coverage of the ambiguity contract.
+openapi: 3.0.3
+info:
+  title: Synthetic Inventory Service
+  version: 2.1.0
+servers:
+  - url: https://inventory.example.invalid/v2
+    description: Primary
+  - url: https://inventory-eu.example.invalid/v2
+security:
+  - inventoryOAuth: [inventory.read]
+paths:
+  /warehouses/{warehouse_id}/items:
+    parameters:
+      - in: path
+        name: warehouse_id
+        required: true
+        description: Warehouse identifier shared by every method on this path.
+        schema: {type: string}
+    get:
+      operationId: listWarehouseItems
+      summary: List items held in a warehouse
+      description: Returns one page of stocked items.
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema: {type: integer, minimum: 1}
+      responses:
+        '200':
+          description: A page of items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemPage'
+              examples:
+                onePage:
+                  summary: A single page of stocked items
+                  value:
+                    items:
+                      - sku: SKU-1
+                        quantity: 4
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: {type: string}
+    delete:
+      operationId: purgeWarehouseItems
+      summary: Permanently remove every item record for a warehouse
+      security:
+        - inventoryOAuth: [inventory.write, inventory.admin]
+        - inventoryOAuth: [inventory.write]
+        - inventoryAdminKey: []
+      responses:
+        '204':
+          description: Purged
+  /warehouses/{warehouse_id}/items-v1:
+    get:
+      operationId: listWarehouseItemsLegacy
+      summary: List items using the retired v1 projection
+      deprecated: true
+      parameters:
+        - {in: path, name: warehouse_id, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Legacy page of items}
+components:
+  securitySchemes:
+    inventoryOAuth:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.example.invalid/token
+          scopes:
+            inventory.read: Read stock levels
+            inventory.write: Modify stock records
+            inventory.admin: Administer warehouse configuration
+    inventoryAdminKey:
+      type: apiKey
+      in: header
+      name: X-Inventory-Admin-Key
+  schemas:
+    ItemPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items: {type: object}

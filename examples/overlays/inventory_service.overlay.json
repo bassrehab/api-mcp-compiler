@@ -1,0 +1,28 @@
+{
+  "composites": [],
+  "entries": [
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": true,
+      "operation_id": "listWarehouseItemsLegacy",
+      "output_fields": [],
+      "review_status": null,
+      "side_effect": null
+    },
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "purgeWarehouseItems",
+      "output_fields": [],
+      "review_status": "rejected",
+      "side_effect": null
+    }
+  ],
+  "schema_version": "0.3.0",
+  "service_id": "synthetic-inventory-service",
+  "source_digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0"
+}

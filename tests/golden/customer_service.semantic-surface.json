@@ -1,0 +1,142 @@
+{
+  "planner": "semantic",
+  "schema_version": "0.2.0",
+  "service_id": "customerservice",
+  "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554",
+  "tools": [
+    {
+      "argument_bindings": [
+        {
+          "argument": "parameters",
+          "location": "soap_body",
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "argument",
+              "rule": "codegen.argument_binding.argument",
+              "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "location",
+              "rule": "codegen.argument_binding.location",
+              "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "wire_name",
+              "rule": "codegen.argument_binding.wire_name",
+              "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "source_operation",
+              "rule": "codegen.argument_binding.source_operation",
+              "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+            }
+          ],
+          "source_operation": null,
+          "wire_name": "parameters"
+        }
+      ],
+      "blocker_detail": null,
+      "blockers": [],
+      "description": "GetCustomer.",
+      "emission": "executable",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "parameters": {
+            "description": "tns:GetCustomerRequest",
+            "type": "string"
+          }
+        },
+        "required": [
+          "parameters"
+        ],
+        "type": "object"
+      },
+      "kind": "tool",
+      "name": "get_customer",
+      "output_schema": {
+        "type": "string"
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_id",
+          "rule": "codegen.tool.tool_id",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "codegen.tool.name",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "codegen.tool.description",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "codegen.tool.kind",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "codegen.tool.risk",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "emission",
+          "rule": "codegen.tool.emission",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "input_schema",
+          "rule": "codegen.tool.input_schema",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "codegen.tool.source_operations",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "output_schema",
+          "rule": "codegen.tool.output_schema",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "risk": "read",
+      "source_operations": [
+        "GetCustomer"
+      ],
+      "tool_id": "tool:get_customer"
+    }
+  ]
+}

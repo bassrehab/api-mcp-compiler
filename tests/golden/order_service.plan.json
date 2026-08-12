@@ -1,0 +1,305 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "tool:getCustomer",
+      "confidence": null,
+      "description": "Get a customer",
+      "group": null,
+      "kind": "tool",
+      "name": "getCustomer",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "baseline.operation_per_tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "kind",
+          "rule": "baseline.operation_per_tool.kind.tool",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "baseline.operation_per_tool.name.operation_id",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "baseline.operation_per_tool.description.operation_intent",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "baseline.operation_per_tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "baseline.operation_per_tool.risk.side_effect_identity",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "review_status",
+          "rule": "baseline.operation_per_tool.review_status.proposed",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "rationale",
+          "rule": "baseline.operation_per_tool.rationale",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "Operation-per-tool baseline. Emitted for controlled comparison against the semantic planner; not an approved production design.",
+      "review_status": "proposed",
+      "risk": "read",
+      "source_operations": [
+        "getCustomer"
+      ]
+    },
+    {
+      "artifact_id": "tool:listCustomerOrders",
+      "confidence": null,
+      "description": "List customer orders",
+      "group": null,
+      "kind": "tool",
+      "name": "listCustomerOrders",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "baseline.operation_per_tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "kind",
+          "rule": "baseline.operation_per_tool.kind.tool",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "baseline.operation_per_tool.name.operation_id",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "baseline.operation_per_tool.description.operation_intent",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "baseline.operation_per_tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "baseline.operation_per_tool.risk.side_effect_identity",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "review_status",
+          "rule": "baseline.operation_per_tool.review_status.proposed",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "rationale",
+          "rule": "baseline.operation_per_tool.rationale",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        }
+      ],
+      "rationale": "Operation-per-tool baseline. Emitted for controlled comparison against the semantic planner; not an approved production design.",
+      "review_status": "proposed",
+      "risk": "read",
+      "source_operations": [
+        "listCustomerOrders"
+      ]
+    },
+    {
+      "artifact_id": "tool:createRefund",
+      "confidence": null,
+      "description": "Create a refund request",
+      "group": null,
+      "kind": "tool",
+      "name": "createRefund",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "baseline.operation_per_tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "kind",
+          "rule": "baseline.operation_per_tool.kind.tool",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "baseline.operation_per_tool.name.operation_id",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "baseline.operation_per_tool.description.operation_intent",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "baseline.operation_per_tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "baseline.operation_per_tool.risk.side_effect_identity",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "review_status",
+          "rule": "baseline.operation_per_tool.review_status.proposed",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "rationale",
+          "rule": "baseline.operation_per_tool.rationale",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rationale": "Operation-per-tool baseline. Emitted for controlled comparison against the semantic planner; not an approved production design.",
+      "review_status": "proposed",
+      "risk": "write",
+      "source_operations": [
+        "createRefund"
+      ]
+    },
+    {
+      "artifact_id": "tool:approveRefund",
+      "confidence": null,
+      "description": "Approve a refund and release the payment",
+      "group": null,
+      "kind": "tool",
+      "name": "approveRefund",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "baseline.operation_per_tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "kind",
+          "rule": "baseline.operation_per_tool.kind.tool",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "baseline.operation_per_tool.name.operation_id",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "baseline.operation_per_tool.description.operation_intent",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "baseline.operation_per_tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "baseline.operation_per_tool.risk.side_effect_identity",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "review_status",
+          "rule": "baseline.operation_per_tool.review_status.proposed",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "rationale",
+          "rule": "baseline.operation_per_tool.rationale",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        }
+      ],
+      "rationale": "Operation-per-tool baseline. Emitted for controlled comparison against the semantic planner; not an approved production design.",
+      "review_status": "proposed",
+      "risk": "write",
+      "source_operations": [
+        "approveRefund"
+      ]
+    }
+  ],
+  "decisions": [],
+  "planner": "baseline",
+  "schema_version": "0.4.0",
+  "service_id": "synthetic-order-and-refund-service",
+  "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935"
+}

@@ -1,0 +1,45 @@
+{
+  "arms": [
+    "baseline",
+    "semantic"
+  ],
+  "corpus_id": "restbench-spotify",
+  "corpus_source_digest": "sha256:7cfaf223ea373d8aa7429e6d62d9085b4678617556865cf23496ab2c4bf44c54",
+  "equal_budget_conditions": [
+    "Identical model and decoding settings in both arms.",
+    "Identical system prompt, describing the job and never the shape of the surface.",
+    "Identical maximum tool calls, at twice the reference solution length, never below six.",
+    "Identical fixtures and starting state per task and per run.",
+    "Both arms approved identically, so the emission gate cannot advantage either.",
+    "Only executable tools offered in both arms.",
+    "The same store, honouring paging and filtering identically for both arms. An agent that pages too narrowly misses what it needed; one that cannot page receives the service default. Neither arm is exempt."
+  ],
+  "falsification": "Six or more discordant pairs with the majority favouring the baseline falsifies the hypothesis, as does a higher unsafe-action or invalid-argument count for the semantic surface at equal task success.",
+  "hypothesis": "A semantically designed tool surface produces a higher end-to-end task success rate than one-operation-per-tool conversion, on the same specification, tasks, model and budget. The design under test is renaming, grouping, description rewriting and argument projection; composition fires nowhere on this specification and no result here is evidence about it. Stated in advance: the harness change this registration depends on is expected to favour the semantic arm, because a store that honours paging is one in which withholding a paging argument can help. That expectation is recorded here so it is a prediction rather than an explanation offered afterwards.",
+  "inconclusive_condition": "Fewer than 6 discordant pairs, reported as inconclusive whatever the raw difference. The pre-committed response is NOT to expand this corpus: at the discordance rate both prior runs observed, 55 tasks expects 2.3 pairs and roughly 150 would be needed to expect 6. The response is to move to an API where surface design has more to do — many operations, poor naming, deep schemas — since a third null on 40 well-named operations would add nothing.",
+  "model": "claude-sonnet-5",
+  "null_hypothesis": "The two surfaces produce the same task success rate; any observed difference is consistent with run-to-run variation.",
+  "primary_metric": "Task success rate over the 24-task corpus.",
+  "primary_test": "McNemar's exact test on discordant pairs, the design being paired.",
+  "prohibited_after_seeing_results": [
+    "Promoting a secondary metric to primary.",
+    "Adding, removing or re-authoring any task or oracle.",
+    "Changing either planner, the model, the call budget, or the success definition.",
+    "Changing the harness, including the store, its paging behaviour and the oracle evaluators.",
+    "Expanding the corpus without a new pre-registration stating the rule in advance.",
+    "Reporting a sub-group of tasks as though it were the pre-registered comparison.",
+    "Describing a result as evidence about composition, which this treatment does not test."
+  ],
+  "registration_id": "spotify-baseline-vs-semantic-004",
+  "runs_per_task": 3,
+  "schema_version": "0.1.0",
+  "secondary_metrics": [
+    "Unsafe actions, being prohibited operations invoked.",
+    "Invalid-argument calls.",
+    "Calls made, and unnecessary calls beyond the reference solution length.",
+    "Context bytes returned.",
+    "Tokens consumed, as a cost of the surface rather than of the task."
+  ],
+  "significance_threshold": "Two-sided, alpha 0.05: at least 6 discordant pairs all favouring one surface. Both prior runs produced 1, so this corpus is very unlikely to reach it, and that is known before this run rather than discovered after it.",
+  "success_definition": "A task counts as a success only when all three runs satisfy every one of its oracles."
+}

@@ -1,0 +1,456 @@
+{
+  "planner": "baseline",
+  "schema_version": "0.2.0",
+  "service_id": "synthetic-inventory-service",
+  "source_digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0",
+  "tools": [
+    {
+      "argument_bindings": [
+        {
+          "argument": "warehouse_id",
+          "location": "path",
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "argument",
+              "rule": "codegen.argument_binding.argument",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "location",
+              "rule": "codegen.argument_binding.location",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "wire_name",
+              "rule": "codegen.argument_binding.wire_name",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "source_operation",
+              "rule": "codegen.argument_binding.source_operation",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+            }
+          ],
+          "source_operation": null,
+          "wire_name": "warehouse_id"
+        },
+        {
+          "argument": "page",
+          "location": "query",
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "argument",
+              "rule": "codegen.argument_binding.argument",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "location",
+              "rule": "codegen.argument_binding.location",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "wire_name",
+              "rule": "codegen.argument_binding.wire_name",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "source_operation",
+              "rule": "codegen.argument_binding.source_operation",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+            }
+          ],
+          "source_operation": null,
+          "wire_name": "page"
+        }
+      ],
+      "blocker_detail": null,
+      "blockers": [],
+      "description": "Returns one page of stocked items.",
+      "emission": "executable",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "warehouse_id": {
+            "description": "Warehouse identifier shared by every method on this path.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "warehouse_id"
+        ],
+        "type": "object"
+      },
+      "kind": "tool",
+      "name": "listWarehouseItems",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_id",
+          "rule": "codegen.tool.tool_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "codegen.tool.name",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "codegen.tool.description",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "codegen.tool.kind",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "codegen.tool.risk",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "emission",
+          "rule": "codegen.tool.emission",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "input_schema",
+          "rule": "codegen.tool.input_schema",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "codegen.tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "output_schema",
+          "rule": "codegen.tool.output_schema",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        }
+      ],
+      "risk": "read",
+      "source_operations": [
+        "listWarehouseItems"
+      ],
+      "tool_id": "tool:listWarehouseItems"
+    },
+    {
+      "argument_bindings": [
+        {
+          "argument": "warehouse_id",
+          "location": "path",
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "argument",
+              "rule": "codegen.argument_binding.argument",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "location",
+              "rule": "codegen.argument_binding.location",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "wire_name",
+              "rule": "codegen.argument_binding.wire_name",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "source_operation",
+              "rule": "codegen.argument_binding.source_operation",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+            }
+          ],
+          "source_operation": null,
+          "wire_name": "warehouse_id"
+        }
+      ],
+      "blocker_detail": "a write, destructive or privileged tool requires explicit human approval",
+      "blockers": [
+        "awaiting_approval"
+      ],
+      "description": "Permanently remove every item record for a warehouse",
+      "emission": "disabled",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "warehouse_id": {
+            "description": "Warehouse identifier shared by every method on this path.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "warehouse_id"
+        ],
+        "type": "object"
+      },
+      "kind": "tool",
+      "name": "purgeWarehouseItems",
+      "output_schema": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_id",
+          "rule": "codegen.tool.tool_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "codegen.tool.name",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "codegen.tool.description",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "codegen.tool.kind",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "codegen.tool.risk",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "emission",
+          "rule": "codegen.tool.emission",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "input_schema",
+          "rule": "codegen.tool.input_schema",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "codegen.tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "blockers",
+          "rule": "codegen.tool.emission_gate",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "blocker_detail",
+          "rule": "codegen.tool.emission_gate.detail",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        }
+      ],
+      "risk": "destructive",
+      "source_operations": [
+        "purgeWarehouseItems"
+      ],
+      "tool_id": "tool:purgeWarehouseItems"
+    },
+    {
+      "argument_bindings": [
+        {
+          "argument": "warehouse_id",
+          "location": "path",
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "argument",
+              "rule": "codegen.argument_binding.argument",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "location",
+              "rule": "codegen.argument_binding.location",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "wire_name",
+              "rule": "codegen.argument_binding.wire_name",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "source_operation",
+              "rule": "codegen.argument_binding.source_operation",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+            }
+          ],
+          "source_operation": null,
+          "wire_name": "warehouse_id"
+        }
+      ],
+      "blocker_detail": null,
+      "blockers": [],
+      "description": "List items using the retired v1 projection",
+      "emission": "executable",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "warehouse_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "warehouse_id"
+        ],
+        "type": "object"
+      },
+      "kind": "tool",
+      "name": "listWarehouseItemsLegacy",
+      "output_schema": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_id",
+          "rule": "codegen.tool.tool_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "codegen.tool.name",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "codegen.tool.description",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "codegen.tool.kind",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "codegen.tool.risk",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "emission",
+          "rule": "codegen.tool.emission",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "input_schema",
+          "rule": "codegen.tool.input_schema",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "codegen.tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        }
+      ],
+      "risk": "read",
+      "source_operations": [
+        "listWarehouseItemsLegacy"
+      ],
+      "tool_id": "tool:listWarehouseItemsLegacy"
+    }
+  ]
+}

@@ -1,0 +1,1127 @@
+{
+  "ambiguities": [
+    {
+      "blocking": false,
+      "code": "default_response_classified_as_fault",
+      "detail": "The OpenAPI `default` response was classified as a fault. Confirm during review that it is not a success case.",
+      "field": "operations.get.faults",
+      "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/default"
+    },
+    {
+      "blocking": false,
+      "code": "security_requirement_alternatives",
+      "detail": "3 alternative security requirements were unioned into one over-approximated scope set. Least-privilege selection is deferred.",
+      "field": "authentication.scopes",
+      "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/security"
+    }
+  ],
+  "operations": [
+    {
+      "authentication": {
+        "alternatives": [
+          {
+            "provenance": [
+              {
+                "confidence": 1.0,
+                "derivation": "source",
+                "field": "scheme_ids",
+                "rule": "openapi.security.requirement.schemes",
+                "source_pointer": "openapi:#/security/0"
+              },
+              {
+                "confidence": 1.0,
+                "derivation": "source",
+                "field": "scopes",
+                "rule": "openapi.security.requirement.scopes",
+                "source_pointer": "openapi:#/security/0"
+              }
+            ],
+            "scheme_ids": [
+              "inventoryOAuth"
+            ],
+            "scopes": [
+              "inventory.read"
+            ]
+          }
+        ],
+        "disabled": false,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "disabled",
+            "rule": "openapi.security.present",
+            "source_pointer": "openapi:#/security"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "scheme_ids",
+            "rule": "openapi.security.scheme_ids",
+            "source_pointer": "openapi:#/security"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "scopes",
+            "rule": "openapi.security.scopes",
+            "source_pointer": "openapi:#/security"
+          }
+        ],
+        "scheme_ids": [
+          "inventoryOAuth"
+        ],
+        "scopes": [
+          "inventory.read"
+        ]
+      },
+      "confidence": null,
+      "deprecated": false,
+      "description": "Returns one page of stocked items.",
+      "faults": [
+        {
+          "code": "default",
+          "description": "Unexpected error",
+          "examples": [],
+          "headers": [],
+          "media_type": "application/json",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "code",
+              "rule": "openapi.responses.key",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/default"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.responses.description",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/default/description"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "media_type",
+              "rule": "openapi.responses.content.key",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/default/content"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.responses.schema",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/default/content/application~1json/schema"
+            }
+          ],
+          "retryable": null,
+          "type_schema": {
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      ],
+      "idempotency": "idempotent",
+      "inputs": [
+        {
+          "allow_reserved": null,
+          "deprecated": false,
+          "description": "Warehouse identifier shared by every method on this path.",
+          "examples": [],
+          "explode": null,
+          "location": "path",
+          "media_type": null,
+          "name": "warehouse_id",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "name",
+              "rule": "openapi.parameter.name",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/name"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "location",
+              "rule": "openapi.parameter.in",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/in"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "required",
+              "rule": "openapi.parameter.required",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/required"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.parameter.description",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/description"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.parameter.schema",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/schema"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "default",
+              "field": "deprecated",
+              "rule": "openapi.parameter.deprecated",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0"
+            }
+          ],
+          "required": true,
+          "style": null,
+          "type_schema": {
+            "type": "string"
+          }
+        },
+        {
+          "allow_reserved": null,
+          "deprecated": false,
+          "description": null,
+          "examples": [],
+          "explode": null,
+          "location": "query",
+          "media_type": null,
+          "name": "page",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "name",
+              "rule": "openapi.parameter.name",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/parameters/0/name"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "location",
+              "rule": "openapi.parameter.in",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/parameters/0/in"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "required",
+              "rule": "openapi.parameter.required",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/parameters/0/required"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.parameter.schema",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/parameters/0/schema"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "default",
+              "field": "deprecated",
+              "rule": "openapi.parameter.deprecated",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/parameters/0"
+            }
+          ],
+          "required": false,
+          "style": null,
+          "type_schema": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        }
+      ],
+      "intent": "List items held in a warehouse",
+      "operation_id": "listWarehouseItems",
+      "outputs": [
+        {
+          "description": "A page of items",
+          "examples": [
+            {
+              "external_value": null,
+              "name": "onePage",
+              "provenance": [
+                {
+                  "confidence": 1.0,
+                  "derivation": "source",
+                  "field": "name",
+                  "rule": "openapi.examples.key",
+                  "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/200/content/application~1json/examples/onePage"
+                },
+                {
+                  "confidence": 1.0,
+                  "derivation": "source",
+                  "field": "summary",
+                  "rule": "openapi.examples.summary",
+                  "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/200/content/application~1json/examples/onePage/summary"
+                },
+                {
+                  "confidence": 1.0,
+                  "derivation": "source",
+                  "field": "value",
+                  "rule": "openapi.examples.value",
+                  "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/200/content/application~1json/examples/onePage/value"
+                }
+              ],
+              "summary": "A single page of stocked items",
+              "value": {
+                "items": [
+                  {
+                    "quantity": 4,
+                    "sku": "SKU-1"
+                  }
+                ]
+              }
+            }
+          ],
+          "headers": [],
+          "media_type": "application/json",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "status",
+              "rule": "openapi.responses.key",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/200"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.responses.description",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/200/description"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "media_type",
+              "rule": "openapi.responses.content.key",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/200/content"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.responses.schema",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/responses/200/content/application~1json/schema"
+            }
+          ],
+          "status": "200",
+          "type_schema": {
+            "properties": {
+              "items": {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          }
+        }
+      ],
+      "pagination": {
+        "cursor_parameter": null,
+        "next_cursor_field": null,
+        "next_link_header": null,
+        "offset_parameter": null,
+        "page_parameter": "page",
+        "provenance": [
+          {
+            "confidence": 0.7,
+            "derivation": "inferred",
+            "field": "style",
+            "rule": "openapi.pagination.style.page_number",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          },
+          {
+            "confidence": 0.7,
+            "derivation": "inferred",
+            "field": "page_parameter",
+            "rule": "openapi.pagination.evidence.page_parameter",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          }
+        ],
+        "size_parameter": null,
+        "style": "page_number"
+      },
+      "protocol": "http",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "operation_id",
+          "rule": "openapi.operationId",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/operationId"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "protocol",
+          "rule": "openapi.protocol.http",
+          "source_pointer": "openapi:#/openapi"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_pointer",
+          "rule": "openapi.operation.pointer",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "route",
+          "rule": "openapi.paths.key",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "intent",
+          "rule": "openapi.summary",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/summary"
+        },
+        {
+          "confidence": 0.95,
+          "derivation": "inferred",
+          "field": "side_effect",
+          "rule": "openapi.side_effect.method.get",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items"
+        },
+        {
+          "confidence": 0.95,
+          "derivation": "inferred",
+          "field": "idempotency",
+          "rule": "openapi.idempotency.rfc9110.get",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "description",
+          "rule": "openapi.description",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get/description"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "deprecated",
+          "rule": "openapi.operation.deprecated",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        }
+      ],
+      "route": "/warehouses/{warehouse_id}/items",
+      "servers": [],
+      "side_effect": "read",
+      "soap": null,
+      "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+    },
+    {
+      "authentication": {
+        "alternatives": [
+          {
+            "provenance": [
+              {
+                "confidence": 1.0,
+                "derivation": "source",
+                "field": "scheme_ids",
+                "rule": "openapi.security.requirement.schemes",
+                "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/security/0"
+              },
+              {
+                "confidence": 1.0,
+                "derivation": "source",
+                "field": "scopes",
+                "rule": "openapi.security.requirement.scopes",
+                "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/security/0"
+              }
+            ],
+            "scheme_ids": [
+              "inventoryOAuth"
+            ],
+            "scopes": [
+              "inventory.admin",
+              "inventory.write"
+            ]
+          },
+          {
+            "provenance": [
+              {
+                "confidence": 1.0,
+                "derivation": "source",
+                "field": "scheme_ids",
+                "rule": "openapi.security.requirement.schemes",
+                "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/security/1"
+              },
+              {
+                "confidence": 1.0,
+                "derivation": "source",
+                "field": "scopes",
+                "rule": "openapi.security.requirement.scopes",
+                "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/security/1"
+              }
+            ],
+            "scheme_ids": [
+              "inventoryOAuth"
+            ],
+            "scopes": [
+              "inventory.write"
+            ]
+          },
+          {
+            "provenance": [
+              {
+                "confidence": 1.0,
+                "derivation": "source",
+                "field": "scheme_ids",
+                "rule": "openapi.security.requirement.schemes",
+                "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/security/2"
+              }
+            ],
+            "scheme_ids": [
+              "inventoryAdminKey"
+            ],
+            "scopes": []
+          }
+        ],
+        "disabled": false,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "disabled",
+            "rule": "openapi.security.present",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/security"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "scheme_ids",
+            "rule": "openapi.security.scheme_ids",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/security"
+          },
+          {
+            "confidence": 0.6,
+            "derivation": "inferred",
+            "field": "scopes",
+            "rule": "openapi.security.scope_union",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/security"
+          }
+        ],
+        "scheme_ids": [
+          "inventoryAdminKey",
+          "inventoryOAuth"
+        ],
+        "scopes": [
+          "inventory.admin",
+          "inventory.write"
+        ]
+      },
+      "confidence": null,
+      "deprecated": false,
+      "description": null,
+      "faults": [],
+      "idempotency": "idempotent",
+      "inputs": [
+        {
+          "allow_reserved": null,
+          "deprecated": false,
+          "description": "Warehouse identifier shared by every method on this path.",
+          "examples": [],
+          "explode": null,
+          "location": "path",
+          "media_type": null,
+          "name": "warehouse_id",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "name",
+              "rule": "openapi.parameter.name",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/name"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "location",
+              "rule": "openapi.parameter.in",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/in"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "required",
+              "rule": "openapi.parameter.required",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/required"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.parameter.description",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/description"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.parameter.schema",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0/schema"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "default",
+              "field": "deprecated",
+              "rule": "openapi.parameter.deprecated",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/parameters/0"
+            }
+          ],
+          "required": true,
+          "style": null,
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "intent": "Permanently remove every item record for a warehouse",
+      "operation_id": "purgeWarehouseItems",
+      "outputs": [
+        {
+          "description": "Purged",
+          "examples": [],
+          "headers": [],
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "status",
+              "rule": "openapi.responses.key",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/responses/204"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.responses.description",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/responses/204/description"
+            }
+          ],
+          "status": "204",
+          "type_schema": null
+        }
+      ],
+      "pagination": null,
+      "protocol": "http",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "operation_id",
+          "rule": "openapi.operationId",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/operationId"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "protocol",
+          "rule": "openapi.protocol.http",
+          "source_pointer": "openapi:#/openapi"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_pointer",
+          "rule": "openapi.operation.pointer",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "route",
+          "rule": "openapi.paths.key",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "intent",
+          "rule": "openapi.summary",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete/summary"
+        },
+        {
+          "confidence": 0.8,
+          "derivation": "inferred",
+          "field": "side_effect",
+          "rule": "openapi.side_effect.method.delete",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items"
+        },
+        {
+          "confidence": 0.85,
+          "derivation": "inferred",
+          "field": "idempotency",
+          "rule": "openapi.idempotency.rfc9110.delete",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "deprecated",
+          "rule": "openapi.operation.deprecated",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        }
+      ],
+      "route": "/warehouses/{warehouse_id}/items",
+      "servers": [],
+      "side_effect": "destructive",
+      "soap": null,
+      "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+    },
+    {
+      "authentication": {
+        "alternatives": [
+          {
+            "provenance": [
+              {
+                "confidence": 1.0,
+                "derivation": "source",
+                "field": "scheme_ids",
+                "rule": "openapi.security.requirement.schemes",
+                "source_pointer": "openapi:#/security/0"
+              },
+              {
+                "confidence": 1.0,
+                "derivation": "source",
+                "field": "scopes",
+                "rule": "openapi.security.requirement.scopes",
+                "source_pointer": "openapi:#/security/0"
+              }
+            ],
+            "scheme_ids": [
+              "inventoryOAuth"
+            ],
+            "scopes": [
+              "inventory.read"
+            ]
+          }
+        ],
+        "disabled": false,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "disabled",
+            "rule": "openapi.security.present",
+            "source_pointer": "openapi:#/security"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "scheme_ids",
+            "rule": "openapi.security.scheme_ids",
+            "source_pointer": "openapi:#/security"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "scopes",
+            "rule": "openapi.security.scopes",
+            "source_pointer": "openapi:#/security"
+          }
+        ],
+        "scheme_ids": [
+          "inventoryOAuth"
+        ],
+        "scopes": [
+          "inventory.read"
+        ]
+      },
+      "confidence": null,
+      "deprecated": true,
+      "description": null,
+      "faults": [],
+      "idempotency": "idempotent",
+      "inputs": [
+        {
+          "allow_reserved": null,
+          "deprecated": false,
+          "description": null,
+          "examples": [],
+          "explode": null,
+          "location": "path",
+          "media_type": null,
+          "name": "warehouse_id",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "name",
+              "rule": "openapi.parameter.name",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/parameters/0/name"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "location",
+              "rule": "openapi.parameter.in",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/parameters/0/in"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "required",
+              "rule": "openapi.parameter.required",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/parameters/0/required"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.parameter.schema",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/parameters/0/schema"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "default",
+              "field": "deprecated",
+              "rule": "openapi.parameter.deprecated",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/parameters/0"
+            }
+          ],
+          "required": true,
+          "style": null,
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "intent": "List items using the retired v1 projection",
+      "operation_id": "listWarehouseItemsLegacy",
+      "outputs": [
+        {
+          "description": "Legacy page of items",
+          "examples": [],
+          "headers": [],
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "status",
+              "rule": "openapi.responses.key",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/responses/200"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.responses.description",
+              "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/responses/200/description"
+            }
+          ],
+          "status": "200",
+          "type_schema": null
+        }
+      ],
+      "pagination": null,
+      "protocol": "http",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "operation_id",
+          "rule": "openapi.operationId",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/operationId"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "protocol",
+          "rule": "openapi.protocol.http",
+          "source_pointer": "openapi:#/openapi"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_pointer",
+          "rule": "openapi.operation.pointer",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "route",
+          "rule": "openapi.paths.key",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "intent",
+          "rule": "openapi.summary",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/summary"
+        },
+        {
+          "confidence": 0.95,
+          "derivation": "inferred",
+          "field": "side_effect",
+          "rule": "openapi.side_effect.method.get",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1"
+        },
+        {
+          "confidence": 0.95,
+          "derivation": "inferred",
+          "field": "idempotency",
+          "rule": "openapi.idempotency.rfc9110.get",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "deprecated",
+          "rule": "openapi.operation.deprecated",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get/deprecated"
+        }
+      ],
+      "route": "/warehouses/{warehouse_id}/items-v1",
+      "servers": [],
+      "side_effect": "read",
+      "soap": null,
+      "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+    }
+  ],
+  "schema_version": "0.5.0",
+  "service": {
+    "auth_schemes": [
+      {
+        "api_key_in": null,
+        "api_key_name": null,
+        "bearer_format": null,
+        "description": null,
+        "detail": {
+          "flows": {
+            "clientCredentials": {
+              "scopes": {
+                "inventory.admin": "Administer warehouse configuration",
+                "inventory.read": "Read stock levels",
+                "inventory.write": "Modify stock records"
+              },
+              "tokenUrl": "https://auth.example.invalid/token"
+            }
+          },
+          "type": "oauth2"
+        },
+        "http_scheme": null,
+        "open_id_connect_url": null,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "scheme_id",
+            "rule": "openapi.securitySchemes.key",
+            "source_pointer": "openapi:#/components/securitySchemes/inventoryOAuth"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "type",
+            "rule": "openapi.securitySchemes.type",
+            "source_pointer": "openapi:#/components/securitySchemes/inventoryOAuth/type"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "detail",
+            "rule": "openapi.securitySchemes.verbatim",
+            "source_pointer": "openapi:#/components/securitySchemes/inventoryOAuth"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "scopes",
+            "rule": "openapi.securitySchemes.flows.scopes",
+            "source_pointer": "openapi:#/components/securitySchemes/inventoryOAuth/flows"
+          }
+        ],
+        "scheme_id": "inventoryOAuth",
+        "scopes": [
+          "inventory.admin",
+          "inventory.read",
+          "inventory.write"
+        ],
+        "type": "oauth2"
+      },
+      {
+        "api_key_in": "header",
+        "api_key_name": "X-Inventory-Admin-Key",
+        "bearer_format": null,
+        "description": null,
+        "detail": {
+          "in": "header",
+          "name": "X-Inventory-Admin-Key",
+          "type": "apiKey"
+        },
+        "http_scheme": null,
+        "open_id_connect_url": null,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "scheme_id",
+            "rule": "openapi.securitySchemes.key",
+            "source_pointer": "openapi:#/components/securitySchemes/inventoryAdminKey"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "type",
+            "rule": "openapi.securitySchemes.type",
+            "source_pointer": "openapi:#/components/securitySchemes/inventoryAdminKey/type"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "detail",
+            "rule": "openapi.securitySchemes.verbatim",
+            "source_pointer": "openapi:#/components/securitySchemes/inventoryAdminKey"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "api_key_in",
+            "rule": "openapi.securitySchemes.in",
+            "source_pointer": "openapi:#/components/securitySchemes/inventoryAdminKey/in"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "api_key_name",
+            "rule": "openapi.securitySchemes.name",
+            "source_pointer": "openapi:#/components/securitySchemes/inventoryAdminKey/name"
+          }
+        ],
+        "scheme_id": "inventoryAdminKey",
+        "scopes": [],
+        "type": "apiKey"
+      }
+    ],
+    "provenance": [
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "service_id",
+        "rule": "openapi.service_id.slug_of_title",
+        "source_pointer": "openapi:#/info/title"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "title",
+        "rule": "openapi.info.title",
+        "source_pointer": "openapi:#/info/title"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "spec_version",
+        "rule": "openapi.version_marker",
+        "source_pointer": "openapi:#/openapi"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "source_format",
+        "rule": "openapi.version_marker",
+        "source_pointer": "openapi:#/openapi"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "source_uri",
+        "rule": "ingest.source_uri.input_path",
+        "source_pointer": "openapi:#"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "source_digest",
+        "rule": "ingest.source_digest.sha256_of_bytes",
+        "source_pointer": "openapi:#"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "source_documents",
+        "rule": "ingest.source_documents.loaded_set",
+        "source_pointer": "openapi:#"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "version",
+        "rule": "openapi.info.version",
+        "source_pointer": "openapi:#/info/version"
+      }
+    ],
+    "servers": [
+      {
+        "description": "Primary",
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "url",
+            "rule": "openapi.servers.url",
+            "source_pointer": "openapi:#/servers/0/url"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "description",
+            "rule": "openapi.servers.description",
+            "source_pointer": "openapi:#/servers/0/description"
+          }
+        ],
+        "url": "https://inventory.example.invalid/v2"
+      },
+      {
+        "description": null,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "url",
+            "rule": "openapi.servers.url",
+            "source_pointer": "openapi:#/servers/1/url"
+          }
+        ],
+        "url": "https://inventory-eu.example.invalid/v2"
+      }
+    ],
+    "service_id": "synthetic-inventory-service",
+    "source_digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0",
+    "source_documents": [
+      {
+        "digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0",
+        "role": "root",
+        "uri": "examples/openapi/inventory_service.yaml"
+      }
+    ],
+    "source_format": "openapi",
+    "source_uri": "examples/openapi/inventory_service.yaml",
+    "spec_version": "3.0.3",
+    "title": "Synthetic Inventory Service",
+    "version": "2.1.0"
+  }
+}

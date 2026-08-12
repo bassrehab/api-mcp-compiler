@@ -1,0 +1,898 @@
+{
+  "policies": [
+    {
+      "allowed_environments": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "approval": "none",
+      "artifact_id": "resource:look_up_customer",
+      "confirmation": null,
+      "idempotency_key_required": false,
+      "log_class": "sensitive",
+      "output": {
+        "max_bytes": 32768,
+        "projected_fields": [
+          "id",
+          "name"
+        ],
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_bytes",
+            "rule": "policy.output.max_bytes",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "projected_fields",
+            "rule": "policy.output.projected_fields",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+          }
+        ],
+        "redact_fields": []
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_name",
+          "rule": "policy.tool.tool_name",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.tool.approval",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.tool.retry",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "idempotency_key_required",
+          "rule": "policy.tool.idempotency_key_required",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "allowed_environments",
+          "rule": "policy.tool.allowed_environments",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.tool.log_class",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.tool.sensitivity",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.rationale.approval: A read requires no approval once validated.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.scopes: The specification declares no security for this operation, so no scopes are required.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.rationale.sensitivity: Personal-data vocabulary present: customer, email, name.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.rationale.retry: Reads are safe to retry.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.rationale.log: personal data must not be recorded in full.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.rate: Reads are cheap to repeat, so the budget is generous.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rate": {
+        "calls_per_minute": 60,
+        "daily_call_budget": 5000,
+        "max_concurrent": 4,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "calls_per_minute",
+            "rule": "policy.rate.calls_per_minute",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_concurrent",
+            "rule": "policy.rate.max_concurrent",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "daily_call_budget",
+            "rule": "policy.rate.daily_call_budget",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+          }
+        ]
+      },
+      "required_scopes": [],
+      "retry": "safe",
+      "rollback_guidance": null,
+      "sensitivity": "personal",
+      "tool_name": "look_up_customer",
+      "unresolved": []
+    },
+    {
+      "allowed_environments": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "approval": "none",
+      "artifact_id": "resource:list_customer_orders",
+      "confirmation": null,
+      "idempotency_key_required": false,
+      "log_class": "sensitive",
+      "output": {
+        "max_bytes": 32768,
+        "projected_fields": [],
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_bytes",
+            "rule": "policy.output.max_bytes",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+          }
+        ],
+        "redact_fields": []
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_name",
+          "rule": "policy.tool.tool_name",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.tool.approval",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.tool.retry",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "idempotency_key_required",
+          "rule": "policy.tool.idempotency_key_required",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "allowed_environments",
+          "rule": "policy.tool.allowed_environments",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.tool.log_class",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.tool.sensitivity",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.rationale.approval: A read requires no approval once validated.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.scopes: The specification declares no security for this operation, so no scopes are required.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.rationale.sensitivity: Personal-data vocabulary present: customer.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.rationale.retry: Reads are safe to retry.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.rationale.log: personal data must not be recorded in full.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.rate: Reads are cheap to repeat, so the budget is generous.",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        }
+      ],
+      "rate": {
+        "calls_per_minute": 60,
+        "daily_call_budget": 5000,
+        "max_concurrent": 4,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "calls_per_minute",
+            "rule": "policy.rate.calls_per_minute",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_concurrent",
+            "rule": "policy.rate.max_concurrent",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "daily_call_budget",
+            "rule": "policy.rate.daily_call_budget",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+          }
+        ]
+      },
+      "required_scopes": [],
+      "retry": "safe",
+      "rollback_guidance": null,
+      "sensitivity": "personal",
+      "tool_name": "list_customer_orders",
+      "unresolved": []
+    },
+    {
+      "allowed_environments": [
+        "development",
+        "staging"
+      ],
+      "approval": "human_approval",
+      "artifact_id": "tool:create_refund_request",
+      "confirmation": null,
+      "idempotency_key_required": true,
+      "log_class": "sensitive",
+      "output": {
+        "max_bytes": 32768,
+        "projected_fields": [
+          "refund_id"
+        ],
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_bytes",
+            "rule": "policy.output.max_bytes",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "projected_fields",
+            "rule": "policy.output.projected_fields",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          }
+        ],
+        "redact_fields": []
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_name",
+          "rule": "policy.tool.tool_name",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.tool.approval",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.tool.retry",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "idempotency_key_required",
+          "rule": "policy.tool.idempotency_key_required",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "allowed_environments",
+          "rule": "policy.tool.allowed_environments",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.tool.log_class",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.tool.sensitivity",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rollback_guidance",
+          "rule": "policy.tool.rollback_guidance",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "unresolved",
+          "rule": "policy.tool.unresolved",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.rationale.approval: A write or privileged tool requires human approval before it is enabled at all.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.scopes: The specification declares no security for this operation, so no scopes are required.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.rationale.sensitivity: Financial vocabulary present: refund.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.rationale.retry: The operation is not idempotent, so a retry may duplicate the effect unless it carries an idempotency key.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.rationale.log: financial data must not be recorded in full.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.rate: A write is budgeted conservatively.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rate": {
+        "calls_per_minute": 10,
+        "daily_call_budget": 200,
+        "max_concurrent": 2,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "calls_per_minute",
+            "rule": "policy.rate.calls_per_minute",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_concurrent",
+            "rule": "policy.rate.max_concurrent",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "daily_call_budget",
+            "rule": "policy.rate.daily_call_budget",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          }
+        ]
+      },
+      "required_scopes": [],
+      "retry": "with_idempotency_key",
+      "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
+      "sensitivity": "financial",
+      "tool_name": "create_refund_request",
+      "unresolved": [
+        "required_scopes: no authentication is declared anywhere in the specification"
+      ]
+    },
+    {
+      "allowed_environments": [
+        "development",
+        "staging"
+      ],
+      "approval": "human_approval",
+      "artifact_id": "tool:approve_refund_and_release_payment",
+      "confirmation": null,
+      "idempotency_key_required": true,
+      "log_class": "sensitive",
+      "output": {
+        "max_bytes": 32768,
+        "projected_fields": [],
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_bytes",
+            "rule": "policy.output.max_bytes",
+            "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+          }
+        ],
+        "redact_fields": []
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_name",
+          "rule": "policy.tool.tool_name",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.tool.approval",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.tool.retry",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "idempotency_key_required",
+          "rule": "policy.tool.idempotency_key_required",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "allowed_environments",
+          "rule": "policy.tool.allowed_environments",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.tool.log_class",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.tool.sensitivity",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rollback_guidance",
+          "rule": "policy.tool.rollback_guidance",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "unresolved",
+          "rule": "policy.tool.unresolved",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.rationale.approval: A write or privileged tool requires human approval before it is enabled at all.",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.scopes: The specification declares no security for this operation, so no scopes are required.",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.rationale.sensitivity: Financial vocabulary present: payment, refund.",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.rationale.retry: The operation is not idempotent, so a retry may duplicate the effect unless it carries an idempotency key.",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.rationale.log: financial data must not be recorded in full.",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.rate: A write is budgeted conservatively.",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        }
+      ],
+      "rate": {
+        "calls_per_minute": 10,
+        "daily_call_budget": 200,
+        "max_concurrent": 2,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "calls_per_minute",
+            "rule": "policy.rate.calls_per_minute",
+            "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_concurrent",
+            "rule": "policy.rate.max_concurrent",
+            "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "daily_call_budget",
+            "rule": "policy.rate.daily_call_budget",
+            "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+          }
+        ]
+      },
+      "required_scopes": [],
+      "retry": "with_idempotency_key",
+      "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
+      "sensitivity": "financial",
+      "tool_name": "approve_refund_and_release_payment",
+      "unresolved": [
+        "required_scopes: no authentication is declared anywhere in the specification"
+      ]
+    },
+    {
+      "allowed_environments": [
+        "development",
+        "staging"
+      ],
+      "approval": "user_confirmation",
+      "artifact_id": "composite:refund_order",
+      "confirmation": {
+        "effect_summary": "Runs createRefund then approveRefund, including an irreversible step.",
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "required",
+            "rule": "policy.confirmation.required",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "effect_summary",
+            "rule": "policy.confirmation.effect_summary",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "token_ttl_seconds",
+            "rule": "policy.confirmation.token_ttl_seconds",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          }
+        ],
+        "required": true,
+        "token_ttl_seconds": 300
+      },
+      "idempotency_key_required": true,
+      "log_class": "sensitive",
+      "output": {
+        "max_bytes": 32768,
+        "projected_fields": [],
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_bytes",
+            "rule": "policy.output.max_bytes",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          }
+        ],
+        "redact_fields": []
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_name",
+          "rule": "policy.tool.tool_name",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.tool.approval",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.tool.retry",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "idempotency_key_required",
+          "rule": "policy.tool.idempotency_key_required",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "allowed_environments",
+          "rule": "policy.tool.allowed_environments",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.tool.log_class",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.tool.sensitivity",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rollback_guidance",
+          "rule": "policy.tool.rollback_guidance",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "unresolved",
+          "rule": "policy.tool.unresolved",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.rationale.approval: A composite exists to guard an irreversible step, so it confirms before acting.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.scopes: The specification declares no security for this operation, so no scopes are required. The specification declares no security for this operation, so no scopes are required.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.rationale.sensitivity: Financial vocabulary present: refund.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.rationale.retry: The operation is not idempotent, so a retry may duplicate the effect unless it carries an idempotency key.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.rationale.log: financial data must not be recorded in full.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.rate: A write is budgeted conservatively.",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rate": {
+        "calls_per_minute": 10,
+        "daily_call_budget": 200,
+        "max_concurrent": 2,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "calls_per_minute",
+            "rule": "policy.rate.calls_per_minute",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_concurrent",
+            "rule": "policy.rate.max_concurrent",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "daily_call_budget",
+            "rule": "policy.rate.daily_call_budget",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          }
+        ]
+      },
+      "required_scopes": [],
+      "retry": "with_idempotency_key",
+      "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
+      "sensitivity": "financial",
+      "tool_name": "refund_order",
+      "unresolved": [
+        "required_scopes: no authentication is declared anywhere in the specification"
+      ]
+    }
+  ],
+  "schema_version": "0.2.0",
+  "service_id": "synthetic-order-and-refund-service",
+  "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935"
+}

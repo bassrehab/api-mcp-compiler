@@ -1,0 +1,422 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "tool:get_customer",
+      "confidence": 0.1667,
+      "description": "GetCustomer.",
+      "group": "CustomerPortType",
+      "kind": "tool",
+      "name": "get_customer",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "semantic.artifact.artifact_id",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.artifact.kind",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "semantic.artifact.name",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "semantic.artifact.description",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "semantic.artifact.source_operations",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "semantic.artifact.risk",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "review_status",
+          "rule": "semantic.artifact.review_status",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.artifact.rationale",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.artifact.confidence",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "group",
+          "rule": "semantic.artifact.group",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "rationale": "No summary was available, so the name falls back to the source identifier 'GetCustomer'. A reviewer should replace it with a task-oriented name. Meets 1 of 6 readiness signals. Missing: has a summary, has a description, declares a success schema, classifies its side effect, has no blocking ambiguity.",
+      "review_status": "approved",
+      "risk": "read",
+      "source_operations": [
+        "GetCustomer"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "applied": true,
+      "confidence": 1.0,
+      "kind": "reclassify",
+      "members": [],
+      "origin": "human",
+      "previous_value": "unknown",
+      "proposed_value": "read",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "rationale": "Side effect recorded by a reviewer in the overlay. WSDL carries no signal to infer one from, so this is a judgement rather than a derivation, and it is the only thing that can release a SOAP operation through the gate.",
+      "target": "GetCustomer"
+    },
+    {
+      "applied": true,
+      "confidence": 0.4,
+      "kind": "rename",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "GetCustomer",
+      "proposed_value": "get_customer",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "rationale": "No summary was available, so the name falls back to the source identifier 'GetCustomer'. A reviewer should replace it with a task-oriented name.",
+      "target": "GetCustomer"
+    },
+    {
+      "applied": true,
+      "confidence": 0.65,
+      "kind": "group",
+      "members": [],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": "CustomerPortType",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.group",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.group",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.group",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.group",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.group",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.group",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.group",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "rationale": "Grouped by the SOAP port type 'CustomerPortType', which plays the role a path prefix plays for HTTP.",
+      "target": "GetCustomer"
+    },
+    {
+      "applied": true,
+      "confidence": 0.7,
+      "kind": "describe",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "GetCustomer",
+      "proposed_value": "GetCustomer.",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "rationale": "Rewrites the description for an agent reading it in a tool list, dropping formatting written for a rendered page, and states the side effect where the model is actually looking. The source text is unchanged in the IR.",
+      "target": "GetCustomer"
+    },
+    {
+      "applied": true,
+      "confidence": 1.0,
+      "kind": "approve",
+      "members": [],
+      "origin": "human",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "rationale": "Approved by a reviewer in the overlay, releasing it through the emission gate.",
+      "target": "GetCustomer"
+    }
+  ],
+  "planner": "semantic",
+  "schema_version": "0.4.0",
+  "service_id": "customerservice",
+  "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554"
+}

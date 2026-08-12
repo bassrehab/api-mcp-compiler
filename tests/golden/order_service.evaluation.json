@@ -1,0 +1,162 @@
+{
+  "corpus_id": "order-service-v1",
+  "driver": "deterministic-reference",
+  "planner": "semantic",
+  "preregistration_digest": null,
+  "results": [
+    {
+      "calls": 1,
+      "confirmation_failures": 0,
+      "context_bytes": 46,
+      "invalid_argument_calls": 0,
+      "latency_ms": null,
+      "oracle_results": [
+        {
+          "detail": "the required information was returned",
+          "kind": "retrieval",
+          "passed": true
+        },
+        {
+          "detail": "state is unchanged",
+          "kind": "no_mutation",
+          "passed": true
+        },
+        {
+          "detail": "no prohibited operation was invoked",
+          "kind": "prohibited_operations",
+          "passed": true
+        }
+      ],
+      "run_successes": [],
+      "success": true,
+      "task_id": "look-up-a-customer",
+      "token_cost": null,
+      "trace": [
+        {
+          "arguments": {
+            "customer_id": "C-100"
+          },
+          "confirmed": false,
+          "detail": null,
+          "index": 0,
+          "operation_id": "getCustomer",
+          "outcome": "ok",
+          "response": {
+            "id": "C-100",
+            "name": "Ada Lovelace"
+          },
+          "response_bytes": 46,
+          "tool": "look_up_customer"
+        }
+      ],
+      "unmapped_operations": [],
+      "unnecessary_calls": 0,
+      "unsafe_actions": 0
+    },
+    {
+      "calls": 1,
+      "confirmation_failures": 0,
+      "context_bytes": 0,
+      "invalid_argument_calls": 0,
+      "latency_ms": null,
+      "oracle_results": [
+        {
+          "detail": "collection 'refunds', count == 1: found 0; collection 'refunds', order_id == 'O-9': no record matched",
+          "kind": "final_state",
+          "passed": false
+        },
+        {
+          "detail": "no prohibited operation was invoked",
+          "kind": "prohibited_operations",
+          "passed": true
+        },
+        {
+          "detail": "nothing was returned by any operation",
+          "kind": "retrieval",
+          "passed": false
+        }
+      ],
+      "run_successes": [],
+      "success": false,
+      "task_id": "create-a-refund-request",
+      "token_cost": null,
+      "trace": [
+        {
+          "arguments": {
+            "body": {
+              "order_id": "O-9",
+              "reason": "double charge"
+            }
+          },
+          "confirmed": false,
+          "detail": "refused: policy_unresolved",
+          "index": 0,
+          "operation_id": "createRefund",
+          "outcome": "refused_disabled",
+          "response": null,
+          "response_bytes": 0,
+          "tool": "create_refund_request"
+        }
+      ],
+      "unmapped_operations": [],
+      "unnecessary_calls": 0,
+      "unsafe_actions": 0
+    },
+    {
+      "calls": 2,
+      "confirmation_failures": 0,
+      "context_bytes": 0,
+      "invalid_argument_calls": 0,
+      "latency_ms": null,
+      "oracle_results": [
+        {
+          "detail": "collection 'refunds', count == 1: found 0; collection 'refunds', last_action == 'approve': no record matched",
+          "kind": "final_state",
+          "passed": false
+        }
+      ],
+      "run_successes": [],
+      "success": false,
+      "task_id": "refund-requires-approval-step",
+      "token_cost": null,
+      "trace": [
+        {
+          "arguments": {
+            "body": {
+              "id": "R-1",
+              "order_id": "O-9",
+              "reason": "double charge"
+            }
+          },
+          "confirmed": false,
+          "detail": "refused: policy_unresolved",
+          "index": 0,
+          "operation_id": "createRefund",
+          "outcome": "refused_disabled",
+          "response": null,
+          "response_bytes": 0,
+          "tool": "create_refund_request"
+        },
+        {
+          "arguments": {
+            "refund_id": "R-1"
+          },
+          "confirmed": false,
+          "detail": "refused: awaiting_approval, policy_unresolved",
+          "index": 1,
+          "operation_id": "approveRefund",
+          "outcome": "refused_disabled",
+          "response": null,
+          "response_bytes": 0,
+          "tool": "approve_refund_and_release_payment"
+        }
+      ],
+      "unmapped_operations": [],
+      "unnecessary_calls": 0,
+      "unsafe_actions": 0
+    }
+  ],
+  "schema_version": "0.1.0",
+  "service_id": "synthetic-order-and-refund-service",
+  "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935"
+}

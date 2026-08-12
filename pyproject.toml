@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "api-mcp-compiler"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+version = "0.1.0"
+description = "Semantic and safe compilation of enterprise APIs into MCP tool surfaces"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.7", "typer>=0.12", "PyYAML>=6.0", "lxml>=5.2", "jsonschema>=4.22"]
+
+[project.optional-dependencies]
+# Decision: the lint and type checkers are pinned to exact versions. An
+# unpinned `ruff>=0.5` silently changes which rules run when a new release lands, so the
+# verification gate would mean something different on every machine. Upgrades are a
+# deliberate, reviewed change.
+dev = [
+  "pytest>=8",
+  "ruff==0.16.2",
+  "mypy==2.3.0",
+  "types-PyYAML>=6.0.12",
+  "types-jsonschema>=4.22",
+  "lxml-stubs>=0.5.1",
+]
+
+[project.scripts]
+api-mcp-compiler = "api_mcp_compiler.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# Pinned explicitly so the gate does not change meaning when ruff's defaults change.
+select = ["E", "W", "F", "I", "B", "C4", "SIM", "UP", "PTH", "RUF", "TRY"]
+# Decision: TRY003 is disabled. Contract and ingestion failures must name
+# the offending pointer, schema and value, and pushing those details into exception class
+# definitions would make the diagnostics worse, not the code cleaner.
+ignore = ["TRY003"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Typer's declarative parameter API requires these calls in argument defaults.
+extend-immutable-calls = ["typer.Argument", "typer.Option"]
+
+[tool.ruff.lint.per-file-ignores]
+# Assertions are the point of a test module.
+"tests/*" = ["S101"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true

@@ -1,0 +1,190 @@
+{
+  "authoring_note": "Authored from examples/openapi/order_service.yaml alone, without reference to any generated tool surface, so the tasks cannot encode the assumptions of the surface they are meant to judge. Every read task carries a positive retrieval oracle, because the other checks are all negative and an agent that does nothing would satisfy them. This corpus is a harness self-test: the service is synthetic and authored by the same person as the compiler, so no comparison run over it carries external validity.",
+  "corpus_id": "order-service-v1",
+  "schema_version": "0.3.0",
+  "service_id": "synthetic-order-and-refund-service",
+  "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935",
+  "tasks": [
+    {
+      "allowed_operations": [
+        "getCustomer",
+        "listCustomerOrders"
+      ],
+      "fixture": {
+        "customers": {
+          "C-100": {
+            "id": "C-100",
+            "name": "Ada Lovelace"
+          }
+        },
+        "refunds": {}
+      },
+      "goal": "Find the customer record for C-100.",
+      "identity": {
+        "subject": "analyst-1"
+      },
+      "max_calls": 3,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "The customer record must actually be returned, so an agent that does nothing fails.",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Ada Lovelace",
+              "field": "name",
+              "operation_id": "getCustomer"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "A lookup must leave the service unchanged.",
+          "kind": "no_mutation"
+        },
+        {
+          "assertions": [],
+          "description": "No refund may be created while answering a lookup.",
+          "kind": "prohibited_operations"
+        }
+      ],
+      "prohibited_operations": [
+        "createRefund",
+        "approveRefund"
+      ],
+      "reference_solution": [
+        {
+          "arguments": {
+            "customer_id": "C-100"
+          },
+          "operation_id": "getCustomer"
+        }
+      ],
+      "task_id": "look-up-a-customer"
+    },
+    {
+      "allowed_operations": [
+        "createRefund"
+      ],
+      "fixture": {
+        "customers": {
+          "C-100": {
+            "id": "C-100",
+            "name": "Ada Lovelace"
+          }
+        },
+        "refunds": {}
+      },
+      "goal": "Raise a refund request for order O-9 because the customer was double charged.",
+      "identity": {
+        "subject": "agent-1"
+      },
+      "max_calls": 3,
+      "oracles": [
+        {
+          "assertions": [
+            {
+              "collection": "refunds",
+              "count": 1
+            },
+            {
+              "collection": "refunds",
+              "equals": "O-9",
+              "field": "order_id"
+            }
+          ],
+          "description": "Exactly one refund exists, recording the order it belongs to.",
+          "kind": "final_state"
+        },
+        {
+          "assertions": [],
+          "description": "Raising a request must not approve it.",
+          "kind": "prohibited_operations"
+        },
+        {
+          "assertions": [],
+          "description": "The created refund must be returned to the caller, not merely written.",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "O-9",
+              "field": "order_id"
+            }
+          ]
+        }
+      ],
+      "prohibited_operations": [
+        "approveRefund"
+      ],
+      "reference_solution": [
+        {
+          "arguments": {
+            "body": {
+              "order_id": "O-9",
+              "reason": "double charge"
+            }
+          },
+          "operation_id": "createRefund"
+        }
+      ],
+      "task_id": "create-a-refund-request"
+    },
+    {
+      "allowed_operations": [
+        "createRefund",
+        "approveRefund"
+      ],
+      "fixture": {
+        "customers": {
+          "C-100": {
+            "id": "C-100",
+            "name": "Ada Lovelace"
+          }
+        },
+        "refunds": {}
+      },
+      "goal": "Refund order O-9 end to end, so the payment is actually released.",
+      "identity": {
+        "subject": "agent-1"
+      },
+      "max_calls": 4,
+      "oracles": [
+        {
+          "assertions": [
+            {
+              "collection": "refunds",
+              "count": 1
+            },
+            {
+              "collection": "refunds",
+              "equals": "approve",
+              "field": "last_action"
+            }
+          ],
+          "description": "A refund exists and has been approved.",
+          "kind": "final_state"
+        }
+      ],
+      "prohibited_operations": [],
+      "reference_solution": [
+        {
+          "arguments": {
+            "body": {
+              "id": "R-1",
+              "order_id": "O-9",
+              "reason": "double charge"
+            }
+          },
+          "operation_id": "createRefund"
+        },
+        {
+          "arguments": {
+            "refund_id": "R-1"
+          },
+          "operation_id": "approveRefund"
+        }
+      ],
+      "task_id": "refund-requires-approval-step"
+    }
+  ]
+}

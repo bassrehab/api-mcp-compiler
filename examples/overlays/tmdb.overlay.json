@@ -1,0 +1,327 @@
+{
+  "composites": [
+    {
+      "composite_id": "GET_search_collection_then_GET_collection_collection_id",
+      "description": "Find the collection by name and return its collection in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_collection",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_collection",
+        "GET_collection_collection_id"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_collection_then_GET_collection_collection_id_images",
+      "description": "Find the collection by name and return its images in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_collection_images",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_collection",
+        "GET_collection_collection_id_images"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_company_then_GET_company_company_id",
+      "description": "Find the company by name and return its company in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_company",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_company",
+        "GET_company_company_id"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_company_then_GET_company_company_id_images",
+      "description": "Find the company by name and return its images in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_company_images",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_company",
+        "GET_company_company_id_images"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_movie_then_GET_movie_movie_id",
+      "description": "Find the movie by name and return its movie in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_movie",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_movie",
+        "GET_movie_movie_id"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_movie_then_GET_movie_movie_id_credits",
+      "description": "Find the movie by name and return its credits in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_movie_credits",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_movie",
+        "GET_movie_movie_id_credits"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_movie_then_GET_movie_movie_id_images",
+      "description": "Find the movie by name and return its images in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_movie_images",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_movie",
+        "GET_movie_movie_id_images"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_movie_then_GET_movie_movie_id_keywords",
+      "description": "Find the movie by name and return its keywords in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_movie_keywords",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_movie",
+        "GET_movie_movie_id_keywords"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_movie_then_GET_movie_movie_id_recommendations",
+      "description": "Find the movie by name and return its recommendations in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_movie_recommendations",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_movie",
+        "GET_movie_movie_id_recommendations"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_movie_then_GET_movie_movie_id_release_dates",
+      "description": "Find the movie by name and return its release dates in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_movie_release_dates",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_movie",
+        "GET_movie_movie_id_release_dates"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_movie_then_GET_movie_movie_id_reviews",
+      "description": "Find the movie by name and return its reviews in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_movie_reviews",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_movie",
+        "GET_movie_movie_id_reviews"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_movie_then_GET_movie_movie_id_similar",
+      "description": "Find the movie by name and return its similar in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_movie_similar",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_movie",
+        "GET_movie_movie_id_similar"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_person_then_GET_person_person_id",
+      "description": "Find the person by name and return its person in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_person",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_person",
+        "GET_person_person_id"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_person_then_GET_person_person_id_images",
+      "description": "Find the person by name and return its images in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_person_images",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_person",
+        "GET_person_person_id_images"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_person_then_GET_person_person_id_movie_credits",
+      "description": "Find the person by name and return its movie credits in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_person_movie_credits",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_person",
+        "GET_person_person_id_movie_credits"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_person_then_GET_person_person_id_tv_credits",
+      "description": "Find the person by name and return its tv credits in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_person_tv_credits",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_person",
+        "GET_person_person_id_tv_credits"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id",
+      "description": "Find the tv by name and return its tv in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_credits",
+      "description": "Find the tv by name and return its credits in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_credits",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_credits"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_images",
+      "description": "Find the tv by name and return its images in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_images",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_images"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_keywords",
+      "description": "Find the tv by name and return its keywords in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_keywords",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_keywords"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_recommendations",
+      "description": "Find the tv by name and return its recommendations in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_recommendations",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_recommendations"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_reviews",
+      "description": "Find the tv by name and return its reviews in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_reviews",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_reviews"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_season_season_number",
+      "description": "Find the tv by name and return its season in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_season",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_season_season_number"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_season_season_number_credits",
+      "description": "Find the tv by name and return its season credits in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_season_credits",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_season_season_number_credits"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_season_season_number_episode_episode_number",
+      "description": "Find the tv by name and return its season episode in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_season_episode",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_season_season_number_episode_episode_number"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_season_season_number_episode_episode_number_credits",
+      "description": "Find the tv by name and return its season episode credits in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_season_episode_credits",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_season_season_number_episode_episode_number_credits"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_season_season_number_episode_episode_number_images",
+      "description": "Find the tv by name and return its season episode images in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_season_episode_images",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_season_season_number_episode_episode_number_images"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_season_season_number_images",
+      "description": "Find the tv by name and return its season images in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_season_images",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_season_season_number_images"
+      ],
+      "supersedes_steps": false
+    },
+    {
+      "composite_id": "GET_search_tv_then_GET_tv_tv_id_similar",
+      "description": "Find the tv by name and return its similar in one call, so the identifier linking the two never has to be carried by the caller.",
+      "name": "find_tv_similar",
+      "review_status": "approved",
+      "steps": [
+        "GET_search_tv",
+        "GET_tv_tv_id_similar"
+      ],
+      "supersedes_steps": false
+    }
+  ],
+  "entries": [],
+  "schema_version": "0.3.0",
+  "service_id": "api",
+  "source_digest": "sha256:6e5a3c4ebdf2e3deeada3331ad65c7b802b0aeb58c6167704db700be49b00017"
+}

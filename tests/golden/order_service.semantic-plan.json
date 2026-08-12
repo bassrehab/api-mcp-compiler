@@ -1,0 +1,1842 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "resource:look_up_customer",
+      "confidence": 0.8333,
+      "description": "Get a customer.",
+      "group": "customers",
+      "kind": "resource",
+      "name": "look_up_customer",
+      "omitted_arguments": [],
+      "output_fields": [
+        "id",
+        "name"
+      ],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "semantic.artifact.artifact_id",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.artifact.kind",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "semantic.artifact.name",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "semantic.artifact.description",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "semantic.artifact.source_operations",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "semantic.artifact.risk",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "review_status",
+          "rule": "semantic.artifact.review_status",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.artifact.rationale",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.artifact.confidence",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "group",
+          "rule": "semantic.artifact.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "output_fields",
+          "rule": "semantic.artifact.output_fields",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'Get a customer' rather than the source identifier 'getCustomer', which names a tool after the API instead of the task. Meets 5 of 6 readiness signals. Missing: has a description.",
+      "review_status": "proposed",
+      "risk": "read",
+      "source_operations": [
+        "getCustomer"
+      ]
+    },
+    {
+      "artifact_id": "resource:list_customer_orders",
+      "confidence": 0.6667,
+      "description": "List customer orders.",
+      "group": "customers",
+      "kind": "resource",
+      "name": "list_customer_orders",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "semantic.artifact.artifact_id",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.artifact.kind",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "semantic.artifact.name",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "semantic.artifact.description",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "semantic.artifact.source_operations",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "semantic.artifact.risk",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "review_status",
+          "rule": "semantic.artifact.review_status",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.artifact.rationale",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.artifact.confidence",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "group",
+          "rule": "semantic.artifact.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'List customer orders' rather than the source identifier 'listCustomerOrders', which names a tool after the API instead of the task. Meets 4 of 6 readiness signals. Missing: has a description, declares a success schema.",
+      "review_status": "proposed",
+      "risk": "read",
+      "source_operations": [
+        "listCustomerOrders"
+      ]
+    },
+    {
+      "artifact_id": "tool:create_refund_request",
+      "confidence": 0.8333,
+      "description": "Create a refund request. This changes stored state.",
+      "group": "refunds",
+      "kind": "tool",
+      "name": "create_refund_request",
+      "omitted_arguments": [],
+      "output_fields": [
+        "refund_id"
+      ],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "semantic.artifact.artifact_id",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.artifact.kind",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "semantic.artifact.name",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "semantic.artifact.description",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "semantic.artifact.source_operations",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "semantic.artifact.risk",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "review_status",
+          "rule": "semantic.artifact.review_status",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.artifact.rationale",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.artifact.confidence",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "group",
+          "rule": "semantic.artifact.group",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "output_fields",
+          "rule": "semantic.artifact.output_fields",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'Create a refund request' rather than the source identifier 'createRefund', which names a tool after the API instead of the task. Meets 5 of 6 readiness signals. Missing: has a description.",
+      "review_status": "approved",
+      "risk": "write",
+      "source_operations": [
+        "createRefund"
+      ]
+    },
+    {
+      "artifact_id": "tool:approve_refund_and_release_payment",
+      "confidence": 0.6667,
+      "description": "Approve a refund and release the payment. This changes stored state.",
+      "group": "refunds",
+      "kind": "tool",
+      "name": "approve_refund_and_release_payment",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "semantic.artifact.artifact_id",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.artifact.kind",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "semantic.artifact.name",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "semantic.artifact.description",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "semantic.artifact.source_operations",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "semantic.artifact.risk",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "review_status",
+          "rule": "semantic.artifact.review_status",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.artifact.rationale",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.artifact.confidence",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "group",
+          "rule": "semantic.artifact.group",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'Approve a refund and release the payment' rather than the source identifier 'approveRefund', which names a tool after the API instead of the task. Meets 4 of 6 readiness signals. Missing: has a description, declares a success schema.",
+      "review_status": "proposed",
+      "risk": "write",
+      "source_operations": [
+        "approveRefund"
+      ]
+    },
+    {
+      "artifact_id": "composite:refund_order",
+      "confidence": null,
+      "description": "Create a refund request and then approve it, releasing payment.",
+      "group": null,
+      "kind": "composite",
+      "name": "refund_order",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "semantic.composite.artifact_id",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.composite.kind",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "semantic.composite.name",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "semantic.composite.description",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "semantic.composite.source_operations",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "semantic.composite.risk",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "review_status",
+          "rule": "semantic.composite.review_status",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.composite.rationale",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rationale": "Composite workflow accepted in the overlay. Its risk is that of its most dangerous step.",
+      "review_status": "approved",
+      "risk": "write",
+      "source_operations": [
+        "createRefund",
+        "approveRefund"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "applied": false,
+      "confidence": 0.75,
+      "kind": "rename",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "getCustomer",
+      "proposed_value": "get_customer",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'Get a customer' rather than the source identifier 'getCustomer', which names a tool after the API instead of the task.",
+      "target": "getCustomer"
+    },
+    {
+      "applied": true,
+      "confidence": 1.0,
+      "kind": "rename",
+      "members": [],
+      "origin": "human",
+      "previous_value": "get_customer",
+      "proposed_value": "look_up_customer",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "Name set by a reviewer in the overlay.",
+      "target": "getCustomer"
+    },
+    {
+      "applied": true,
+      "confidence": 0.6,
+      "kind": "reclassify",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "tool",
+      "proposed_value": "resource",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "A read whose only inputs identify what to fetch is addressable, so a resource avoids spending a tool slot on a lookup.",
+      "target": "getCustomer"
+    },
+    {
+      "applied": true,
+      "confidence": 0.65,
+      "kind": "group",
+      "members": [],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": "customers",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "Grouped by the first path segment 'customers', which is the coarsest grouping the specification states rather than one this planner invents.",
+      "target": "getCustomer"
+    },
+    {
+      "applied": true,
+      "confidence": 0.7,
+      "kind": "describe",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "Get a customer",
+      "proposed_value": "Get a customer.",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "Rewrites the description for an agent reading it in a tool list, dropping formatting written for a rendered page, and states the side effect where the model is actually looking. The source text is unchanged in the IR.",
+      "target": "getCustomer"
+    },
+    {
+      "applied": false,
+      "confidence": 0.55,
+      "kind": "project",
+      "members": [
+        "id",
+        "name"
+      ],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "members",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "Projects the 2 field(s) the response declares required and drops email, internal_account_ref, so an agent is not handed the whole payload. Confirm nothing dropped is needed downstream.",
+      "target": "getCustomer"
+    },
+    {
+      "applied": true,
+      "confidence": 0.75,
+      "kind": "rename",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "listCustomerOrders",
+      "proposed_value": "list_customer_orders",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'List customer orders' rather than the source identifier 'listCustomerOrders', which names a tool after the API instead of the task.",
+      "target": "listCustomerOrders"
+    },
+    {
+      "applied": true,
+      "confidence": 0.6,
+      "kind": "reclassify",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "tool",
+      "proposed_value": "resource",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.reclassify",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        }
+      ],
+      "rationale": "A read whose only inputs identify what to fetch is addressable, so a resource avoids spending a tool slot on a lookup.",
+      "target": "listCustomerOrders"
+    },
+    {
+      "applied": true,
+      "confidence": 0.65,
+      "kind": "group",
+      "members": [],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": "customers",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        }
+      ],
+      "rationale": "Grouped by the first path segment 'customers', which is the coarsest grouping the specification states rather than one this planner invents.",
+      "target": "listCustomerOrders"
+    },
+    {
+      "applied": true,
+      "confidence": 0.7,
+      "kind": "describe",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "List customer orders",
+      "proposed_value": "List customer orders.",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        }
+      ],
+      "rationale": "Rewrites the description for an agent reading it in a tool list, dropping formatting written for a rendered page, and states the side effect where the model is actually looking. The source text is unchanged in the IR.",
+      "target": "listCustomerOrders"
+    },
+    {
+      "applied": true,
+      "confidence": 0.75,
+      "kind": "rename",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "createRefund",
+      "proposed_value": "create_refund_request",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'Create a refund request' rather than the source identifier 'createRefund', which names a tool after the API instead of the task.",
+      "target": "createRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 0.65,
+      "kind": "group",
+      "members": [],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": "refunds",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rationale": "Grouped by the first path segment 'refunds', which is the coarsest grouping the specification states rather than one this planner invents.",
+      "target": "createRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 0.7,
+      "kind": "describe",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "Create a refund request",
+      "proposed_value": "Create a refund request. This changes stored state.",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rationale": "Rewrites the description for an agent reading it in a tool list, dropping formatting written for a rendered page, and states the side effect where the model is actually looking. The source text is unchanged in the IR.",
+      "target": "createRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 0.55,
+      "kind": "project",
+      "members": [
+        "refund_id"
+      ],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "members",
+          "rule": "semantic.decision.project",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rationale": "Projects the 1 field(s) the response declares required and drops status, so an agent is not handed the whole payload. Confirm nothing dropped is needed downstream.",
+      "target": "createRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 1.0,
+      "kind": "approve",
+      "members": [],
+      "origin": "human",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.approve",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rationale": "Approved by a reviewer in the overlay, releasing it through the emission gate.",
+      "target": "createRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 0.75,
+      "kind": "rename",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "approveRefund",
+      "proposed_value": "approve_refund_and_release_payment",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.rename",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        }
+      ],
+      "rationale": "Derived from the operation summary 'Approve a refund and release the payment' rather than the source identifier 'approveRefund', which names a tool after the API instead of the task.",
+      "target": "approveRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 0.65,
+      "kind": "group",
+      "members": [],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": "refunds",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.group",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        }
+      ],
+      "rationale": "Grouped by the first path segment 'refunds', which is the coarsest grouping the specification states rather than one this planner invents.",
+      "target": "approveRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 0.7,
+      "kind": "describe",
+      "members": [],
+      "origin": "planner",
+      "previous_value": "Approve a refund and release the payment",
+      "proposed_value": "Approve a refund and release the payment. This changes stored state.",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "previous_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "proposed_value",
+          "rule": "semantic.decision.describe",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        }
+      ],
+      "rationale": "Rewrites the description for an agent reading it in a tool list, dropping formatting written for a rendered page, and states the side effect where the model is actually looking. The source text is unchanged in the IR.",
+      "target": "approveRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 0.5,
+      "kind": "compose",
+      "members": [
+        "createRefund",
+        "approveRefund"
+      ],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "members",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "'createRefund' prepares a resource that 'approveRefund' then approves. Exposing them separately lets an agent take the irreversible step without the step that makes it meaningful.",
+      "target": "createRefund_then_approveRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 0.45,
+      "kind": "compose",
+      "members": [
+        "createRefund",
+        "approveRefund"
+      ],
+      "origin": "planner",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "members",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "rationale": "'approveRefund' cannot be called without a refunds identifier, and 'createRefund' is what yields one. The specification states the dependency; exposing the two separately makes the agent rediscover it.",
+      "target": "createRefund_then_approveRefund"
+    },
+    {
+      "applied": true,
+      "confidence": 1.0,
+      "kind": "compose",
+      "members": [
+        "createRefund",
+        "approveRefund"
+      ],
+      "origin": "human",
+      "previous_value": null,
+      "proposed_value": null,
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "kind",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "origin",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "target",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "rationale",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "confidence",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "applied",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "members",
+          "rule": "semantic.decision.compose",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "rationale": "Composite accepted by a reviewer in the overlay.",
+      "target": "createRefund_then_approveRefund"
+    }
+  ],
+  "planner": "semantic",
+  "schema_version": "0.4.0",
+  "service_id": "synthetic-order-and-refund-service",
+  "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935"
+}

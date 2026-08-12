@@ -1,0 +1,796 @@
+{
+  "ambiguities": [],
+  "operations": [
+    {
+      "authentication": null,
+      "confidence": null,
+      "deprecated": false,
+      "description": null,
+      "faults": [],
+      "idempotency": "idempotent",
+      "inputs": [
+        {
+          "allow_reserved": null,
+          "deprecated": false,
+          "description": null,
+          "examples": [],
+          "explode": null,
+          "location": "path",
+          "media_type": null,
+          "name": "customer_id",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "name",
+              "rule": "openapi.parameter.name",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/parameters/0/name"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "location",
+              "rule": "openapi.parameter.in",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/parameters/0/in"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "required",
+              "rule": "openapi.parameter.required",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/parameters/0/required"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.parameter.schema",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/parameters/0/schema"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "default",
+              "field": "deprecated",
+              "rule": "openapi.parameter.deprecated",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/parameters/0"
+            }
+          ],
+          "required": true,
+          "style": null,
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "intent": "Get a customer",
+      "operation_id": "getCustomer",
+      "outputs": [
+        {
+          "description": "Customer",
+          "examples": [],
+          "headers": [],
+          "media_type": "application/json",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "status",
+              "rule": "openapi.responses.key",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/responses/200"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.responses.description",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/responses/200/description"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "media_type",
+              "rule": "openapi.responses.content.key",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/responses/200/content"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.responses.schema",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/responses/200/content/application~1json/schema"
+            }
+          ],
+          "status": "200",
+          "type_schema": {
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "internal_account_ref": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "pagination": null,
+      "protocol": "http",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "operation_id",
+          "rule": "openapi.operationId",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/operationId"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "protocol",
+          "rule": "openapi.protocol.http",
+          "source_pointer": "openapi:#/openapi"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_pointer",
+          "rule": "openapi.operation.pointer",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "route",
+          "rule": "openapi.paths.key",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "intent",
+          "rule": "openapi.summary",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get/summary"
+        },
+        {
+          "confidence": 0.95,
+          "derivation": "inferred",
+          "field": "side_effect",
+          "rule": "openapi.side_effect.method.get",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}"
+        },
+        {
+          "confidence": 0.95,
+          "derivation": "inferred",
+          "field": "idempotency",
+          "rule": "openapi.idempotency.rfc9110.get",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "deprecated",
+          "rule": "openapi.operation.deprecated",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        }
+      ],
+      "route": "/customers/{customer_id}",
+      "servers": [],
+      "side_effect": "read",
+      "soap": null,
+      "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+    },
+    {
+      "authentication": null,
+      "confidence": null,
+      "deprecated": false,
+      "description": null,
+      "faults": [],
+      "idempotency": "idempotent",
+      "inputs": [
+        {
+          "allow_reserved": null,
+          "deprecated": false,
+          "description": null,
+          "examples": [],
+          "explode": null,
+          "location": "path",
+          "media_type": null,
+          "name": "customer_id",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "name",
+              "rule": "openapi.parameter.name",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get/parameters/0/name"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "location",
+              "rule": "openapi.parameter.in",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get/parameters/0/in"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "required",
+              "rule": "openapi.parameter.required",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get/parameters/0/required"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.parameter.schema",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get/parameters/0/schema"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "default",
+              "field": "deprecated",
+              "rule": "openapi.parameter.deprecated",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get/parameters/0"
+            }
+          ],
+          "required": true,
+          "style": null,
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "intent": "List customer orders",
+      "operation_id": "listCustomerOrders",
+      "outputs": [
+        {
+          "description": "Orders",
+          "examples": [],
+          "headers": [],
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "status",
+              "rule": "openapi.responses.key",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get/responses/200"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.responses.description",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get/responses/200/description"
+            }
+          ],
+          "status": "200",
+          "type_schema": null
+        }
+      ],
+      "pagination": null,
+      "protocol": "http",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "operation_id",
+          "rule": "openapi.operationId",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get/operationId"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "protocol",
+          "rule": "openapi.protocol.http",
+          "source_pointer": "openapi:#/openapi"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_pointer",
+          "rule": "openapi.operation.pointer",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "route",
+          "rule": "openapi.paths.key",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "intent",
+          "rule": "openapi.summary",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get/summary"
+        },
+        {
+          "confidence": 0.95,
+          "derivation": "inferred",
+          "field": "side_effect",
+          "rule": "openapi.side_effect.method.get",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders"
+        },
+        {
+          "confidence": 0.95,
+          "derivation": "inferred",
+          "field": "idempotency",
+          "rule": "openapi.idempotency.rfc9110.get",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "deprecated",
+          "rule": "openapi.operation.deprecated",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        }
+      ],
+      "route": "/customers/{customer_id}/orders",
+      "servers": [],
+      "side_effect": "read",
+      "soap": null,
+      "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+    },
+    {
+      "authentication": null,
+      "confidence": null,
+      "deprecated": false,
+      "description": null,
+      "faults": [],
+      "idempotency": "non_idempotent",
+      "inputs": [
+        {
+          "allow_reserved": null,
+          "deprecated": false,
+          "description": null,
+          "examples": [],
+          "explode": null,
+          "location": "body",
+          "media_type": "application/json",
+          "name": "body",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "name",
+              "rule": "openapi.requestBody.name.literal_body",
+              "source_pointer": "openapi:#/paths/~1refunds/post/requestBody"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "location",
+              "rule": "openapi.requestBody.location.body",
+              "source_pointer": "openapi:#/paths/~1refunds/post/requestBody"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "required",
+              "rule": "openapi.requestBody.required",
+              "source_pointer": "openapi:#/paths/~1refunds/post/requestBody/required"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "media_type",
+              "rule": "openapi.requestBody.content.key",
+              "source_pointer": "openapi:#/paths/~1refunds/post/requestBody/content"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "default",
+              "field": "deprecated",
+              "rule": "openapi.requestBody.deprecated.not_applicable",
+              "source_pointer": "openapi:#/paths/~1refunds/post/requestBody"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.requestBody.schema",
+              "source_pointer": "openapi:#/paths/~1refunds/post/requestBody/content/application~1json/schema"
+            }
+          ],
+          "required": true,
+          "style": null,
+          "type_schema": {
+            "properties": {
+              "order_id": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "order_id",
+              "reason"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "intent": "Create a refund request",
+      "operation_id": "createRefund",
+      "outputs": [
+        {
+          "description": "Refund request created",
+          "examples": [],
+          "headers": [],
+          "media_type": "application/json",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "status",
+              "rule": "openapi.responses.key",
+              "source_pointer": "openapi:#/paths/~1refunds/post/responses/202"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.responses.description",
+              "source_pointer": "openapi:#/paths/~1refunds/post/responses/202/description"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "media_type",
+              "rule": "openapi.responses.content.key",
+              "source_pointer": "openapi:#/paths/~1refunds/post/responses/202/content"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.responses.schema",
+              "source_pointer": "openapi:#/paths/~1refunds/post/responses/202/content/application~1json/schema"
+            }
+          ],
+          "status": "202",
+          "type_schema": {
+            "properties": {
+              "refund_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "refund_id"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "pagination": null,
+      "protocol": "http",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "operation_id",
+          "rule": "openapi.operationId",
+          "source_pointer": "openapi:#/paths/~1refunds/post/operationId"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "protocol",
+          "rule": "openapi.protocol.http",
+          "source_pointer": "openapi:#/openapi"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_pointer",
+          "rule": "openapi.operation.pointer",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "route",
+          "rule": "openapi.paths.key",
+          "source_pointer": "openapi:#/paths/~1refunds"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "intent",
+          "rule": "openapi.summary",
+          "source_pointer": "openapi:#/paths/~1refunds/post/summary"
+        },
+        {
+          "confidence": 0.6,
+          "derivation": "inferred",
+          "field": "side_effect",
+          "rule": "openapi.side_effect.method.post",
+          "source_pointer": "openapi:#/paths/~1refunds"
+        },
+        {
+          "confidence": 0.8,
+          "derivation": "inferred",
+          "field": "idempotency",
+          "rule": "openapi.idempotency.rfc9110.post",
+          "source_pointer": "openapi:#/paths/~1refunds"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "deprecated",
+          "rule": "openapi.operation.deprecated",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
+        }
+      ],
+      "route": "/refunds",
+      "servers": [],
+      "side_effect": "write",
+      "soap": null,
+      "source_pointer": "openapi:#/paths/~1refunds/post"
+    },
+    {
+      "authentication": null,
+      "confidence": null,
+      "deprecated": false,
+      "description": null,
+      "faults": [],
+      "idempotency": "non_idempotent",
+      "inputs": [
+        {
+          "allow_reserved": null,
+          "deprecated": false,
+          "description": null,
+          "examples": [],
+          "explode": null,
+          "location": "path",
+          "media_type": null,
+          "name": "refund_id",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "name",
+              "rule": "openapi.parameter.name",
+              "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post/parameters/0/name"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "location",
+              "rule": "openapi.parameter.in",
+              "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post/parameters/0/in"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "required",
+              "rule": "openapi.parameter.required",
+              "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post/parameters/0/required"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "type_schema",
+              "rule": "openapi.parameter.schema",
+              "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post/parameters/0/schema"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "default",
+              "field": "deprecated",
+              "rule": "openapi.parameter.deprecated",
+              "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post/parameters/0"
+            }
+          ],
+          "required": true,
+          "style": null,
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "intent": "Approve a refund and release the payment",
+      "operation_id": "approveRefund",
+      "outputs": [
+        {
+          "description": "Refund approved",
+          "examples": [],
+          "headers": [],
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "status",
+              "rule": "openapi.responses.key",
+              "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post/responses/200"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "openapi.responses.description",
+              "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post/responses/200/description"
+            }
+          ],
+          "status": "200",
+          "type_schema": null
+        }
+      ],
+      "pagination": null,
+      "protocol": "http",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "operation_id",
+          "rule": "openapi.operationId",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post/operationId"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "protocol",
+          "rule": "openapi.protocol.http",
+          "source_pointer": "openapi:#/openapi"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_pointer",
+          "rule": "openapi.operation.pointer",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "route",
+          "rule": "openapi.paths.key",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "intent",
+          "rule": "openapi.summary",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post/summary"
+        },
+        {
+          "confidence": 0.6,
+          "derivation": "inferred",
+          "field": "side_effect",
+          "rule": "openapi.side_effect.method.post",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve"
+        },
+        {
+          "confidence": 0.8,
+          "derivation": "inferred",
+          "field": "idempotency",
+          "rule": "openapi.idempotency.rfc9110.post",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "deprecated",
+          "rule": "openapi.operation.deprecated",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        }
+      ],
+      "route": "/refunds/{refund_id}/approve",
+      "servers": [],
+      "side_effect": "write",
+      "soap": null,
+      "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+    }
+  ],
+  "schema_version": "0.5.0",
+  "service": {
+    "auth_schemes": [],
+    "provenance": [
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "service_id",
+        "rule": "openapi.service_id.slug_of_title",
+        "source_pointer": "openapi:#/info/title"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "title",
+        "rule": "openapi.info.title",
+        "source_pointer": "openapi:#/info/title"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "spec_version",
+        "rule": "openapi.version_marker",
+        "source_pointer": "openapi:#/openapi"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "source_format",
+        "rule": "openapi.version_marker",
+        "source_pointer": "openapi:#/openapi"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "source_uri",
+        "rule": "ingest.source_uri.input_path",
+        "source_pointer": "openapi:#"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "source_digest",
+        "rule": "ingest.source_digest.sha256_of_bytes",
+        "source_pointer": "openapi:#"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "source_documents",
+        "rule": "ingest.source_documents.loaded_set",
+        "source_pointer": "openapi:#"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "version",
+        "rule": "openapi.info.version",
+        "source_pointer": "openapi:#/info/version"
+      }
+    ],
+    "servers": [
+      {
+        "description": null,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "url",
+            "rule": "openapi.servers.url",
+            "source_pointer": "openapi:#/servers/0/url"
+          }
+        ],
+        "url": "https://api.example.invalid"
+      }
+    ],
+    "service_id": "synthetic-order-and-refund-service",
+    "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935",
+    "source_documents": [
+      {
+        "digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935",
+        "role": "root",
+        "uri": "examples/openapi/order_service.yaml"
+      }
+    ],
+    "source_format": "openapi",
+    "source_uri": "examples/openapi/order_service.yaml",
+    "spec_version": "3.1.0",
+    "title": "Synthetic Order and Refund Service",
+    "version": "1.0.0"
+  }
+}

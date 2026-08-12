@@ -1,0 +1,35 @@
+{
+  "composites": [
+    {
+      "composite_id": "createRefund_then_approveRefund",
+      "description": "Create a refund request and then approve it, releasing payment.",
+      "name": "refund_order",
+      "review_status": "approved",
+      "steps": [
+        "createRefund",
+        "approveRefund"
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "name": "look_up_customer",
+      "operation_id": "getCustomer",
+      "output_fields": [
+        "id",
+        "name"
+      ]
+    },
+    {
+      "operation_id": "createRefund",
+      "review_status": "approved"
+    },
+    {
+      "operation_id": "approveRefund",
+      "review_status": "proposed"
+    }
+  ],
+  "schema_version": "0.3.0",
+  "service_id": "synthetic-order-and-refund-service",
+  "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935"
+}

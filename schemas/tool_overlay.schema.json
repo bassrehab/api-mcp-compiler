@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:api-mcp-compiler:schema:tool-overlay:0.1.0",
+  "title": "Agent Tool Surface Overlay",
+  "description": "Human decisions about a service's tool surface, kept beside the source specification rather than inside it. The overlay is what reconciles semantic judgement with reproducibility: the planner proposes, the overlay records what a human accepted, and regeneration is a pure function of specification plus overlay.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "service_id",
+    "source_digest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.3.0"
+    },
+    "service_id": {
+      "type": "string"
+    },
+    "source_digest": {
+      "description": "Digest of the specification revision this overlay was reviewed against. Applying an overlay whose digest disagrees with the specification is refused, because the decisions were made about different bytes.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    },
+    "composites": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/composite"
+      }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "description": "Decisions recorded against one source operation. Every field is optional: an absent field means the planner's proposal stands.",
+      "type": "object",
+      "required": [
+        "operation_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "review_status": {
+          "description": "Setting this to approved is how a human releases a write, destructive or privileged tool through the emission gate.",
+          "oneOf": [
+            {
+              "enum": [
+                "proposed",
+                "approved",
+                "rejected"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "oneOf": [
+            {
+              "enum": [
+                "tool",
+                "resource",
+                "prompt",
+                "composite",
+                "omitted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "omit": {
+          "description": "An operation disappears from the surface only when a human accepts the omission here. A planner may propose it but never perform it.",
+          "type": "boolean"
+        },
+        "output_fields": {
+          "description": "Top-level response fields to keep. Empty means no projection.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "group": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "description": "The side effect a reviewer determined for this operation. WSDL carries no signal equivalent to an HTTP method, so a SOAP operation stays blocked until a person records the decision here.",
+          "enum": [
+            "read",
+            "write",
+            "destructive",
+            "unknown",
+            null
+          ]
+        }
+      }
+    },
+    "composite": {
+      "description": "A workflow spanning several source operations, such as a prepare step followed by an irreversible execute step.",
+      "type": "object",
+      "required": [
+        "composite_id",
+        "name",
+        "description",
+        "steps"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "composite_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "steps": {
+          "description": "Source operation identifiers, in execution order.",
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "string"
+          }
+        },
+        "review_status": {
+          "enum": [
+            "proposed",
+            "approved",
+            "rejected"
+          ]
+        },
+        "supersedes_steps": {
+          "description": "Whether the composite replaces its steps on the surface rather than joining them. Defaults to false, because approving a tool should never silently remove others.",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

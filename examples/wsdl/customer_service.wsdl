@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="urn:example:customer"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             targetNamespace="urn:example:customer">
+  <types>
+    <xsd:schema targetNamespace="urn:example:customer">
+      <xsd:element name="GetCustomerRequest" type="xsd:string"/>
+      <xsd:element name="GetCustomerResponse" type="xsd:string"/>
+    </xsd:schema>
+  </types>
+  <message name="GetCustomerInput"><part name="parameters" element="tns:GetCustomerRequest"/></message>
+  <message name="GetCustomerOutput"><part name="parameters" element="tns:GetCustomerResponse"/></message>
+  <portType name="CustomerPortType">
+    <operation name="GetCustomer">
+      <input message="tns:GetCustomerInput"/>
+      <output message="tns:GetCustomerOutput"/>
+    </operation>
+  </portType>
+  <binding name="CustomerBinding" type="tns:CustomerPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="GetCustomer">
+      <soap:operation soapAction="urn:GetCustomer"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  </binding>
+  <service name="CustomerService">
+    <port name="CustomerPort" binding="tns:CustomerBinding">
+      <soap:address location="https://api.example.invalid/soap/customer"/>
+    </port>
+  </service>
+</definitions>

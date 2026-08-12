@@ -1,0 +1,167 @@
+{
+  "policies": [
+    {
+      "allowed_environments": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "approval": "none",
+      "artifact_id": "tool:get_customer",
+      "confirmation": null,
+      "idempotency_key_required": false,
+      "log_class": "sensitive",
+      "output": {
+        "max_bytes": 32768,
+        "projected_fields": [],
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_bytes",
+            "rule": "policy.output.max_bytes",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          }
+        ],
+        "redact_fields": []
+      },
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.tool.artifact_id",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "tool_name",
+          "rule": "policy.tool.tool_name",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.tool.approval",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.tool.retry",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "idempotency_key_required",
+          "rule": "policy.tool.idempotency_key_required",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "allowed_environments",
+          "rule": "policy.tool.allowed_environments",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.tool.log_class",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.tool.sensitivity",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "approval",
+          "rule": "policy.rationale.approval: A read requires no approval once validated.",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.scopes: The specification declares no security for this operation, so no scopes are required.",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "sensitivity",
+          "rule": "policy.rationale.sensitivity: Personal-data vocabulary present: customer.",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "retry",
+          "rule": "policy.rationale.retry: Reads are safe to retry.",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "log_class",
+          "rule": "policy.rationale.log: personal data must not be recorded in full.",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "policy.rationale.rate: Reads are cheap to repeat, so the budget is generous.",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "rate": {
+        "calls_per_minute": 60,
+        "daily_call_budget": 5000,
+        "max_concurrent": 4,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "calls_per_minute",
+            "rule": "policy.rate.calls_per_minute",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "max_concurrent",
+            "rule": "policy.rate.max_concurrent",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "daily_call_budget",
+            "rule": "policy.rate.daily_call_budget",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          }
+        ]
+      },
+      "required_scopes": [],
+      "retry": "safe",
+      "rollback_guidance": null,
+      "sensitivity": "personal",
+      "tool_name": "get_customer",
+      "unresolved": []
+    }
+  ],
+  "schema_version": "0.2.0",
+  "service_id": "customerservice",
+  "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554"
+}

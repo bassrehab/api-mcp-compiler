@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:api-mcp-compiler:schema:preregistration:0.1.0",
+  "title": "Comparison Pre-Registration",
+  "description": "A hypothesis and analysis fixed before any model-backed run. The document is digested and an evaluation run records that digest, so changing any registered decision, including which model an arm uses, shows up as a mismatch rather than passing unnoticed.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "registration_id",
+    "hypothesis",
+    "null_hypothesis",
+    "corpus_id",
+    "corpus_source_digest",
+    "arms",
+    "model",
+    "runs_per_task",
+    "success_definition",
+    "equal_budget_conditions",
+    "primary_metric",
+    "primary_test",
+    "significance_threshold",
+    "falsification",
+    "inconclusive_condition",
+    "prohibited_after_seeing_results"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "registration_id": {
+      "type": "string"
+    },
+    "hypothesis": {
+      "type": "string"
+    },
+    "null_hypothesis": {
+      "type": "string"
+    },
+    "corpus_id": {
+      "type": "string"
+    },
+    "corpus_source_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "arms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "description": "The surfaces compared, by planner."
+    },
+    "model": {
+      "description": "Pinned before the run; both arms must use this exactly.",
+      "type": "string"
+    },
+    "runs_per_task": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "success_definition": {
+      "type": "string"
+    },
+    "equal_budget_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "primary_metric": {
+      "type": "string"
+    },
+    "primary_test": {
+      "type": "string"
+    },
+    "significance_threshold": {
+      "type": "string"
+    },
+    "secondary_metrics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "falsification": {
+      "description": "What result would count against the hypothesis, stated in advance.",
+      "type": "string"
+    },
+    "inconclusive_condition": {
+      "type": "string"
+    },
+    "prohibited_after_seeing_results": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    }
+  }
+}

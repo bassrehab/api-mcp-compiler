@@ -1,0 +1,231 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "tool:listWarehouseItems",
+      "confidence": null,
+      "description": "Returns one page of stocked items.",
+      "group": null,
+      "kind": "tool",
+      "name": "listWarehouseItems",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "baseline.operation_per_tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "kind",
+          "rule": "baseline.operation_per_tool.kind.tool",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "baseline.operation_per_tool.name.operation_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "baseline.operation_per_tool.description.operation_description",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "baseline.operation_per_tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "baseline.operation_per_tool.risk.side_effect_identity",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "review_status",
+          "rule": "baseline.operation_per_tool.review_status.proposed",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "rationale",
+          "rule": "baseline.operation_per_tool.rationale",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        }
+      ],
+      "rationale": "Operation-per-tool baseline. Emitted for controlled comparison against the semantic planner; not an approved production design.",
+      "review_status": "proposed",
+      "risk": "read",
+      "source_operations": [
+        "listWarehouseItems"
+      ]
+    },
+    {
+      "artifact_id": "tool:purgeWarehouseItems",
+      "confidence": null,
+      "description": "Permanently remove every item record for a warehouse",
+      "group": null,
+      "kind": "tool",
+      "name": "purgeWarehouseItems",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "baseline.operation_per_tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "kind",
+          "rule": "baseline.operation_per_tool.kind.tool",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "baseline.operation_per_tool.name.operation_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "baseline.operation_per_tool.description.operation_intent",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "baseline.operation_per_tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "baseline.operation_per_tool.risk.side_effect_identity",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "review_status",
+          "rule": "baseline.operation_per_tool.review_status.proposed",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "rationale",
+          "rule": "baseline.operation_per_tool.rationale",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        }
+      ],
+      "rationale": "Operation-per-tool baseline. Emitted for controlled comparison against the semantic planner; not an approved production design.",
+      "review_status": "proposed",
+      "risk": "destructive",
+      "source_operations": [
+        "purgeWarehouseItems"
+      ]
+    },
+    {
+      "artifact_id": "tool:listWarehouseItemsLegacy",
+      "confidence": null,
+      "description": "List items using the retired v1 projection",
+      "group": null,
+      "kind": "tool",
+      "name": "listWarehouseItemsLegacy",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "baseline.operation_per_tool.artifact_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "kind",
+          "rule": "baseline.operation_per_tool.kind.tool",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "baseline.operation_per_tool.name.operation_id",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "baseline.operation_per_tool.description.operation_intent",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "baseline.operation_per_tool.source_operations",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "baseline.operation_per_tool.risk.side_effect_identity",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "review_status",
+          "rule": "baseline.operation_per_tool.review_status.proposed",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "rationale",
+          "rule": "baseline.operation_per_tool.rationale",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items-v1/get"
+        }
+      ],
+      "rationale": "Operation-per-tool baseline. Emitted for controlled comparison against the semantic planner; not an approved production design.",
+      "review_status": "proposed",
+      "risk": "read",
+      "source_operations": [
+        "listWarehouseItemsLegacy"
+      ]
+    }
+  ],
+  "decisions": [],
+  "planner": "baseline",
+  "schema_version": "0.4.0",
+  "service_id": "synthetic-inventory-service",
+  "source_digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0"
+}

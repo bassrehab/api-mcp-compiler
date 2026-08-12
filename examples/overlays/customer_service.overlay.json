@@ -1,0 +1,18 @@
+{
+  "composites": [],
+  "entries": [
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "GetCustomer",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    }
+  ],
+  "schema_version": "0.3.0",
+  "service_id": "customerservice",
+  "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554"
+}

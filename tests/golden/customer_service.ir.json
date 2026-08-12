@@ -1,0 +1,344 @@
+{
+  "ambiguities": [
+    {
+      "blocking": true,
+      "code": "unclassified_side_effect",
+      "detail": "Operation 'GetCustomer' has no side-effect classification. WSDL provides no signal equivalent to an HTTP method, so a human must classify it before any executable tool is generated.",
+      "field": "operations.GetCustomer.side_effect",
+      "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+    }
+  ],
+  "operations": [
+    {
+      "authentication": null,
+      "confidence": null,
+      "deprecated": false,
+      "description": null,
+      "faults": [],
+      "idempotency": "unknown",
+      "inputs": [
+        {
+          "allow_reserved": null,
+          "deprecated": false,
+          "description": "tns:GetCustomerRequest",
+          "examples": [],
+          "explode": null,
+          "location": "soap_body",
+          "media_type": null,
+          "name": "parameters",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "name",
+              "rule": "wsdl.message.part.name",
+              "source_pointer": "wsdl:/w:definitions/w:message[@name='GetCustomerInput']/w:part[@name='parameters']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "location",
+              "rule": "wsdl.part.location.soap_body",
+              "source_pointer": "wsdl:/w:definitions/w:message[@name='GetCustomerInput']/w:part[@name='parameters']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "required",
+              "rule": "wsdl.part.presence_in_message",
+              "source_pointer": "wsdl:/w:definitions/w:message[@name='GetCustomerInput']/w:part[@name='parameters']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "default",
+              "field": "deprecated",
+              "rule": "wsdl.part.deprecated.not_expressible",
+              "source_pointer": "wsdl:/w:definitions/w:message[@name='GetCustomerInput']/w:part[@name='parameters']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "wsdl.message.part.type_reference",
+              "source_pointer": "wsdl:/w:definitions/w:message[@name='GetCustomerInput']/w:part[@name='parameters']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "type_schema",
+              "rule": "wsdl.part.xsd_type_resolution",
+              "source_pointer": "wsdl:/w:definitions/w:message[@name='GetCustomerInput']/w:part[@name='parameters']"
+            }
+          ],
+          "required": true,
+          "style": null,
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "intent": "GetCustomer",
+      "operation_id": "GetCustomer",
+      "outputs": [
+        {
+          "description": "GetCustomerOutput",
+          "examples": [],
+          "headers": [],
+          "media_type": null,
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "status",
+              "rule": "wsdl.output.status.literal_output",
+              "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "source",
+              "field": "description",
+              "rule": "wsdl.output.message",
+              "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "type_schema",
+              "rule": "wsdl.output.xsd_type_resolution",
+              "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+            }
+          ],
+          "status": "output",
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "pagination": null,
+      "protocol": "soap",
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "source",
+          "field": "operation_id",
+          "rule": "wsdl.portType.operation.name",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "protocol",
+          "rule": "wsdl.protocol.soap",
+          "source_pointer": "wsdl:/w:definitions"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_pointer",
+          "rule": "wsdl.operation.pointer",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "intent",
+          "rule": "wsdl.intent.from_operation_name",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "side_effect",
+          "rule": "wsdl.side_effect.unclassified",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "idempotency",
+          "rule": "wsdl.idempotency.undetermined",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "deprecated",
+          "rule": "wsdl.operation.deprecated.not_expressible",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "route": null,
+      "servers": [],
+      "side_effect": "unknown",
+      "soap": {
+        "binding": "CustomerBinding",
+        "endpoint": "https://api.example.invalid/soap/customer",
+        "input_message": "GetCustomerInput",
+        "output_message": "GetCustomerOutput",
+        "port": "CustomerPort",
+        "port_type": "CustomerPortType",
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "target_namespace",
+            "rule": "wsdl.definitions.targetNamespace",
+            "source_pointer": "wsdl:/w:definitions"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "port_type",
+            "rule": "wsdl.portType.name",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "binding",
+            "rule": "wsdl.binding.binding",
+            "source_pointer": "wsdl:/w:definitions/w:binding[@name='CustomerBinding']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "port",
+            "rule": "wsdl.binding.port",
+            "source_pointer": "wsdl:/w:definitions/w:service[@name='CustomerService']/w:port[@name='CustomerPort']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "style",
+            "rule": "wsdl.binding.style",
+            "source_pointer": "wsdl:/w:definitions/w:binding[@name='CustomerBinding']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "transport",
+            "rule": "wsdl.binding.transport",
+            "source_pointer": "wsdl:/w:definitions/w:binding[@name='CustomerBinding']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "soap_action",
+            "rule": "wsdl.binding.soap_action",
+            "source_pointer": "wsdl:/w:definitions/w:binding[@name='CustomerBinding']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "endpoint",
+            "rule": "wsdl.binding.endpoint",
+            "source_pointer": "wsdl:/w:definitions/w:service[@name='CustomerService']/w:port[@name='CustomerPort']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "input_message",
+            "rule": "wsdl.binding.input_message",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "output_message",
+            "rule": "wsdl.binding.output_message",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          }
+        ],
+        "soap_action": "urn:GetCustomer",
+        "style": "document",
+        "target_namespace": "urn:example:customer",
+        "transport": "http://schemas.xmlsoap.org/soap/http"
+      },
+      "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+    }
+  ],
+  "schema_version": "0.5.0",
+  "service": {
+    "auth_schemes": [],
+    "provenance": [
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "source_documents",
+        "rule": "ingest.source_documents.root_only",
+        "source_pointer": "wsdl:/w:definitions"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "service_id",
+        "rule": "wsdl.service_id.slug_of_service_name",
+        "source_pointer": "wsdl:/w:definitions/w:service[@name='CustomerService']"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "title",
+        "rule": "wsdl.service.name",
+        "source_pointer": "wsdl:/w:definitions/w:service[@name='CustomerService']"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "source_format",
+        "rule": "wsdl.definitions.namespace",
+        "source_pointer": "wsdl:/w:definitions"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "source_uri",
+        "rule": "ingest.source_uri.input_path",
+        "source_pointer": "wsdl:/w:definitions"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "source",
+        "field": "source_digest",
+        "rule": "ingest.source_digest.sha256_of_bytes",
+        "source_pointer": "wsdl:/w:definitions"
+      }
+    ],
+    "servers": [
+      {
+        "description": "CustomerPort",
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "url",
+            "rule": "wsdl.port.address.location",
+            "source_pointer": "wsdl:/w:definitions/w:service[@name='CustomerService']/w:port[@name='CustomerPort']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "description",
+            "rule": "wsdl.port.name",
+            "source_pointer": "wsdl:/w:definitions/w:service[@name='CustomerService']/w:port[@name='CustomerPort']"
+          }
+        ],
+        "url": "https://api.example.invalid/soap/customer"
+      }
+    ],
+    "service_id": "customerservice",
+    "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554",
+    "source_documents": [
+      {
+        "digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554",
+        "role": "root",
+        "uri": "examples/wsdl/customer_service.wsdl"
+      }
+    ],
+    "source_format": "wsdl",
+    "source_uri": "examples/wsdl/customer_service.wsdl",
+    "spec_version": null,
+    "title": "CustomerService",
+    "version": null
+  }
+}

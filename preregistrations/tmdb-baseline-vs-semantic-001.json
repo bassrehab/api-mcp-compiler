@@ -1,0 +1,46 @@
+{
+  "arms": [
+    "baseline",
+    "semantic"
+  ],
+  "corpus_id": "restbench-tmdb",
+  "corpus_source_digest": "sha256:6e5a3c4ebdf2e3deeada3331ad65c7b802b0aeb58c6167704db700be49b00017",
+  "equal_budget_conditions": [
+    "Identical model and decoding settings in both arms.",
+    "Identical system prompt, describing the job and never the shape of the surface.",
+    "Identical maximum tool calls per task, at twice the reference length, never below six.",
+    "Identical fixtures and starting state per task and per run.",
+    "Both arms approved identically, so the emission gate cannot advantage either.",
+    "Only executable tools offered in both arms.",
+    "The same store, honouring paging and filtering identically for both arms.",
+    "Every operation remains individually available in both arms. The composites join the semantic surface rather than replacing their steps, so no task is reachable in one arm and unreachable in the other; the arms differ in what is offered, not in what can be done."
+  ],
+  "falsification": "Six or more discordant pairs with the majority favouring the baseline falsifies the hypothesis. So does equal task success with no reduction in calls for the semantic arm, since a composite that saves nothing is a tool nobody needed.",
+  "hypothesis": "A semantically designed tool surface produces a higher end-to-end task success rate than one-operation-per-tool conversion, on the same specification, tasks, model and budget. Unlike every earlier registration, the treatment here contains composition: 29 lookup-then-use tools, each pairing a search with a detail call that cannot be made without the identifier the search returns. Every goal in this corpus is such a chain, which is why this API was held back for it.",
+  "inconclusive_condition": "Fewer than 6 discordant pairs, reported as inconclusive whatever the raw difference. The pre-committed response is to report that composition, the most distinctive claim this project makes, produced no measurable difference on the benchmark chosen because its goals were the best available fit for it — and to stop adding treatments rather than look for a fifth.",
+  "model": "claude-sonnet-5",
+  "null_hypothesis": "The two surfaces produce the same task success rate; any observed difference is consistent with run-to-run variation.",
+  "primary_metric": "Task success rate over the 34-task corpus.",
+  "primary_test": "McNemar's exact test on discordant pairs, the design being paired.",
+  "prohibited_after_seeing_results": [
+    "Promoting a secondary metric to primary.",
+    "Adding, removing or re-authoring any task or oracle.",
+    "Changing either planner, the model, the call budget, or the success definition.",
+    "Changing which composites the semantic arm carries.",
+    "Changing the harness, including the store and the oracle evaluators.",
+    "Expanding the corpus without a new pre-registration stating the rule in advance.",
+    "Reading the annotated solution paths for this task set, which would make any later registration against it worthless."
+  ],
+  "registration_id": "tmdb-baseline-vs-semantic-001",
+  "runs_per_task": 3,
+  "schema_version": "0.1.0",
+  "secondary_metrics": [
+    "Calls made, which is where a composite should show first: one call where the baseline needs two.",
+    "Invalid-argument calls.",
+    "Unnecessary calls beyond the reference solution length.",
+    "Context bytes returned.",
+    "Tokens consumed, as a cost of the surface rather than of the task."
+  ],
+  "significance_threshold": "Two-sided, alpha 0.05: at least 6 discordant pairs all favouring one surface. With 34 tasks this is reachable at a discordance rate of about 18 percent. The Spotify runs produced 4 percent, on a treatment that contained no composition.",
+  "success_definition": "A task counts as a success only when all three runs satisfy every one of its oracles."
+}

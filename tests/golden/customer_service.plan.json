@@ -1,0 +1,83 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "tool:GetCustomer",
+      "confidence": null,
+      "description": "GetCustomer",
+      "group": null,
+      "kind": "tool",
+      "name": "GetCustomer",
+      "omitted_arguments": [],
+      "output_fields": [],
+      "provenance": [
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "artifact_id",
+          "rule": "baseline.operation_per_tool.artifact_id",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "kind",
+          "rule": "baseline.operation_per_tool.kind.tool",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "name",
+          "rule": "baseline.operation_per_tool.name.operation_id",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "description",
+          "rule": "baseline.operation_per_tool.description.operation_intent",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "source_operations",
+          "rule": "baseline.operation_per_tool.source_operations",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "risk",
+          "rule": "baseline.operation_per_tool.risk.side_effect_identity",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "review_status",
+          "rule": "baseline.operation_per_tool.review_status.proposed",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "default",
+          "field": "rationale",
+          "rule": "baseline.operation_per_tool.rationale",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        }
+      ],
+      "rationale": "Operation-per-tool baseline. Emitted for controlled comparison against the semantic planner; not an approved production design.",
+      "review_status": "proposed",
+      "risk": "unknown",
+      "source_operations": [
+        "GetCustomer"
+      ]
+    }
+  ],
+  "decisions": [],
+  "planner": "baseline",
+  "schema_version": "0.4.0",
+  "service_id": "customerservice",
+  "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554"
+}

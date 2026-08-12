@@ -1,0 +1,23 @@
+.DS_Store
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+.env
+secrets/
+artifacts/private/
+# Conversion reports are per-run evidence for a reviewer, not repository content.
+reports/
+build/
+# Benchmark documents are fetched and verified, never stored here.
+examples/benchmarks/*
+!examples/benchmarks/manifest.json
+_dev/
+docs/
+# Every prompt instructs a reader to open a document under docs/, so publishing them
+# without docs/ would ship seven files of dangling references.
+prompts/

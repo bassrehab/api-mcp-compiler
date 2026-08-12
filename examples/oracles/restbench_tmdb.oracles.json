@@ -1,0 +1,1361 @@
+{
+  "authoring_note": "Oracles and fixtures authored for this project against the RestBench TMDB task set. The annotated solution paths were never read: `read_goals_only` drops them inside the loader, so a composition rule cannot be fitted to them and no reviewer has to take a promise on trust. Selection rule, fixed before any behaviour was inspected: every third goal by upstream index, giving 34 of 100. Every task is a retrieval, because the API is entirely read-only, and every oracle asserts the answer the goal asked for rather than the route to it: no operation is pinned and no field is named, so the value may be returned by whatever call the agent judged right. Identifiers are integers because the specification declares them so. An earlier draft used readable string keys, which made every chain unsatisfiable: the search returned an identifier the agent could not pass on, since a string fails validation against an integer parameter. A fixture has to satisfy the types the specification states, or the corpus measures nothing.",
+  "entries": [
+    {
+      "arguments": [],
+      "fixture": {
+        "person.movie_credits": {
+          "1007": {
+            "id": 1007,
+            "movie_count": 8
+          }
+        },
+        "search.person": {
+          "search.person": {
+            "id": 1007,
+            "name": "Sofia Coppola"
+          }
+        }
+      },
+      "index": 0,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 8 was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": 8
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:1610a48795b3e3dd",
+      "task_id": "count-movies-by-director"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "collection.images": {
+          "1014": {
+            "id": 1014,
+            "poster": "starwars-poster.jpg"
+          }
+        },
+        "search.collection": {
+          "search.collection": {
+            "id": 1014,
+            "title": "Star Wars"
+          }
+        }
+      },
+      "index": 3,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'starwars-poster.jpg' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "starwars-poster.jpg"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:7c73c160934e4b47",
+      "task_id": "collection-image"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie.reviews": {
+          "1021": {
+            "id": 1021,
+            "review": "A sweeping disaster epic."
+          }
+        },
+        "movie.similar": {
+          "1028": {
+            "first_similar": 1021,
+            "id": 1028
+          }
+        },
+        "search.movie": {
+          "search.movie": {
+            "id": 1028,
+            "title": "Titanic"
+          }
+        }
+      },
+      "index": 6,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'A sweeping disaster epic.' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "A sweeping disaster epic."
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:c8da46ef7b5fa1b7",
+      "task_id": "reviews-of-similar-movie"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "person.movie_credits": {
+          "1035": {
+            "highest_rated": "Goodfellas",
+            "id": 1035
+          }
+        },
+        "search.person": {
+          "search.person": {
+            "id": 1035,
+            "name": "Martin Scorsese"
+          }
+        }
+      },
+      "index": 9,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Goodfellas' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Goodfellas"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:36ce8040c57bda77",
+      "task_id": "highest-rated-by-director"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "search.tv": {
+          "search.tv": {
+            "id": 1042,
+            "title": "Breaking Bad"
+          }
+        },
+        "tv.similar": {
+          "1042": {
+            "first_similar": "Better Call Saul",
+            "id": 1042
+          }
+        }
+      },
+      "index": 12,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Better Call Saul' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Better Call Saul"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:2ec95c4bf6007f92",
+      "task_id": "similar-tv-shows"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "search.tv": {
+          "search.tv": {
+            "id": 1049,
+            "title": "The Witcher"
+          }
+        },
+        "tv.season": {
+          "1049": {
+            "episode_still": "witcher-s1e2.jpg",
+            "id": 1049
+          }
+        }
+      },
+      "index": 15,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'witcher-s1e2.jpg' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "witcher-s1e2.jpg"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:13b10b1c24463b7b",
+      "task_id": "episode-photo"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie.credits": {
+          "1028": {
+            "id": 1028,
+            "lead_actor": "Leonardo DiCaprio"
+          }
+        },
+        "search.movie": {
+          "search.movie": {
+            "id": 1028,
+            "title": "Titanic"
+          }
+        }
+      },
+      "index": 18,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Leonardo DiCaprio' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Leonardo DiCaprio"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:bdd8baa7977b1bf3",
+      "task_id": "who-starred"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie.recommendations": {
+          "1028": {
+            "first": "The Notebook",
+            "id": 1028
+          }
+        },
+        "search.movie": {
+          "search.movie": {
+            "id": 1028,
+            "title": "Titanic"
+          }
+        }
+      },
+      "index": 21,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'The Notebook' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "The Notebook"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:065e43fb288ff55b",
+      "task_id": "movie-recommendations"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie.similar": {
+          "1056": {
+            "first_similar": "Goodfellas",
+            "id": 1056
+          }
+        },
+        "person.movie_credits": {
+          "1063": {
+            "first_movie": 1056,
+            "id": 1063
+          }
+        },
+        "search.person": {
+          "search.person": {
+            "id": 1063,
+            "name": "Francis Ford Coppola"
+          }
+        }
+      },
+      "index": 24,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Goodfellas' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Goodfellas"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:4ca6b3ab76cd911f",
+      "task_id": "similar-to-directors-movie"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie.keywords": {
+          "1070": {
+            "id": 1070,
+            "keyword": "desert planet"
+          }
+        },
+        "trending": {
+          "trending": {
+            "id": 1070,
+            "title": "Dune"
+          }
+        }
+      },
+      "index": 27,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'desert planet' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "desert planet"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:811845f19172d3e0",
+      "task_id": "trending-movie-keywords"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "company.images": {
+          "1077": {
+            "id": 1077,
+            "logo": "paramount-logo.svg"
+          }
+        },
+        "search.company": {
+          "search.company": {
+            "id": 1077,
+            "name": "Paramount Pictures"
+          }
+        }
+      },
+      "index": 30,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'paramount-logo.svg' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "paramount-logo.svg"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:1b5cd91c639a6590",
+      "task_id": "company-logo"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "collection": {
+          "1014": {
+            "first_movie": 1084,
+            "id": 1014
+          }
+        },
+        "movie.credits": {
+          "1084": {
+            "id": 1084,
+            "lead_actor": "Mark Hamill"
+          }
+        },
+        "search.collection": {
+          "search.collection": {
+            "id": 1014,
+            "title": "Star Wars"
+          }
+        }
+      },
+      "index": 33,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Mark Hamill' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Mark Hamill"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:aa960f9f983c617f",
+      "task_id": "collection-first-movie-cast"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "collection": {
+          "1091": {
+            "first_release": "2012-12-14",
+            "id": 1091
+          }
+        },
+        "search.collection": {
+          "search.collection": {
+            "id": 1091,
+            "title": "The Hobbit"
+          }
+        }
+      },
+      "index": 36,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer '2012-12-14' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "2012-12-14"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:4d04d42b7cf8f5c9",
+      "task_id": "collection-release-dates"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "collection": {
+          "1098": {
+            "first_release": "2001-12-19",
+            "id": 1098
+          }
+        },
+        "search.collection": {
+          "search.collection": {
+            "id": 1098,
+            "title": "Lord of the Rings"
+          }
+        }
+      },
+      "index": 39,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer '2001-12-19' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "2001-12-19"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:580009fc5c7f226c",
+      "task_id": "collection-first-release"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "tv": {
+          "1105": {
+            "first_air_date": "2022-02-18",
+            "id": 1105
+          }
+        },
+        "tv.on_the_air": {
+          "tv.on_the_air": {
+            "id": 1105,
+            "title": "Severance"
+          }
+        }
+      },
+      "index": 42,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer '2022-02-18' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "2022-02-18"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:a7847d998b999f4d",
+      "task_id": "on-air-show-start"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "search.tv": {
+          "search.tv": {
+            "id": 1042,
+            "title": "Breaking Bad"
+          }
+        },
+        "tv.reviews": {
+          "1042": {
+            "id": 1042,
+            "review": "A masterclass in tension."
+          }
+        }
+      },
+      "index": 45,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'A masterclass in tension.' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "A masterclass in tension."
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:4aa87e7b8aeee316",
+      "task_id": "tv-review"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "search.tv": {
+          "search.tv": {
+            "id": 1112,
+            "title": "Friends"
+          }
+        },
+        "tv.season": {
+          "1112": {
+            "guest_star": "Bruce Willis",
+            "id": 1112
+          }
+        }
+      },
+      "index": 48,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Bruce Willis' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Bruce Willis"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:6ee8326f6df62a5a",
+      "task_id": "guest-star"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "search.tv": {
+          "search.tv": {
+            "id": 1119,
+            "title": "2 Broke Girls"
+          }
+        },
+        "tv.images": {
+          "1119": {
+            "id": 1119,
+            "poster": "2brokegirls-poster.jpg"
+          }
+        }
+      },
+      "index": 51,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer '2brokegirls-poster.jpg' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "2brokegirls-poster.jpg"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:e8114f87930b076a",
+      "task_id": "tv-poster"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "search.tv": {
+          "search.tv": {
+            "id": 1126,
+            "title": "The Big Bang Theory"
+          }
+        },
+        "tv": {
+          "1126": {
+            "created": "2007-09-24",
+            "id": 1126
+          }
+        }
+      },
+      "index": 54,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer '2007-09-24' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "2007-09-24"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:43103c5e3e332532",
+      "task_id": "tv-created"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "search.tv": {
+          "search.tv": {
+            "id": 1133,
+            "title": "Game of Thrones"
+          }
+        },
+        "tv.season": {
+          "1133": {
+            "air_date": "2012-04-01",
+            "id": 1133
+          }
+        }
+      },
+      "index": 57,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer '2012-04-01' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "2012-04-01"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:9e70a22c8e6d4ccd",
+      "task_id": "season-air-date"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "network": {
+          "1140": {
+            "homepage": "https://www.hbo.example",
+            "id": 1140
+          }
+        },
+        "search.tv": {
+          "search.tv": {
+            "id": 1133,
+            "title": "Game of Thrones"
+          }
+        },
+        "tv": {
+          "1133": {
+            "id": 1133,
+            "network_id": 1140
+          }
+        }
+      },
+      "index": 60,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'https://www.hbo.example' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "https://www.hbo.example"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:40474c91d9d9d754",
+      "task_id": "network-homepage"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "search.tv": {
+          "search.tv": {
+            "id": 1147,
+            "title": "The Mandalorian"
+          }
+        },
+        "tv": {
+          "1147": {
+            "genre": "Science Fiction",
+            "id": 1147
+          }
+        }
+      },
+      "index": 63,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Science Fiction' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Science Fiction"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:87c1ba8d255024c6",
+      "task_id": "tv-genre"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "trending": {
+          "trending": {
+            "id": 1154,
+            "title": "Fallout"
+          }
+        },
+        "tv.reviews": {
+          "1154": {
+            "id": 1154,
+            "review": "Faithful and strange."
+          }
+        }
+      },
+      "index": 66,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Faithful and strange.' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Faithful and strange."
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:6e6fb71059d8d451",
+      "task_id": "trending-tv-review"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "person.tv_credits": {
+          "1161": {
+            "id": 1161,
+            "most_popular": 1168
+          }
+        },
+        "search.person": {
+          "search.person": {
+            "id": 1161,
+            "name": "Jeremy Clarkson"
+          }
+        },
+        "tv.credits": {
+          "1168": {
+            "co_star": "Richard Hammond",
+            "id": 1168
+          }
+        }
+      },
+      "index": 69,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Richard Hammond' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Richard Hammond"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:83e2423fa58e551e",
+      "task_id": "co-star-in-popular-show"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "tv.credits": {
+          "1175": {
+            "id": 1175,
+            "lead_actor": "Jeremy Allen White"
+          }
+        },
+        "tv.popular": {
+          "tv.popular": {
+            "id": 1175,
+            "title": "The Bear"
+          }
+        }
+      },
+      "index": 72,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Jeremy Allen White' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Jeremy Allen White"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:e5868b461c9b881b",
+      "task_id": "popular-tv-lead"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "person.tv_credits": {
+          "1182": {
+            "id": 1182,
+            "most_popular": "Friends"
+          }
+        },
+        "search.person": {
+          "search.person": {
+            "id": 1182,
+            "name": "David Schwimmer"
+          }
+        }
+      },
+      "index": 75,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Friends' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Friends"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:1ad98746945e6520",
+      "task_id": "persons-popular-show"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie": {
+          "1189": {
+            "id": 1189,
+            "rating": 7.6
+          }
+        },
+        "search.movie": {
+          "1196": {
+            "id": 1196,
+            "rating": 7.2,
+            "title": "Avatar: The Way of Water"
+          },
+          "search.movie": {
+            "id": 1189,
+            "rating": 7.6,
+            "title": "Avatar"
+          }
+        }
+      },
+      "index": 78,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 7.6 was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": 7.6
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:12af8c84cc0b13db",
+      "task_id": "compare-ratings"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "person": {
+          "1203": {
+            "birthday": "1996-09-01",
+            "id": 1203
+          }
+        },
+        "person.popular": {
+          "person.popular": {
+            "id": 1203,
+            "name": "Zendaya"
+          }
+        }
+      },
+      "index": 81,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer '1996-09-01' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "1996-09-01"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:99cd963d75a86cf1",
+      "task_id": "popular-person-birthday"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie.credits": {
+          "1210": {
+            "id": 1210,
+            "lead_actor_id": 1217
+          }
+        },
+        "person": {
+          "1217": {
+            "birthday": "1958-10-16",
+            "id": 1217,
+            "name": "Tim Robbins"
+          }
+        },
+        "search.movie": {
+          "search.movie": {
+            "id": 1210,
+            "title": "The Shawshank Redemption"
+          }
+        }
+      },
+      "index": 84,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer '1958-10-16' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "1958-10-16"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:bd86e82634c4503e",
+      "task_id": "lead-actor-birthday"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "collection": {
+          "1014": {
+            "company_id": 1224,
+            "id": 1014
+          }
+        },
+        "company": {
+          "1224": {
+            "headquarters": "San Francisco",
+            "id": 1224
+          }
+        },
+        "search.collection": {
+          "search.collection": {
+            "id": 1014,
+            "title": "Star Wars"
+          }
+        }
+      },
+      "index": 87,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'San Francisco' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "San Francisco"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:be31b604b49f9424",
+      "task_id": "company-headquarters"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie.credits": {
+          "1238": {
+            "director_id": 1231,
+            "id": 1238
+          }
+        },
+        "person": {
+          "1231": {
+            "id": 1231,
+            "name": "David Lynch",
+            "place_of_birth": "Missoula, Montana"
+          }
+        },
+        "search.movie": {
+          "search.movie": {
+            "id": 1238,
+            "title": "Mulholland Drive"
+          }
+        }
+      },
+      "index": 90,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Missoula, Montana' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Missoula, Montana"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:318962715fb8523a",
+      "task_id": "director-birthplace"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie.credits": {
+          "1238": {
+            "director_id": 1231,
+            "id": 1238
+          }
+        },
+        "person.tv_credits": {
+          "1231": {
+            "id": 1231,
+            "series": "Twin Peaks"
+          }
+        },
+        "search.movie": {
+          "search.movie": {
+            "id": 1238,
+            "title": "Mulholland Drive"
+          }
+        }
+      },
+      "index": 93,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Twin Peaks' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Twin Peaks"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:f58fe5da245483c2",
+      "task_id": "director-tv-work"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "search.tv": {
+          "search.tv": {
+            "id": 1245,
+            "title": "We Married as Job"
+          }
+        },
+        "tv.credits": {
+          "1245": {
+            "cast": "Yui Aragaki, Gen Hoshino",
+            "id": 1245
+          }
+        }
+      },
+      "index": 96,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'Yui Aragaki, Gen Hoshino' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "Yui Aragaki, Gen Hoshino"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:24996fb5f78b6d45",
+      "task_id": "co-starring-check"
+    },
+    {
+      "arguments": [],
+      "fixture": {
+        "movie.images": {
+          "1252": {
+            "id": 1252,
+            "poster": "oppenheimer-cover.jpg"
+          }
+        },
+        "search.movie": {
+          "search.movie": {
+            "id": 1252,
+            "title": "Oppenheimer"
+          }
+        }
+      },
+      "index": 99,
+      "oracles": [
+        {
+          "assertions": [],
+          "description": "the answer 'oppenheimer-cover.jpg' was returned",
+          "kind": "retrieval",
+          "retrieval_assertions": [
+            {
+              "equals": "oppenheimer-cover.jpg"
+            }
+          ]
+        },
+        {
+          "assertions": [],
+          "description": "a question changes nothing",
+          "kind": "no_mutation"
+        }
+      ],
+      "prohibited_operations": [],
+      "query_digest": "sha256:b146274561bf2a90",
+      "task_id": "movie-cover-image"
+    }
+  ],
+  "schema_version": "0.1.0",
+  "source_id": "restbench-tmdb-tasks"
+}

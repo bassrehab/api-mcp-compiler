@@ -1,0 +1,28 @@
+{
+  "composites": [],
+  "entries": [
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "NumberToWords",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    },
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "NumberToDollars",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    }
+  ],
+  "schema_version": "0.3.0",
+  "service_id": "numberconversion",
+  "source_digest": "sha256:c544123d2d3e6ccca67ce79e9f659fb5d191f40c35e68cc15d9746534721e454"
+}

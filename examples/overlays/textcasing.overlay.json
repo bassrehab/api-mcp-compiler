@@ -1,0 +1,88 @@
+{
+  "composites": [],
+  "entries": [
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "TitleCaseWordsWithToken",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    },
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "InvertStringCase",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    },
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "InvertCaseFirstAdjustStringToPrevious",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    },
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "InvertCaseFirstAdjustStringToCurrent",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    },
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "AllUppercaseWithToken",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    },
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "AllLowercaseWithToken",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    },
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "UppercaseWordsWithToken",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    },
+    {
+      "group": null,
+      "kind": null,
+      "name": null,
+      "omit": false,
+      "operation_id": "LowercaseWordsWithToken",
+      "output_fields": [],
+      "review_status": "approved",
+      "side_effect": "read"
+    }
+  ],
+  "schema_version": "0.3.0",
+  "service_id": "textcasing",
+  "source_digest": "sha256:a99ae3023643b918b2ee55afbddb0627e24a1887cc9fb495259c6957c98425c8"
+}
