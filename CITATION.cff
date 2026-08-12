@@ -10,7 +10,7 @@ authors:
     email: contact@subhadipmitra.com
     website: https://subhadipmitra.com
 repository-code: https://github.com/bassrehab/api-mcp-compiler
-url: https://bassrehab.github.io/api-mcp-compiler/
+url: https://api-mcp.subhadipmitra.com/
 abstract: >-
   A compiler that converts REST/OpenAPI and SOAP/WSDL service
   descriptions into agent-ready MCP tool surfaces. Every field carries

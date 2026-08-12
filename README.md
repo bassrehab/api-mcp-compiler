@@ -12,7 +12,7 @@
 [![Contracts](https://img.shields.io/badge/contracts-JSON%20Schema%202020--12-blue.svg)](src/api_mcp_compiler/schemas)
 [![Results](https://img.shields.io/badge/results-pre--registered-8A2BE2.svg)](preregistrations/)
 
-[Documentation](https://bassrehab.github.io/api-mcp-compiler/) &middot;
+[Documentation](https://api-mcp.subhadipmitra.com/) &middot;
 [Notebook walkthrough](notebooks/from_specification_to_server.ipynb) &middot;
 [Pre-registrations](preregistrations/) &middot;
 [Changelog](CHANGELOG.md)
@@ -225,7 +225,7 @@ committed. Regenerate them deliberately and review the diff:
 
 ## Documentation
 
-The full guide lives at **[bassrehab.github.io/api-mcp-compiler](https://bassrehab.github.io/api-mcp-compiler/)**:
+The full guide lives at **[api-mcp.subhadipmitra.com](https://api-mcp.subhadipmitra.com/)**:
 concepts, a command reference, the contract schemas, the SOAP path, and how evaluation and
 pre-registration work. Its source is in [`guide/`](guide/).
 

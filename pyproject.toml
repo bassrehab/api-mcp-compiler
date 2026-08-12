@@ -56,7 +56,7 @@ docs = ["mkdocs>=1.6,<2", "mkdocs-material>=9.5,<10"]
 
 [project.urls]
 Homepage = "https://github.com/bassrehab/api-mcp-compiler"
-Documentation = "https://bassrehab.github.io/api-mcp-compiler/"
+Documentation = "https://api-mcp.subhadipmitra.com/"
 Source = "https://github.com/bassrehab/api-mcp-compiler"
 Issues = "https://github.com/bassrehab/api-mcp-compiler/issues"
 Changelog = "https://github.com/bassrehab/api-mcp-compiler/blob/main/CHANGELOG.md"

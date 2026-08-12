@@ -1,7 +1,7 @@
 site_name: api-mcp-compiler
 site_description: Compile REST/OpenAPI and SOAP/WSDL services into governed MCP tool surfaces
 site_author: Subhadip Mitra
-site_url: https://bassrehab.github.io/api-mcp-compiler/
+site_url: https://api-mcp.subhadipmitra.com/
 repo_url: https://github.com/bassrehab/api-mcp-compiler
 repo_name: bassrehab/api-mcp-compiler
 copyright: Copyright 2026 Subhadip Mitra. Licensed under Apache-2.0.
