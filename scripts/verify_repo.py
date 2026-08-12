@@ -26,6 +26,9 @@ COMMANDS: list[list[str]] = [
     # the defect it catches — a wheel with no contracts in it — is invisible to every other
     # check and visible to every user.
     [sys.executable, str(REPO_ROOT / "scripts" / "check_packaging.py")],
+    # The notebook's stored outputs are documentation that looks like evidence, so they are
+    # held to the same standard as the golden artifacts rather than trusted.
+    [sys.executable, str(REPO_ROOT / "scripts" / "check_notebook.py")],
 ]
 
 

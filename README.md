@@ -94,6 +94,13 @@ the same thing on every machine.
 .venv/bin/python -m api_mcp_compiler.cli validate examples/openapi/inventory_service.yaml
 ```
 
+To read the same walk with every intermediate value printed — the provenance on a field, the
+rationale behind a rename, the scope chosen over the union of its alternatives, the gate
+holding a destructive tool and the review decision that releases it — open
+[`notebooks/from_specification_to_server.ipynb`](notebooks/from_specification_to_server.ipynb).
+Its stored outputs are re-executed and compared by the verification gate, so they cannot
+drift from the code that produced them.
+
 ## How it works
 
 ```text

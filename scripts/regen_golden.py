@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 from api_mcp_compiler.codegen.tools import generate_surface
@@ -86,7 +88,16 @@ def main() -> int:
     relative = GOLDEN_DIR.relative_to(REPO_ROOT)
     count = len(list(GOLDEN_DIR.glob("*")))
     print(f"Regenerated {count} golden artifacts in {relative}.")
-    return 0
+
+    # The notebook prints the same artifacts, so a change that moves a golden file moves the
+    # notebook too. Refreshing both from one command means the diff to review is complete.
+    return int(
+        subprocess.run(
+            [sys.executable, str(REPO_ROOT / "scripts" / "check_notebook.py"), "--write"],
+            check=False,
+            cwd=REPO_ROOT,
+        ).returncode
+    )
 
 
 if __name__ == "__main__":

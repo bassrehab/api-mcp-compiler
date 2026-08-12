@@ -59,6 +59,19 @@
 - Verified against the live Swagger 2 Petstore: 20 operations, no blocking ambiguities, 13
   tools executable, and a runnable MCP server emitted.
 
+### Teaching artifact
+
+- **A notebook that walks a specification to a governed server with the values visible.**
+  Provenance on a field pointed at the pointer it came from, a rename and a projection with
+  their rationale and confidence, a scope chosen as the narrowest of three declared
+  alternatives rather than their union, the emission gate holding a destructive tool, the
+  review decision that releases it, and the policy compiled into the emitted call site.
+- **Its outputs are verified, not trusted.** A notebook is documentation that looks like
+  evidence: a reader cannot tell a digest that is current from one that was current a year
+  ago. `scripts/check_notebook.py` re-executes every cell in the gate and fails on any
+  difference, and `regen_golden.py` refreshes the notebook alongside the golden artifacts so
+  one command produces the whole diff to review.
+
 ### Packaging
 
 - **The distribution shipped none of the contract schemas.** They were kept at the repository
