@@ -41,7 +41,7 @@ from api_mcp_compiler.planning.semantic import plan_semantic  # noqa: E402
 
 #: Which files a registration's corpus refers to. The registration names the corpus; the
 #: mapping lives here so a runner cannot be pointed at different data than the one registered.
-#: `overlay` carries the human decisions the semantic arm is entitled to — composites a
+#: `overlay` carries the human decisions the semantic arm is entitled to, such as composites a
 #: reviewer approved. The baseline never receives one, because one tool per operation is what
 #: it is.
 CORPORA: dict[str, dict[str, Path | None]] = {

@@ -11,7 +11,7 @@ of what was believed beforehand is the only thing that makes a later result wort
 | | Status | Why it was superseded |
 |---|---|---|
 | `spotify-baseline-vs-semantic-001` | superseded, never run | Written before the planner gained description rewriting and argument projection. The arms it described differed only in tool names. |
-| `spotify-baseline-vs-semantic-002` | **run, result recorded** | Returned inconclusive: baseline 13 of 24, semantic 14 of 24, one discordant pair against a threshold of six. Diagnosing the failures showed the corpus setting the ceiling — a read that mutated the store, and oracles asserting the route rather than the outcome. Those could not be corrected under it, since it forbids re-authoring an oracle after results are seen. |
+| `spotify-baseline-vs-semantic-002` | **run, result recorded** | Returned inconclusive: baseline 13 of 24, semantic 14 of 24, one discordant pair against a threshold of six. Diagnosing the failures showed the corpus setting the ceiling: a read that mutated the store, and oracles asserting the route rather than the outcome. Those could not be corrected under it, since it forbids re-authoring an oracle after results are seen. |
 | `spotify-baseline-vs-semantic-003` | **run, result recorded** | Same hypothesis, corrected harness and oracles, wider call budget. Returned inconclusive: baseline 17 of 24, semantic 16 of 24, one discordant pair against a threshold of six. |
 
 | `spotify-baseline-vs-semantic-004` | **run, result recorded** | Store honours paging and filtering. Baseline 20 of 24, semantic 21 of 24, one discordant pair. Inconclusive. The prediction that the harness change would favour the semantic arm was **not** confirmed: the nominal direction was semantic, but at one discordant pair that is the same non-evidence the two earlier runs produced. |
@@ -55,15 +55,15 @@ hypothesis is not, and no defect found afterwards may be used to set one aside.
 
 Two runs found the arms indistinguishable, and the reason turned out not to be sample size.
 The baseline agent supplied an argument the semantic surface removes 30 times in 48 eligible
-calls, mostly `limit` — but the store ignored `limit` entirely, so setting it badly cost
+calls, mostly `limit`, but the store ignored `limit` entirely, so setting it badly cost
 nothing and withholding it saved nothing. The benefit projection exists to deliver could not
 appear in an outcome, by construction.
 
 The store now pages and filters as a service does. **This is expected to favour the semantic
 arm**, and saying so before the run is the point: an expectation stated in advance is a
 prediction, and the same sentence offered afterwards would be an excuse. The change is
-symmetric — an agent that pages too narrowly misses what it needed, and one that cannot page
-receives the service default — and both arms run against the same store.
+symmetric, since an agent that pages too narrowly misses what it needed while one that cannot
+page receives the service default, and both arms run against the same store.
 
 ## What three runs together say
 
@@ -89,7 +89,7 @@ has more to do.
 The corrections worked: both arms rose, baseline from 13 to 17 and semantic from 14 to 16,
 so the earlier ceiling was the corpus rather than the surfaces.
 
-Both runs are inconclusive, and **the nominal direction reversed between them** — semantic
+Both runs are inconclusive, and **the nominal direction reversed between them**: semantic
 ahead by one task in 002, baseline ahead by one in 003. A single discordant pair pointing a
 different way each time is what no real difference looks like. Neither run licenses a claim
 about which surface is better, and the reversal is the clearest evidence that the one-task

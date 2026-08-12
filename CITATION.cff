@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+title: >-
+  api-mcp-compiler: semantic and safe compilation of enterprise APIs
+  into MCP tool surfaces
+message: If you use this software, please cite it as below.
+type: software
+authors:
+  - given-names: Subhadip
+    family-names: Mitra
+    email: contact@subhadipmitra.com
+    website: https://subhadipmitra.com
+repository-code: https://github.com/bassrehab/api-mcp-compiler
+url: https://bassrehab.github.io/api-mcp-compiler/
+abstract: >-
+  A compiler that converts REST/OpenAPI and SOAP/WSDL service
+  descriptions into agent-ready MCP tool surfaces. Every field carries
+  provenance, judgement is proposed rather than applied, governance is
+  derived separately from code generation, and write or destructive
+  tools are not emitted executable until a human approves them by
+  class. Comparisons between a semantically planned surface and a
+  one-tool-per-operation baseline are pre-registered before they run.
+keywords:
+  - model-context-protocol
+  - openapi
+  - wsdl
+  - soap
+  - llm-agents
+  - api-governance
+  - tool-use
+license: Apache-2.0
+version: 0.1.0

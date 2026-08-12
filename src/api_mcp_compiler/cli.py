@@ -156,8 +156,8 @@ def report(
     """Write the conversion report a reviewer reads before approving anything.
 
     One self-contained HTML file: what was read, what is proposed, what the gate is holding,
-    and what needs a decision. Reports are never overwritten — a decision made against one set
-    of proposals is not evidence about a different set — so each run writes a new file named
+    and what needs a decision. Reports are never overwritten, because a decision made against
+    one set of proposals is not evidence about a different set, so each run writes a file named
     for the source digest it describes.
     """
     ir = _parse(source, kind, allow_dir)

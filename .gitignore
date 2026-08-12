@@ -21,3 +21,5 @@ docs/
 # Every prompt instructs a reader to open a document under docs/, so publishing them
 # without docs/ would ship seven files of dangling references.
 prompts/
+# Built documentation site.
+.site/

@@ -141,7 +141,7 @@ def compose_input_schema(
     the union of its steps' arguments.
 
     `supplied` withholds arguments a composite fills for itself. A composite exists because the
-    value cannot come from the goal — it comes from an earlier step's response — so asking the
+    value cannot come from the goal, since it comes from an earlier step's response, so asking
     caller for it would put back the very coupling composing was meant to remove. Unlike
     `omit`, this applies to required arguments, because that is exactly what gets threaded.
 

@@ -392,8 +392,8 @@ def propose_lookup_then_use(
     """Propose a lookup paired with the write that cannot run without it.
 
     A write whose route carries an identifier cannot be called from a goal alone: the value has
-    to come from a read first. The specification states both halves — which resource the write
-    needs an identifier for, and which read yields identifiers for that resource — so the pair
+    to come from a read first. The specification states both halves, which resource the write
+    needs an identifier for and which read yields identifiers for that resource, so the pair
     is derivable without consulting how anybody happened to solve a task.
 
     Exposing the two separately makes the agent responsible for discovering a dependency the

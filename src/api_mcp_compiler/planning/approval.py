@@ -4,8 +4,8 @@ The emission gate is a safety property, and so is the effort it takes to pass it
 clicking through twenty-three read tools individually is doing data entry, not governance, and
 a gate that is drudgery is one that gets bypassed wholesale rather than carefully.
 
-So approval is granted over a selection a person can actually reason about — every read, one
-group, one risk class — and what the selection covered is reported back, because a reviewer
+So approval is granted over a selection a person can actually reason about: every read, one
+group, one risk class. What the selection covered is reported back, because a reviewer
 who cannot see what they just approved has not really approved it.
 
 Selecting is deliberately not the same as approving everything. There is no flag here that

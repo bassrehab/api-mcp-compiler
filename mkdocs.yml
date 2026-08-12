@@ -1,0 +1,65 @@
+site_name: api-mcp-compiler
+site_description: Compile REST/OpenAPI and SOAP/WSDL services into governed MCP tool surfaces
+site_author: Subhadip Mitra
+site_url: https://bassrehab.github.io/api-mcp-compiler/
+repo_url: https://github.com/bassrehab/api-mcp-compiler
+repo_name: bassrehab/api-mcp-compiler
+copyright: Copyright 2026 Subhadip Mitra. Licensed under Apache-2.0.
+
+# The repository keeps working notes under `docs/`, so the published guide lives in `guide/`
+# and the built site in `.site/`. Both are deliberate, not defaults.
+docs_dir: guide
+site_dir: .site
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - content.code.copy
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle: {icon: material/weather-night, name: Switch to dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle: {icon: material/weather-sunny, name: Switch to light mode}
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc: {permalink: true}
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight: {anchor_linenums: true}
+  - pymdownx.inlinehilite
+
+nav:
+  - Home: index.md
+  - Install: install.md
+  - Quickstart: quickstart.md
+  - Concepts:
+      - The semantic IR: concepts/ir.md
+      - Planning a surface: concepts/planning.md
+      - Policy: concepts/policy.md
+      - The emission gate: concepts/gate.md
+      - Reproducibility: concepts/reproducibility.md
+  - SOAP and WSDL: soap.md
+  - Evaluation: evaluation.md
+  - CLI reference: cli.md
+  - Contracts: contracts.md
+  - Contributing: contributing.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bassrehab
+    - icon: fontawesome/solid/globe
+      link: https://subhadipmitra.com

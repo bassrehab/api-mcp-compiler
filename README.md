@@ -1,34 +1,80 @@
+<div align="center">
+
 # api-mcp-compiler
 
-A compiler that turns REST/OpenAPI and SOAP/WSDL service descriptions into agent-ready MCP
-tool surfaces, with provenance on every field, a safety gate that refuses to emit what it
-cannot justify, and governance derived separately from code.
+**Compile REST/OpenAPI and SOAP/WSDL services into agent-ready MCP tool surfaces**
+**that are semantically designed, policy-governed, and evaluation-backed.**
+
+[![CI](https://github.com/bassrehab/api-mcp-compiler/actions/workflows/ci.yml/badge.svg)](https://github.com/bassrehab/api-mcp-compiler/actions/workflows/ci.yml)
+[![Licence](https://img.shields.io/badge/licence-Apache--2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/downloads/)
+[![Typed](https://img.shields.io/badge/mypy-strict-blue.svg)](https://mypy.readthedocs.io/en/stable/)
+[![Contracts](https://img.shields.io/badge/contracts-JSON%20Schema%202020--12-blue.svg)](src/api_mcp_compiler/schemas)
+[![Results](https://img.shields.io/badge/results-pre--registered-8A2BE2.svg)](preregistrations/)
+
+[Documentation](https://bassrehab.github.io/api-mcp-compiler/) &middot;
+[Notebook walkthrough](notebooks/from_specification_to_server.ipynb) &middot;
+[Pre-registrations](preregistrations/) &middot;
+[Changelog](CHANGELOG.md)
+
+</div>
+
+---
 
 Turning one API operation into one MCP tool is already commodity. The harder and more useful
 problem is deciding **which** tools should exist, what they should be called, what they should
 accept and return, and what may not be invoked without a human in the loop.
 
+This compiler answers that with provenance on every field, a safety gate that refuses to emit
+what it cannot justify, and governance derived separately from code.
+
+```
+specification -> ingestion -> API Semantic IR -> planner -> tool plan
+                                                    |
+                              overlay (human decisions)
+                                                    |
+                                              policy manifest
+                                                    |
+                                          generated tool surface
+                                                    |
+                                    runnable MCP server (HTTP or SOAP)
+```
+
+## Contents
+
+- [Status](#status)
+- [Install and verify](#install-and-verify)
+- [Try it](#try-it)
+- [How it works](#how-it-works)
+- [Design properties](#design-properties)
+- [Reproducibility](#reproducibility)
+- [Documentation](#documentation)
+- [Scope](#scope)
+- [Author](#author)
+- [Licence](#licence)
+
 ## Status
 
-Working software, and two recorded comparisons that did not find a difference.
+Working software, and recorded comparisons that did not find a difference.
 
-The compiler ingests OpenAPI 3.x and WSDL 1.1, produces an intermediate representation, plans
-a tool surface, derives a policy manifest, and generates a transport-independent surface that
-runs against a deterministic mock. An evaluation harness scores a surface against a task
-corpus using deterministic oracles over real service state, driven either by a replay of a
-recorded solution or by a model that sees only the goal and the tools. It emits a runnable MCP server for the approved part of a surface — over HTTP for
-OpenAPI, and over SOAP envelopes for WSDL — while the compiler itself binds to no MCP SDK,
-never calls a model, and never reaches the network.
+The compiler ingests OpenAPI 3.x, Swagger 2.0 and WSDL 1.1, produces an intermediate
+representation, plans a tool surface, derives a policy manifest, and generates a
+transport-independent surface that runs against a deterministic mock. An evaluation harness
+scores a surface against a task corpus using deterministic oracles over real service state,
+driven either by a replay of a recorded solution or by a model that sees only the goal and the
+tools. It emits a runnable MCP server for the approved part of a surface, over HTTP for
+OpenAPI and over SOAP envelopes for WSDL, while the compiler itself binds to no MCP SDK, never
+calls a model, and never reaches the network.
 
-The central question — whether a semantically planned surface beats one-tool-per-operation on
-task success, unsafe-action rate and cost — **has been measured twice and is still unanswered**.
+The central question, whether a semantically planned surface beats one-tool-per-operation on
+task success, unsafe-action rate and cost, **has been measured four times and is still
+unanswered**.
 
-Both comparisons were pre-registered: the hypothesis, corpus, arms, model, success definition
+Every comparison was pre-registered: the hypothesis, corpus, arms, model, success definition
 and significance threshold were fixed in a digested document before the run, and each run
-records that digest. Both returned inconclusive, on 24 tasks over a third-party benchmark, and
-the nominal direction reversed between them. Nothing here should be read as evidence that the
-semantic surface performs better. It is an argued position that has so far survived no test
-capable of confirming it.
+records that digest. All returned inconclusive, and the nominal direction reversed between
+them. Nothing here should be read as evidence that the semantic surface performs better. It is
+an argued position that has so far survived no test capable of confirming it.
 
 What the runs did establish is mostly about the instrument. Several defects were found only by
 pointing the system at a specification and a task set written by other people: a parser that
@@ -37,10 +83,10 @@ which a read mutated state and a bulk delete removed everything, and oracles tha
 route an annotator took rather than the outcome a goal asked for. Each is fixed, and the rules
 that would have prevented the last class now fail the build.
 
-The most distinctive claim — that operations should be composed into workflow tools — remains
-untested. The rule that proposes composites fires nowhere on the benchmark API, and designing
-a better one after reading that benchmark's solution paths would fit the treatment to the test
-set. It needs a benchmark whose tasks have not been read here.
+The most distinctive claim, that operations should be composed into workflow tools, remains
+untested. The rule that proposes composites fires nowhere on the first benchmark API, and
+designing a better one after reading that benchmark's solution paths would fit the treatment
+to the test set. It needs a benchmark whose tasks have not been read here.
 
 ## Install and verify
 
@@ -50,9 +96,10 @@ python -m venv .venv
 .venv/bin/python scripts/verify_repo.py
 ```
 
-The gate runs pytest, ruff, mypy in strict mode, and validates every committed example against
-its versioned JSON Schema. Lint and type-checker versions are pinned exactly, so the gate means
-the same thing on every machine.
+The gate runs pytest, ruff, mypy in strict mode, validates every committed example against its
+versioned JSON Schema, builds the wheel and sdist and proves an installed copy can validate its
+own artifacts, and re-executes the notebook to confirm its stored outputs still match. Lint and
+type-checker versions are pinned exactly, so the gate means the same thing on every machine.
 
 ## Try it
 
@@ -94,30 +141,27 @@ the same thing on every machine.
 .venv/bin/python -m api_mcp_compiler.cli validate examples/openapi/inventory_service.yaml
 ```
 
-To read the same walk with every intermediate value printed — the provenance on a field, the
+To read the same walk with every intermediate value printed, the provenance on a field, the
 rationale behind a rename, the scope chosen over the union of its alternatives, the gate
-holding a destructive tool and the review decision that releases it — open
+holding a destructive tool and the review decision that releases it, open
 [`notebooks/from_specification_to_server.ipynb`](notebooks/from_specification_to_server.ipynb).
-Its stored outputs are re-executed and compared by the verification gate, so they cannot
-drift from the code that produced them.
+Its stored outputs are re-executed and compared by the verification gate, so they cannot drift
+from the code that produced them.
 
 ## How it works
-
-```text
-specification -> ingestion -> API Semantic IR -> planner -> tool plan
-                                                    |
-                              overlay (human decisions)
-                                                    |
-                                              policy manifest
-                                                    |
-                                          generated tool surface
-                                                    |
-                                            deterministic mock
-```
 
 Ingestion, planning, policy synthesis and code generation are separate stages with separate
 contracts. Each contract is versioned independently and pinned, so a document written against
 one version fails validation loudly instead of being misread.
+
+| Stage | Input | Output | Contract |
+|---|---|---|---|
+| Ingestion | OpenAPI 3.x, Swagger 2.0, WSDL 1.1 | API Semantic IR | `api_semantic_ir.schema.json` |
+| Planning | IR, overlay | Tool plan | `tool_plan.schema.json` |
+| Policy | IR, plan | Policy manifest | `policy_manifest.schema.json` |
+| Generation | IR, plan, manifest | Tool surface | `mcp_tool_surface.schema.json` |
+| Review | Plan | Overlay | `tool_overlay.schema.json` |
+| Evaluation | Surface, corpus | Evaluation run | `evaluation_run.schema.json` |
 
 ## Design properties
 
@@ -179,14 +223,28 @@ committed. Regenerate them deliberately and review the diff:
 .venv/bin/python scripts/regen_golden.py
 ```
 
+## Documentation
+
+The full guide lives at **[bassrehab.github.io/api-mcp-compiler](https://bassrehab.github.io/api-mcp-compiler/)**:
+concepts, a command reference, the contract schemas, the SOAP path, and how evaluation and
+pre-registration work. Its source is in [`guide/`](guide/).
+
 ## Scope
 
 Uses synthetic and public specifications only. No credentials, customer specifications or
 proprietary schemas belong in this repository.
 
+## Author
+
+**Subhadip Mitra**
+[subhadipmitra.com](https://subhadipmitra.com) &middot; contact@subhadipmitra.com
+
+If you use this in academic work, please cite it. [`CITATION.cff`](CITATION.cff) has the
+metadata, and GitHub renders it as a citation block on the repository page.
+
 ## Licence
 
-Apache-2.0. See `LICENSE` and `NOTICE`.
+Apache-2.0. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
 
 Apache rather than a copyleft licence, deliberately. The interesting part of this project is
 what it decides a good tool surface looks like and what it refuses to emit; restricting who

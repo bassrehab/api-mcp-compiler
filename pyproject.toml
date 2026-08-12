@@ -8,6 +8,17 @@ license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 version = "0.1.0"
 description = "Semantic and safe compilation of enterprise APIs into MCP tool surfaces"
+readme = "README.md"
+authors = [{name = "Subhadip Mitra", email = "contact@subhadipmitra.com"}]
+keywords = ["mcp", "openapi", "wsdl", "soap", "llm", "agents", "api", "governance"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Code Generators",
+  "Typing :: Typed",
+]
 requires-python = ">=3.11"
 dependencies = ["pydantic>=2.7", "typer>=0.12", "PyYAML>=6.0", "lxml>=5.2", "jsonschema>=4.22"]
 
@@ -28,6 +39,18 @@ dev = [
   "types-jsonschema>=4.22",
   "lxml-stubs>=0.5.1",
 ]
+# Building the documentation site. Kept out of `dev` so the verification gate never depends
+# on a theme being installed.
+# Capped below the next major of each: MkDocs 2.0 removes the plugin and theming
+# systems with no migration path, so an unpinned build would break unannounced.
+docs = ["mkdocs>=1.6,<2", "mkdocs-material>=9.5,<10"]
+
+[project.urls]
+Homepage = "https://github.com/bassrehab/api-mcp-compiler"
+Documentation = "https://bassrehab.github.io/api-mcp-compiler/"
+Source = "https://github.com/bassrehab/api-mcp-compiler"
+Issues = "https://github.com/bassrehab/api-mcp-compiler/issues"
+Changelog = "https://github.com/bassrehab/api-mcp-compiler/blob/main/CHANGELOG.md"
 
 [project.scripts]
 api-mcp-compiler = "api_mcp_compiler.cli:app"

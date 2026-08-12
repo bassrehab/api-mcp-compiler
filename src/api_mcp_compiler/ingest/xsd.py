@@ -5,7 +5,7 @@ resolved an operation has no input or output schema and nothing downstream can r
 schema, no argument validation, no emission. Every WSDL the compiler saw was blocked here.
 
 The translation is deliberately narrow and says so. XSD can express things JSON Schema cannot
-— substitution groups, mixed content, xsi:type polymorphism — and inventing an approximation
+(substitution groups, mixed content, xsi:type polymorphism) and inventing an approximation
 for those would produce a tool whose schema quietly disagrees with the service. What cannot be
 translated is reported as an ambiguity and left for a person, exactly as an unresolved
 construct is anywhere else in this compiler.

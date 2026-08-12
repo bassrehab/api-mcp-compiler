@@ -127,8 +127,9 @@ def _names_a_secret(field_name: str) -> bool:
     the answer while looking like the call had worked. Silent over-redaction is worse than
     none: the caller receives nothing useful and no reason.
 
-    So the decisive token is the last one, which is the noun a field name ends on —
-    `accessToken`, `api_key`, `clientSecret` — or the whole name when it is a bare secret word.
+    So the decisive token is the last one, which is the noun a field name ends on in
+    `accessToken`, `api_key` and `clientSecret`, or the whole name when it is a bare secret
+    word.
     """
     words = [item for item in _CAMEL_BOUNDARY.sub(" ", field_name).lower().split() if item]
     words = [piece for item in words for piece in _NON_WORD.split(item) if piece]

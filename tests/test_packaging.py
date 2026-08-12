@@ -2,7 +2,7 @@
 
 The schemas were kept at the repository root for most of this project's life. Everything
 passed, because every test imports the package from the source tree where the schemas sit
-two directories up whether or not the packaging mentions them — and the wheel shipped none
+two directories up whether or not the packaging mentions them, and the wheel shipped none
 of them. An installed copy could not validate a single artifact it produced.
 
 These tests fix the location. They cannot prove the built distribution is correct, since
@@ -23,7 +23,7 @@ from api_mcp_compiler.contracts import ContractViolation, load_schema, schema_di
 PACKAGE_ROOT = Path(api_mcp_compiler.__file__).resolve().parent
 
 #: Every schema the module names, read from the module so that adding a constant without a
-#: file — or a file without a constant — fails here rather than at a user's first validation.
+#: file, or a file without a constant, fails here rather than at a user's first validation.
 DECLARED = sorted(
     value
     for name, value in vars(contracts).items()

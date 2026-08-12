@@ -2,7 +2,7 @@
 
 The project instructions put Swagger 2 behind an adapter rather than in the parser, and that
 is the right split: the two formats describe the same things differently, so one translation
-here keeps every stage downstream — planning, policy, generation, evaluation — unaware that
+here keeps every stage downstream (planning, policy, generation, evaluation) unaware that
 there are two input formats at all.
 
 The translation is total for the constructs Swagger 2 has and OpenAPI 3 also has, and honest

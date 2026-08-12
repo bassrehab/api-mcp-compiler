@@ -23,12 +23,13 @@ COMMANDS: list[list[str]] = [
     [sys.executable, str(REPO_ROOT / "scripts" / "validate_examples.py")],
     # Decision: the packaging check runs in the gate rather than at release time. It is the
     # only check here that exercises the built distribution instead of the source tree, and
-    # the defect it catches — a wheel with no contracts in it — is invisible to every other
+    # the defect it catches, a wheel with no contracts in it, is invisible to every other
     # check and visible to every user.
     [sys.executable, str(REPO_ROOT / "scripts" / "check_packaging.py")],
     # The notebook's stored outputs are documentation that looks like evidence, so they are
     # held to the same standard as the golden artifacts rather than trusted.
     [sys.executable, str(REPO_ROOT / "scripts" / "check_notebook.py")],
+    [sys.executable, str(REPO_ROOT / "scripts" / "check_docs.py")],
 ]
 
 

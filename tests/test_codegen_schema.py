@@ -2,7 +2,7 @@
 
 The compiler copies type information from the source specification into the tool schemas it
 emits. A real specification writes numbers and booleans as strings, so copying verbatim
-produced schemas that no JSON Schema validator would accept — 22 of 40 tools on the benchmark
+produced schemas that no JSON Schema validator would accept: 22 of 40 tools on the benchmark
 API. These tests cover the interpretation and the refusal that now stand between a malformed
 source and a tool a client cannot load.
 """

@@ -9,7 +9,7 @@
   direction alternating. A registered prediction that repairing the store would favour the
   semantic arm was not confirmed.
 - Earlier runs, before the instrument was repaired: both inconclusive, with the nominal
-  direction reversing between them — the clearest available evidence that the one-task gap in
+  direction reversing between them, the clearest available evidence that the one-task gap in
   either was noise. After correcting the corpus, baseline 17 of 24 and semantic 16 of 24.
 - First registered comparison, on the uncorrected corpus: Baseline 13 of 24, semantic
   14 of 24, one discordant pair against a pre-registered threshold of six, p = 1.0. Recorded
@@ -59,6 +59,18 @@
 - Verified against the live Swagger 2 Petstore: 20 operations, no blocking ambiguities, 13
   tools executable, and a runnable MCP server emitted.
 
+### Documentation
+
+- **A documentation site**, built from `guide/` with MkDocs Material and published to GitHub
+  Pages on every push to `main`. Concepts, a command reference, the contract schemas, the SOAP
+  path, and how evaluation and pre-registration work. The published guide lives in `guide/`
+  rather than `docs/`, which the repository already uses for working notes.
+- **`scripts/check_docs.py` runs in the gate.** It holds prose to plain ASCII, and checks the
+  command reference against the Typer application in both directions, so a command nobody
+  documented and a documented command that no longer exists both fail the build.
+- Packaging metadata for publication: author, keywords, classifiers, project URLs and a
+  `CITATION.cff` that GitHub renders as a citation block.
+
 ### Teaching artifact
 
 - **A notebook that walks a specification to a governed server with the values visible.**
@@ -81,7 +93,7 @@
   against a directory two levels up.
 - **The verification gate now builds the wheel and the sdist and exercises them.** It reads
   both archives for every declared schema, unpacks the wheel elsewhere and makes it validate
-  an artifact with no source tree on the path — then makes it reject an invalid one, since a
+  an artifact with no source tree on the path, then makes it reject an invalid one, since a
   validator that accepted everything would pass the first half. Building happens from a clean
   copy of the source: setuptools reuses `build/`, and the first version of this check
   certified a wheel built from a stale tree after the declaration that produced it was
@@ -100,7 +112,7 @@
   server made real calls: `4207` came back as "four thousand two hundred and seven", and
   `"a<b & c>d"` round-tripped through the envelope intact.
 - Two defects only a real service could show. A document body carries the element the message
-  part *references*, not the part's own name — using the part name produced a fault from
+  part *references*, not the part's own name. Using the part name produced a fault from
   every real service, while every fixture here would have passed. And redaction removed a
   service's answer because the field name contained "token", where it meant a delimiter.
 
@@ -138,8 +150,8 @@
 - **The distinctive claim has been tested and did not show.** On TMDB, whose every goal is a
   lookup-then-use chain, baseline and semantic both scored 28 of 34 with **zero** discordant
   pairs. The agent reached for a composite on 29 of 34 tasks and used 18 of the 29 offered.
-- Calls fell 7.4 percent, so the registration's second falsification condition — equal success
-  with no reduction in calls — is not met. Composition changed what the agent did without
+- Calls fell 7.4 percent, so the registration's second falsification condition, equal success
+  with no reduction in calls, is not met. Composition changed what the agent did without
   changing what it achieved.
 - Context bytes rose 20 percent: a composite returns the last step's payload where the
   baseline agent often stopped at the smaller one it needed.
@@ -148,8 +160,8 @@
 
 - TMDB fetched and verified. **54 operations, every one a read**, which forced the composite
   rule to stop asking about side effects: needing a value the goal cannot supply is a property
-  of the route. A companion constraint — a composite must begin with something a goal can
-  reach on its own — keeps the read-to-read rule from proposing every detail endpoint against
+  of the route. A companion constraint, that a composite must begin with something a goal can
+  reach on its own, keeps the read-to-read rule from proposing every detail endpoint against
   every other.
 - `read_goals_only` drops annotated solution paths inside the loader, so a composition rule
   cannot be fitted to them and no reviewer has to take a promise on trust.
@@ -169,7 +181,7 @@
   because the value cannot come from the goal, so asking for it would restore the coupling.
   `create_playlist_with_tracks` takes no `playlist_id` and still sends one.
 - **Two steps may each carry a body.** A flat schema cannot say that, so the gate was refusing
-  composites of two writes — the interesting case — as an argument collision. The later
+  composites of two writes, which are the interesting case, as an argument collision. The later
   argument is now qualified by its step, and `ArgumentBinding` records `source_operation` so
   each value reaches the right request.
 - Confirmation is taken once, against the composite's own arguments.
@@ -181,7 +193,7 @@
   so the service applies its own value. On the benchmark API this halves what an agent must
   reason about: **92 arguments become 46**. A required argument is never withheld, so a
   projection cannot make a call invalid.
-- **Description rewriting.** Descriptions are rewritten for the audience that reads them —
+- **Description rewriting.** Descriptions are rewritten for the audience that reads them:
   a model inside a tool list, which cannot follow a link and pays for every token. Source-site
   links and markup are dropped, prose is cut to what the call does, and the side effect is
   stated in the text: a destructive tool now says so where the model is actually looking.
@@ -195,7 +207,7 @@
   route names which resource. Pairing the write with the read that yields that resource uses
   only what the specification states, and needs no reference to how anybody solved a task.
 - On the benchmark API it proposes six pairs; on this repository's own fixtures it proposes
-  none, which is the check that matters — it is no more shaped to the examples written here
+  none, which is the check that matters. It is no more shaped to the examples written here
   than to the benchmark's annotated paths.
 - It complements rather than replaces the existing action-verb rule: that one fires on the
   enterprise approve-then-commit shape and not on a consumer API, this one the other way round.
@@ -205,8 +217,8 @@
 
 - **`report`** writes the conversion report a reviewer actually reads: one self-contained HTML
   file saying what was read, what is proposed, what the gate is holding, and what needs a
-  decision. **Reports are never overwritten** — a decision made against one set of proposals is
-  not evidence about a different set — so each run writes a new file named for the source
+  decision. **Reports are never overwritten.** A decision made against one set of proposals is
+  not evidence about a different set, so each run writes a new file named for the source
   digest it describes.
 - **`approve`** records approval for a class of tools and writes the overlay, so nobody
   hand-edits JSON. A selection must name what it covers, by risk, by group or by name; there is
@@ -240,7 +252,7 @@
   could not know, pin the operation a goal must be reached by, or count records in a
   collection an agent writes into.
 
-- A **model-backed driver**. It sees the goal and the tools and nothing else — never the
+- A **model-backed driver**. It sees the goal and the tools and nothing else, never the
   oracles, the fixture, or the reference solution. Both arms get the same model, decoding
   settings, system prompt, budget and starting state; the only difference permitted is the
   tool list.
@@ -252,7 +264,7 @@
 
 - **Generated tool schemas were never checked for being valid schemas.** The compiler
   validated arguments *against* them but never validated them, and the source specification
-  writes `"maximum": "50"` and `"additionalProperties": "true"` as strings — so **22 of 40
+  writes `"maximum": "50"` and `"additionalProperties": "true"` as strings, so **22 of 40
   tools in both arms carried schemas the API rejects outright**. Schema keywords are now
   interpreted like any other source value, and a composed schema that is still invalid is
   refused rather than emitted.
