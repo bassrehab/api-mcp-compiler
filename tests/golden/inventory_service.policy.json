@@ -92,6 +92,13 @@
         {
           "confidence": 1.0,
           "derivation": "normalized",
+          "field": "required_schemes",
+          "rule": "policy.tool.required_schemes",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
           "field": "approval",
           "rule": "policy.rationale.approval: A read requires no approval once validated.",
           "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
@@ -160,6 +167,9 @@
           }
         ]
       },
+      "required_schemes": [
+        "inventoryOAuth"
+      ],
       "required_scopes": [
         "inventory.read"
       ],
@@ -287,6 +297,13 @@
         {
           "confidence": 1.0,
           "derivation": "normalized",
+          "field": "required_schemes",
+          "rule": "policy.tool.required_schemes",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
           "field": "rollback_guidance",
           "rule": "policy.tool.rollback_guidance",
           "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
@@ -362,6 +379,9 @@
           }
         ]
       },
+      "required_schemes": [
+        "inventoryOAuth"
+      ],
       "required_scopes": [
         "inventory.write"
       ],
@@ -372,7 +392,7 @@
       "unresolved": []
     }
   ],
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "service_id": "synthetic-inventory-service",
   "source_digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0"
 }

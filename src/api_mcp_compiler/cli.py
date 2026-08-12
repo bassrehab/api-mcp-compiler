@@ -225,6 +225,11 @@ def serve(
     confirmation, output ceilings and redaction are written into the server rather than
     documented beside it.
 
+    Each credential is read at call time from an environment variable named after its
+    security scheme, and placed where the specification said it goes: an API key in the
+    header or query parameter the service named, HTTP basic encoded, OAuth2 as a bearer
+    token. The variables are reported below rather than left to be discovered.
+
     The generated module needs `mcp` and `httpx`, which this compiler does not depend on.
     """
     ir = _parse(source, kind, allow_dir)
@@ -243,6 +248,7 @@ def serve(
             soap_emitted.withheld,
         )
         upstream = soap_emitted.endpoint
+        credentials = soap_emitted.credentials
     else:
         http_emitted = emit_server(ir, surface, manifest)
         generated, registered, withheld = (
@@ -251,6 +257,7 @@ def serve(
             http_emitted.withheld,
         )
         upstream = http_emitted.base_url
+        credentials = http_emitted.credentials
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(generated, encoding="utf-8")
     typer.echo(f"wrote {out} for {ir.service.service_id} ({'SOAP' if soap else 'HTTP'})")
@@ -260,6 +267,12 @@ def serve(
         for name, reason in sorted(withheld.items()):
             typer.echo(f"    {name}: {reason}")
     typer.echo(f"  upstream {upstream}")
+    # Named here because the alternative is discovering them from 401s in production. The
+    # server reads each at call time; no credential is ever written into the file.
+    if credentials:
+        typer.echo("  set before running:")
+        for variable, scheme_id in sorted(credentials.items()):
+            typer.echo(f"    {variable}  (for the {scheme_id!r} security scheme)")
     typer.echo(f"  run it with: pip install {' '.join(GENERATED_REQUIREMENTS)} && python {out}")
 
 

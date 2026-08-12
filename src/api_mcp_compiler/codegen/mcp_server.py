@@ -23,9 +23,10 @@ nothing here is imported by the compiler at runtime.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from api_mcp_compiler.codegen.composite import composite_threading
+from api_mcp_compiler.codegen.credentials import placements, tool_schemes, variables
 from api_mcp_compiler.models import (
     ApiSemanticIR,
     ArgumentBinding,
@@ -53,6 +54,9 @@ class EmittedServer:
     registered: list[str]
     withheld: dict[str, str]
     base_url: str
+    #: Environment variable to scheme identifier, for everything the server reads a
+    #: credential from. Empty when the specification declares no authentication it can place.
+    credentials: dict[str, str] = field(default_factory=dict)
 
 
 def _base_url(ir: ApiSemanticIR) -> str:
@@ -158,7 +162,10 @@ from mcp.server.fastmcp import FastMCP
 
 BASE_URL = os.environ.get({env_var!r}, {base_url!r})
 #: Credentials are read from the environment. Nothing generated here stores one.
-AUTH_ENV_VAR = {auth_env!r}
+#: How each security scheme's credential is sent, and the variable it is read from.
+_AUTH: dict[str, dict[str, str]] = json.loads({auth!r})
+#: Which schemes each tool needs, as least-privilege selection chose them.
+_TOOL_SCHEMES: dict[str, list[str]] = json.loads({tool_schemes!r})
 
 mcp = FastMCP({service_id!r})
 
@@ -176,6 +183,39 @@ def _digest(tool_name: str, arguments: dict[str, Any]) -> str:
 
     payload = json.dumps([tool_name, arguments], sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _credentials(tool_name: str) -> tuple[dict[str, str], dict[str, str]]:
+    """Read the credentials this tool needs and place each where the service declared it.
+
+    Returns headers and query parameters to add. A scheme whose variable is unset is left
+    out rather than sent empty, so an unauthenticated call fails at the service with a clear
+    401 instead of here with something that looks like a bug in the tool.
+    """
+    import base64
+
+    headers: dict[str, str] = {{}}
+    query: dict[str, str] = {{}}
+    for scheme_id in _TOOL_SCHEMES.get(tool_name, []):
+        described = _AUTH.get(scheme_id)
+        if described is None:
+            continue
+        value = os.environ.get(described["env"])
+        if not value:
+            continue
+        kind = described["kind"]
+        if kind == "basic":
+            encoded = base64.b64encode(value.encode("utf-8")).decode("ascii")
+            headers[described["name"]] = f"Basic {{encoded}}"
+        elif kind == "header":
+            headers[described["name"]] = described["prefix"] + value
+        elif kind == "cookie":
+            existing = headers.get("Cookie")
+            pair = f"{{described['name']}}={{value}}"
+            headers["Cookie"] = f"{{existing}}; {{pair}}" if existing else pair
+        else:
+            query[described["name"]] = value
+    return headers, query
 
 
 def _threaded(payload: Any, field: str) -> Any:
@@ -308,9 +348,9 @@ async def _invoke(
                 else:
                     body = value
 
-            credential = os.environ.get(AUTH_ENV_VAR)
-            if credential:
-                headers.setdefault("Authorization", f"Bearer {{credential}}")
+            authorization, authorized_query = _credentials(tool_name)
+            headers.update(authorization)
+            query.update(authorized_query)
 
             response = await client.request(
                 method, path, params=query or None, headers=headers or None, json=body
@@ -377,7 +417,8 @@ def emit_server(
         service_id=ir.service.service_id,
         base_url=base_url,
         env_var=f"{slug}_BASE_URL",
-        auth_env=f"{slug}_TOKEN",
+        auth=json.dumps(placements(ir, slug)),
+        tool_schemes=json.dumps(tool_schemes(registered, manifest)),
         schemas=json.dumps({item.name: item.input_schema for item in registered}),
         withheld=json.dumps(withheld),
     )
@@ -388,6 +429,7 @@ def emit_server(
         registered=[item.name for item in registered],
         withheld=withheld,
         base_url=base_url,
+        credentials=variables(ir, slug, tool_schemes(registered, manifest)),
     )
 
 

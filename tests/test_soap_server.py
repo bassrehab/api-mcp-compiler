@@ -100,6 +100,6 @@ def test_an_unclassified_surface_refuses_to_emit() -> None:
 def test_no_credential_is_written_into_the_generated_file() -> None:
     ir, surface, manifest = _reviewed()
     source = emit_soap_server(ir, surface, manifest).source
-    assert "os.environ.get(AUTH_ENV_VAR)" in source
+    assert 'os.environ.get(described["env"])' in source
     for marker in ("password", "sk-", "bearer ey"):
         assert marker not in source.lower()

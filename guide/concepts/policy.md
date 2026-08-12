@@ -30,6 +30,28 @@ An authorization concern is fatal only for a tool that changes state. A read wit
 authentication is an ordinary public endpoint; a write or destructive one with none cannot be
 shown to be governed, so it fails closed.
 
+## The credential, not only the scope
+
+A scope says how much access is needed. It does not say what to present at the door, and a
+generated server that knows one without the other cannot authenticate at all. The manifest
+therefore records `required_schemes` beside `required_scopes`: the identifiers of the
+alternative that least-privilege selection chose.
+
+The emitted server places each credential where the specification declared it:
+
+| Scheme | Placement |
+|---|---|
+| `apiKey` | The header, query parameter or cookie the service named. |
+| `http` with `scheme: basic` | `Authorization: Basic`, base64 encoded from a `user:password` variable. |
+| `http` with `scheme: bearer` | `Authorization: Bearer`. |
+| `oauth2`, `openIdConnect` | `Authorization: Bearer`. |
+| Anything else | Nothing is sent. An unplaceable scheme is reported, never guessed. |
+
+One environment variable per scheme, named `<SERVICE>_<SCHEME>_CREDENTIAL` and reported by
+`serve`. A variable that is unset is omitted rather than sent empty, so the call fails at the
+service as unauthenticated rather than locally as malformed. No credential value is ever
+written into a generated file.
+
 ## Confirmation is bound to the arguments
 
 A destructive tool requires a confirmation token derived from a digest of the exact arguments

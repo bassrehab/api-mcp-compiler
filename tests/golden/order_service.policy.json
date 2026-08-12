@@ -163,6 +163,7 @@
           }
         ]
       },
+      "required_schemes": [],
       "required_scopes": [],
       "retry": "safe",
       "rollback_guidance": null,
@@ -323,6 +324,7 @@
           }
         ]
       },
+      "required_schemes": [],
       "required_scopes": [],
       "retry": "safe",
       "rollback_guidance": null,
@@ -505,6 +507,7 @@
           }
         ]
       },
+      "required_schemes": [],
       "required_scopes": [],
       "retry": "with_idempotency_key",
       "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
@@ -680,6 +683,7 @@
           }
         ]
       },
+      "required_schemes": [],
       "required_scopes": [],
       "retry": "with_idempotency_key",
       "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
@@ -882,6 +886,7 @@
           }
         ]
       },
+      "required_schemes": [],
       "required_scopes": [],
       "retry": "with_idempotency_key",
       "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
@@ -892,7 +897,7 @@
       ]
     }
   ],
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "service_id": "synthetic-order-and-refund-service",
   "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935"
 }

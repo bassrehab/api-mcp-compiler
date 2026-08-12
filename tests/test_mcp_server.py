@@ -90,7 +90,7 @@ def test_no_credential_is_written_into_the_generated_file() -> None:
     lowered = emitted.source.lower()
     for marker in ("sk-", "bearer ey", "password", "api_key ="):
         assert marker not in lowered
-    assert "os.environ.get(AUTH_ENV_VAR)" in emitted.source
+    assert 'os.environ.get(described["env"])' in emitted.source
 
 
 def test_arguments_are_validated_before_the_call_is_made() -> None:

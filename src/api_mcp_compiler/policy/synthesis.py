@@ -152,19 +152,25 @@ def secret_fields(operation: OperationIR) -> list[str]:
 
 def least_privilege_scopes(
     authentication: AuthRequirementIR | None,
-) -> tuple[list[str], str, list[str]]:
+) -> tuple[list[str], list[str], str, list[str]]:
     """Choose the narrowest security requirement that still grants access.
 
     Fewest scopes is not the same as least privilege. A scopeless credential such as an
     admin key looks narrowest by count while granting the most, so scoped alternatives are
     preferred and a scopeless winner is reported as a concern rather than accepted.
 
-    Returns the scopes, the reasoning, and any concerns. A concern is only fatal for a tool
-    that changes state: a read with no declared authentication is an ordinary public
-    endpoint, while a destructive one with none is a red flag that must fail closed.
+    Returns the scopes, the scheme identifiers whose credentials satisfy the chosen
+    alternative, the reasoning, and any concerns. The schemes are returned because choosing
+    an alternative and then not saying which credential it needs leaves a generated client
+    guessing, and it guessed bearer for everything.
+
+    A concern is only fatal for a tool that changes state: a read with no declared
+    authentication is an ordinary public endpoint, while a destructive one with none is a red
+    flag that must fail closed.
     """
     if authentication is None:
         return (
+            [],
             [],
             "The specification declares no security for this operation, so no scopes are "
             "required.",
@@ -173,15 +179,22 @@ def least_privilege_scopes(
     if authentication.disabled:
         return (
             [],
+            [],
             "The operation explicitly disables authentication with an empty security list.",
             ["the operation explicitly disables authentication"],
         )
     alternatives: list[SecurityRequirementIR] = list(authentication.alternatives)
     if not alternatives:
-        return (list(authentication.scopes), "Scopes taken from the sole requirement.", [])
+        return (
+            list(authentication.scopes),
+            list(authentication.scheme_ids),
+            "Scopes taken from the sole requirement.",
+            [],
+        )
     if len(alternatives) == 1:
         return (
             list(alternatives[0].scopes),
+            list(alternatives[0].scheme_ids),
             "A single security requirement, so its scopes are exactly what is needed.",
             [],
         )
@@ -195,6 +208,7 @@ def least_privilege_scopes(
     if not chosen.scopes:
         return (
             [],
+            list(chosen.scheme_ids),
             "Every alternative is a scopeless credential, so no least-privilege scope set "
             "can be demonstrated.",
             ["every authentication alternative uses an unscoped credential"],
@@ -202,6 +216,7 @@ def least_privilege_scopes(
     union = sorted({scope for item in alternatives for scope in item.scopes})
     return (
         list(chosen.scopes),
+        list(chosen.scheme_ids),
         f"Narrowest of {len(alternatives)} alternatives, using "
         f"{'+'.join(chosen.scheme_ids)}. The union across alternatives would have granted "
         f"{', '.join(union)}; rejected {'; '.join(rejected)}.",
@@ -332,12 +347,13 @@ def synthesize_policy(ir: ApiSemanticIR, plan: ToolPlan) -> PolicyManifest:
         # A composite is only as constrained as its most demanding step.
         scope_sets = [least_privilege_scopes(item.authentication) for item in sources]
         scopes = sorted({scope for entry in scope_sets for scope in entry[0]})
-        scope_rationale = " ".join(entry[1] for entry in scope_sets)
+        schemes = sorted({scheme for entry in scope_sets for scheme in entry[1]})
+        scope_rationale = " ".join(entry[2] for entry in scope_sets)
         # Decision: an authorization concern is fatal only for a tool that
         # changes state. A read with no declared authentication is an ordinary public
         # endpoint; a write or destructive one with none cannot be shown to be governed, so
         # it fails closed rather than being emitted with empty scopes.
-        concerns = sorted({item for entry in scope_sets for item in entry[2]})
+        concerns = sorted({item for entry in scope_sets for item in entry[3]})
         if concerns and artifact.risk is not RiskClass.READ:
             unresolved.extend(f"required_scopes: {item}" for item in concerns)
 
@@ -372,6 +388,8 @@ def synthesize_policy(ir: ApiSemanticIR, plan: ToolPlan) -> PolicyManifest:
         ]
         if scopes:
             fields.append("required_scopes")
+        if schemes:
+            fields.append("required_schemes")
         if rollback:
             fields.append("rollback_guidance")
         if unresolved:
@@ -381,6 +399,7 @@ def synthesize_policy(ir: ApiSemanticIR, plan: ToolPlan) -> PolicyManifest:
                 artifact_id=artifact.artifact_id,
                 tool_name=artifact.name,
                 required_scopes=scopes,
+                required_schemes=schemes,
                 approval=approval,
                 confirmation=confirmation,
                 retry=retry,

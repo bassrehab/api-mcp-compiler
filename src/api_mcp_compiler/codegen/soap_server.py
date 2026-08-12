@@ -14,8 +14,9 @@ while looking like it worked. Emission is refused rather than approximated.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from api_mcp_compiler.codegen.credentials import placements, tool_schemes, variables
 from api_mcp_compiler.models import (
     ApiSemanticIR,
     EmissionStatus,
@@ -45,6 +46,9 @@ class EmittedSoapServer:
     registered: list[str]
     withheld: dict[str, str]
     endpoint: str
+    #: Environment variable to scheme identifier, for everything the server reads a
+    #: credential from.
+    credentials: dict[str, str] = field(default_factory=dict)
 
 
 def _operation_for(ir: ApiSemanticIR, tool: ToolDescriptor) -> OperationIR:
@@ -125,7 +129,10 @@ from mcp.server.fastmcp import FastMCP
 
 ENDPOINT = os.environ.get({env_var!r}, {endpoint!r})
 #: Credentials are read from the environment. Nothing generated here stores one.
-AUTH_ENV_VAR = {auth_env!r}
+#: How each security scheme's credential is sent, and the variable it is read from.
+_AUTH: dict[str, dict[str, str]] = json.loads({auth!r})
+#: Which schemes each tool needs, as least-privilege selection chose them.
+_TOOL_SCHEMES: dict[str, list[str]] = json.loads({tool_schemes!r})
 ENVELOPE_NS = "http://schemas.xmlsoap.org/soap/envelope/"
 
 mcp = FastMCP({service_id!r})
@@ -144,6 +151,38 @@ def _digest(tool_name: str, arguments: dict[str, Any]) -> str:
 
     payload = json.dumps([tool_name, arguments], sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _credentials(tool_name: str) -> tuple[dict[str, str], dict[str, str]]:
+    """Read the credentials this tool needs and place each where the service declared it.
+
+    A scheme whose variable is unset is left out rather than sent empty, so an
+    unauthenticated call fails at the service rather than looking like a fault in the tool.
+    """
+    import base64
+
+    headers: dict[str, str] = {{}}
+    query: dict[str, str] = {{}}
+    for scheme_id in _TOOL_SCHEMES.get(tool_name, []):
+        described = _AUTH.get(scheme_id)
+        if described is None:
+            continue
+        value = os.environ.get(described["env"])
+        if not value:
+            continue
+        kind = described["kind"]
+        if kind == "basic":
+            encoded = base64.b64encode(value.encode("utf-8")).decode("ascii")
+            headers[described["name"]] = f"Basic {{encoded}}"
+        elif kind == "header":
+            headers[described["name"]] = described["prefix"] + value
+        elif kind == "cookie":
+            existing = headers.get("Cookie")
+            pair = f"{{described['name']}}={{value}}"
+            headers["Cookie"] = f"{{existing}}; {{pair}}" if existing else pair
+        else:
+            query[described["name"]] = value
+    return headers, query
 
 
 def _redact(value: Any, fields: list[str]) -> Any:
@@ -287,12 +326,16 @@ async def _invoke(
         "Content-Type": "text/xml; charset=utf-8",
         "SOAPAction": f'"{{soap_action}}"',
     }}
-    credential = os.environ.get(AUTH_ENV_VAR)
-    if credential:
-        headers["Authorization"] = f"Bearer {{credential}}"
+    authorization, query = _credentials(tool_name)
+    headers.update(authorization)
 
     async with httpx.AsyncClient(timeout=30) as client:
-        response = await client.post(ENDPOINT, content=envelope.encode("utf-8"), headers=headers)
+        response = await client.post(
+            ENDPOINT,
+            content=envelope.encode("utf-8"),
+            headers=headers,
+            params=query or None,
+        )
 
     try:
         root = ElementTree.fromstring(response.text)
@@ -367,7 +410,8 @@ def emit_soap_server(
         service_id=ir.service.service_id,
         endpoint=endpoint,
         env_var=f"{slug}_ENDPOINT",
-        auth_env=f"{slug}_TOKEN",
+        auth=json.dumps(placements(ir, slug)),
+        tool_schemes=json.dumps(tool_schemes(registered, manifest)),
         schemas=json.dumps({item.name: item.input_schema for item in registered}),
         withheld=json.dumps(withheld),
     )
@@ -378,4 +422,5 @@ def emit_soap_server(
         registered=[item.name for item in registered],
         withheld=withheld,
         endpoint=endpoint,
+        credentials=variables(ir, slug, tool_schemes(registered, manifest)),
     )

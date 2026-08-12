@@ -20,7 +20,7 @@ IR_SCHEMA_VERSION = "0.5.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
 TOOL_SURFACE_SCHEMA_VERSION = "0.2.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
-POLICY_MANIFEST_SCHEMA_VERSION = "0.2.0"
+POLICY_MANIFEST_SCHEMA_VERSION = "0.3.0"
 EVAL_CORPUS_SCHEMA_VERSION = "0.3.0"
 EVALUATION_RUN_SCHEMA_VERSION = "0.1.0"
 BENCHMARK_MANIFEST_SCHEMA_VERSION = "0.1.0"
@@ -1007,6 +1007,10 @@ class ToolPolicy(ProvenanceBearing):
     artifact_id: str
     tool_name: str
     required_scopes: list[str] = Field(default_factory=list)
+    # Which credential to present, not merely how much of it is needed. The scopes alone say
+    # what access is required and leave a server unable to authenticate at all: a generated
+    # client sent every credential as a bearer token because this was the only thing recorded.
+    required_schemes: list[str] = Field(default_factory=list)
     approval: ApprovalClass
     confirmation: ConfirmationPolicy | None = None
     retry: RetryPolicy

@@ -129,11 +129,15 @@ def test_least_privilege_picks_a_narrower_set_than_the_union() -> None:
     )
     assert operation.authentication is not None
     union = set(operation.authentication.scopes)
-    chosen, rationale, concerns = least_privilege_scopes(operation.authentication)
+    chosen, schemes, rationale, concerns = least_privilege_scopes(operation.authentication)
     assert set(chosen) < union
     assert chosen == ["inventory.write"]
     assert "union across alternatives" in rationale
     assert not concerns
+    # The scheme is returned as well as the scopes: knowing how much access is needed and
+    # not which credential grants it is what left the generated server sending bearer for
+    # everything.
+    assert schemes == ["inventoryOAuth"]
 
 
 def test_a_scopeless_credential_is_not_treated_as_least_privilege() -> None:

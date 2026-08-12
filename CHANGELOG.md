@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### Safety
+
+- **A generated server could not authenticate to most services.** Every scheme was sent as
+  `Authorization: Bearer`, whatever the document declared, so an API key in a service-named
+  header or HTTP basic produced a 401 on every call. The compiler had parsed the correct
+  placement and discarded it at the last step.
+- The policy manifest now records `required_schemes` beside `required_scopes`, taken from the
+  alternative least-privilege selection chose, and the emitted server places each credential
+  where the specification said it goes: the named header, query parameter or cookie for an
+  API key, base64 for HTTP basic, a bearer token for OAuth2. A scheme that cannot be placed
+  sends nothing rather than something plausible.
+- One environment variable per scheme rather than one per service, so a surface that
+  legitimately needs two credentials can express that, and `serve` reports the variables a
+  deployment must set instead of leaving them to be found through 401s.
+- `policy_manifest` schema version raised to `0.3.0`.
+
 ## 0.1.0
 
 First published release, on PyPI as `api-mcp-compiler`.
@@ -491,6 +509,24 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Pinned ruff and mypy to exact versions and declared an explicit lint rule selection, so
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
+
+## Unreleased
+
+### Safety
+
+- **A generated server could not authenticate to most services.** Every scheme was sent as
+  `Authorization: Bearer`, whatever the document declared, so an API key in a service-named
+  header or HTTP basic produced a 401 on every call. The compiler had parsed the correct
+  placement and discarded it at the last step.
+- The policy manifest now records `required_schemes` beside `required_scopes`, taken from the
+  alternative least-privilege selection chose, and the emitted server places each credential
+  where the specification said it goes: the named header, query parameter or cookie for an
+  API key, base64 for HTTP basic, a bearer token for OAuth2. A scheme that cannot be placed
+  sends nothing rather than something plausible.
+- One environment variable per scheme rather than one per service, so a surface that
+  legitimately needs two credentials can express that, and `serve` reports the variables a
+  deployment must set instead of leaving them to be found through 401s.
+- `policy_manifest` schema version raised to `0.3.0`.
 
 ## 0.1.0
 

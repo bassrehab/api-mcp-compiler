@@ -153,6 +153,7 @@
           }
         ]
       },
+      "required_schemes": [],
       "required_scopes": [],
       "retry": "safe",
       "rollback_guidance": null,
@@ -161,7 +162,7 @@
       "unresolved": []
     }
   ],
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "service_id": "customerservice",
   "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554"
 }
