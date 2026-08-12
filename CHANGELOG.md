@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
+
+Released 2026-08-13. Two correctness fixes for generated servers, both of which affect
+anyone running a server emitted by 0.1.0.
+
+The minor rather than the patch position because the policy manifest contract changed: a
+manifest written by 0.1.0 no longer validates, which is a break even though the reason for it
+is a fix.
 
 ### Safety
 
@@ -510,7 +517,14 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
 
-## Unreleased
+## 0.2.0
+
+Released 2026-08-13. Two correctness fixes for generated servers, both of which affect
+anyone running a server emitted by 0.1.0.
+
+The minor rather than the patch position because the policy manifest contract changed: a
+manifest written by 0.1.0 no longer validates, which is a break even though the reason for it
+is a fix.
 
 ### Safety
 

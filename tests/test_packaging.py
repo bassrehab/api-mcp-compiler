@@ -88,3 +88,25 @@ def test_a_missing_schema_names_the_override(
         load_schema(DECLARED[0])
     assert str(tmp_path) in str(failure.value)
     assert contracts.SCHEMA_DIR_ENV_VAR in str(failure.value)
+
+
+def test_the_version_is_stated_once_in_effect() -> None:
+    """Three files carry the package version, and nothing kept them equal.
+
+    A wheel built from a pyproject that says one thing while `__version__` says another is
+    not caught by any other check here: the build reads only pyproject, and every import
+    reads only the module. They drift silently and the disagreement surfaces in a bug report
+    from someone reading the wrong one.
+    """
+    import tomllib
+
+    root = Path(__file__).resolve().parents[1]
+    declared = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
+    citation = [
+        line.split(":", 1)[1].strip()
+        for line in (root / "CITATION.cff").read_text(encoding="utf-8").splitlines()
+        if line.startswith("version:")
+    ]
+
+    assert api_mcp_compiler.__version__ == declared["project"]["version"]
+    assert citation == [api_mcp_compiler.__version__]

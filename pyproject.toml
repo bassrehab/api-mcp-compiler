@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "api-mcp-compiler"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
-version = "0.1.0"
+version = "0.2.0"
 description = "Semantic and safe compilation of enterprise APIs into MCP tool surfaces"
 readme = "README.md"
 authors = [{name = "Subhadip Mitra", email = "contact@subhadipmitra.com"}]
