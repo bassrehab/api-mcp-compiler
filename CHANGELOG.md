@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.1.0
+
+First published release, on PyPI as `api-mcp-compiler`.
 
 ### Research validity
 

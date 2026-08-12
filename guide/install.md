@@ -1,5 +1,13 @@
 # Install
 
+```bash
+pip install api-mcp-compiler
+```
+
+That is enough to run the compiler and every command in the
+[quickstart](quickstart.md). The contract schemas ship inside the package, so an installed
+copy validates its own artifacts with no checkout present.
+
 ## From source
 
 ```bash

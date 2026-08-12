@@ -5,6 +5,7 @@
 **Compile REST/OpenAPI and SOAP/WSDL services into agent-ready MCP tool surfaces**
 **that are semantically designed, policy-governed, and evaluation-backed.**
 
+[![PyPI](https://img.shields.io/pypi/v/api-mcp-compiler.svg)](https://pypi.org/project/api-mcp-compiler/)
 [![CI](https://github.com/bassrehab/api-mcp-compiler/actions/workflows/ci.yml/badge.svg)](https://github.com/bassrehab/api-mcp-compiler/actions/workflows/ci.yml)
 [![Licence](https://img.shields.io/badge/licence-Apache--2.0-blue.svg)](https://github.com/bassrehab/api-mcp-compiler/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/downloads/)
@@ -88,7 +89,13 @@ untested. The rule that proposes composites fires nowhere on the first benchmark
 designing a better one after reading that benchmark's solution paths would fit the treatment
 to the test set. It needs a benchmark whose tasks have not been read here.
 
-## Install and verify
+## Install
+
+```bash
+pip install api-mcp-compiler
+```
+
+## Install from source, and verify
 
 ```bash
 python -m venv .venv
