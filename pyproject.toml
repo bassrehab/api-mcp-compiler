@@ -23,12 +23,21 @@ requires-python = ">=3.11"
 dependencies = ["pydantic>=2.7", "typer>=0.12", "PyYAML>=6.0", "lxml>=5.2", "jsonschema>=4.22"]
 
 [project.optional-dependencies]
+# The model-backed evaluation driver imports the Anthropic SDK, and nothing else does. It is
+# an extra so that installing the compiler does not drag in a client for a service the
+# compiler never calls.
+eval = ["anthropic>=0.40"]
+
 # Decision: the lint and type checkers are pinned to exact versions. An
 # unpinned `ruff>=0.5` silently changes which rules run when a new release lands, so the
 # verification gate would mean something different on every machine. Upgrades are a
 # deliberate, reviewed change.
 dev = [
   "pytest>=8",
+  # Included in `dev` as well as its own extra, deliberately. Without it mypy cannot resolve
+  # the driver's import and skips checking that module, so the gate would mean one thing on a
+  # machine that happens to have the SDK and another on a machine that does not.
+  "anthropic>=0.40",
   # Required by `scripts/check_packaging.py`, which builds the distribution without
   # isolation so the gate needs no network. A 3.12 virtual environment has neither.
   "setuptools>=68",

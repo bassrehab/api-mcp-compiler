@@ -34,6 +34,18 @@ Lint and type-checker versions are pinned exactly. An unpinned `ruff>=0.5` silen
 which rules run when a new release lands, which would make the gate mean something different
 on every machine.
 
+## Running a model-backed evaluation
+
+The evaluation driver that puts a real model in front of a surface needs the Anthropic SDK,
+which nothing else in the compiler uses:
+
+```bash
+.venv/bin/python -m pip install '.[eval]'
+```
+
+It reads `ANTHROPIC_API_KEY` from the environment and refuses to start without it. The `dev`
+extra already includes it, so a checkout that passes the gate can run a comparison.
+
 ## Generated servers
 
 A server this compiler emits imports the MCP Python SDK and an HTTP client, which are
