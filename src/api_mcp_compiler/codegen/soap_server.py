@@ -23,6 +23,7 @@ from api_mcp_compiler.models import (
     OperationIR,
     ParameterLocation,
     PolicyManifest,
+    RetryPolicy,
     RiskClass,
     ToolDescriptor,
     ToolSurface,
@@ -65,6 +66,7 @@ def _tool_function(ir: ApiSemanticIR, tool: ToolDescriptor, manifest: PolicyMani
         raise SoapEmissionError(f"{tool.name!r} carries no SOAP binding record")
     policy = manifest.policy_for(tool.tool_id) if manifest else None
     confirm = policy is not None and policy.confirmation is not None
+    retry = policy.retry.value if policy else RetryPolicy.NEVER.value
     confirmation_ttl = (
         policy.confirmation.token_ttl_seconds
         if policy is not None and policy.confirmation is not None
@@ -96,6 +98,7 @@ async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
         schema=_SCHEMAS[{tool.name!r}],
         requires_confirmation={confirm!r},
         confirmation_ttl_seconds={confirmation_ttl!r},
+        retry={retry!r},
         destructive={(tool.risk is RiskClass.DESTRUCTIVE)!r},
         max_output_bytes={(policy.output.max_bytes if policy else None)!r},
         redact_fields={sorted(policy.output.redact_fields) if policy else []!r},
@@ -117,6 +120,7 @@ produces a request the service rejects while looking like it worked.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import time
@@ -151,6 +155,51 @@ def _digest(tool_name: str, arguments: dict[str, Any]) -> str:
 
     payload = json.dumps([tool_name, arguments], sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+#: Attempts in total, not retries in addition.
+_MAX_ATTEMPTS = 3
+
+#: Transport-level codes worth sending again. A SOAP fault arrives as 500 and is an answer,
+#: not a failure to answer, so 500 is never retried here.
+_RETRYABLE_STATUS = frozenset({{429, 502, 503, 504}})
+
+
+def _backoff(attempt: int, response: Any) -> float:
+    """How long to wait, preferring what the service asked for over what we guessed."""
+    if response is not None:
+        requested = getattr(response, "headers", {{}}) or {{}}
+        raw = requested.get("Retry-After") or requested.get("retry-after")
+        if raw:
+            try:
+                return max(0.0, float(raw))
+            except (TypeError, ValueError):
+                pass
+    return float(2**attempt) / 2
+
+
+async def _post(client: Any, envelope: str, headers: dict[str, str], query: Any, retry: str) -> Any:
+    """Post the envelope, repeating it only as far as the derived policy allows.
+
+    No idempotency key is sent. WSDL declares nothing equivalent, so a key here would be a
+    header invented by this compiler that no service was built to honour, and a retry of a
+    non-idempotent SOAP operation is exactly what `never` is for.
+    """
+    for attempt in range(1 if retry == "never" else _MAX_ATTEMPTS):
+        try:
+            response = await client.post(
+                ENDPOINT, content=envelope.encode("utf-8"), headers=headers, params=query or None
+            )
+        except Exception:  # nothing was answered, so nothing was performed twice
+            if attempt + 1 >= (1 if retry == "never" else _MAX_ATTEMPTS):
+                raise
+            await asyncio.sleep(_backoff(attempt, None))
+            continue
+        if response.status_code in _RETRYABLE_STATUS and attempt + 1 < _MAX_ATTEMPTS:
+            await asyncio.sleep(_backoff(attempt, response))
+            continue
+        return response
+    raise RuntimeError("no attempt was made")
 
 
 def _credentials(tool_name: str) -> tuple[dict[str, str], dict[str, str]]:
@@ -252,6 +301,7 @@ async def _invoke(
     schema: dict[str, Any],
     requires_confirmation: bool,
     confirmation_ttl_seconds: int,
+    retry: str,
     destructive: bool,
     max_output_bytes: int | None,
     redact_fields: list[str],
@@ -330,12 +380,7 @@ async def _invoke(
     headers.update(authorization)
 
     async with httpx.AsyncClient(timeout=30) as client:
-        response = await client.post(
-            ENDPOINT,
-            content=envelope.encode("utf-8"),
-            headers=headers,
-            params=query or None,
-        )
+        response = await _post(client, envelope, headers, query, retry)
 
     try:
         root = ElementTree.fromstring(response.text)

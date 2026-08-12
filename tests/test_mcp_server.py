@@ -94,11 +94,16 @@ def test_no_credential_is_written_into_the_generated_file() -> None:
 
 
 def test_arguments_are_validated_before_the_call_is_made() -> None:
-    """A surface that validates after calling has already had the effect it was checking."""
+    """A surface that validates after calling has already had the effect it was checking.
+
+    Asserted on the ordering inside `_invoke`, which is where the decision lives. The request
+    itself is made from a helper defined further up the file, so comparing raw positions
+    would compare the wrong two things. `test_generated_retry.py` checks the same property
+    by running the module and finding no request was made at all.
+    """
     _, _, emitted = _emit()
-    validate_at = emitted.source.index("iter_errors(arguments)")
-    call_at = emitted.source.index("await client.request(")
-    assert validate_at < call_at
+    body = emitted.source[emitted.source.index("async def _invoke("):]
+    assert body.index("iter_errors(arguments)") < body.index("await _send(")
 
 
 def test_a_surface_with_nothing_executable_refuses_to_emit() -> None:

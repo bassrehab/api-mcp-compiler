@@ -1,5 +1,35 @@
 # Changelog
 
+## Unreleased
+
+### Safety
+
+- **The derived retry policy is now acted on.** The manifest computed `retry` and
+  `idempotency_key_required` per tool and the generated server read neither, so `never`
+  retried nothing only because nothing retried at all. That is the third value in a row that
+  was derived, written into the artifact and acted on by nobody, after the confirmation time
+  to live and the credential placement.
+- A `safe` policy retries 429 and the gateway codes, and transport failures where nothing was
+  answered. **500 is deliberately not retried**: it may mean the effect happened and the
+  answer was lost, which is precisely what the policy exists to prevent. Client errors are
+  never retried.
+- A tool whose policy requires an idempotency key generates one per invocation and holds it
+  across that invocation's retries. A fresh key per attempt would make every retry a new
+  operation; a key derived from the arguments would make two deliberate identical calls
+  collide.
+- `Retry-After` is honoured over the backoff curve, because a service that names its window
+  knows better than any curve here. Attempts are bounded at three, so a wedged upstream is
+  reported rather than hammered.
+- The SOAP path retries on the same transport codes and sends no idempotency key, because
+  WSDL declares nothing equivalent and a header invented here would be honoured by nobody.
+
+### Documentation
+
+- The README and the guide now lead with what is demonstrated, and state what is not
+  immediately after. Nothing about the four inconclusive comparisons was removed or softened;
+  it was placed after the reader knows what the software does, because a null result about
+  one component was reading as a verdict on all of it.
+
 ## 0.2.0
 
 Released 2026-08-13. Two correctness fixes for generated servers, both of which affect
@@ -516,6 +546,36 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Pinned ruff and mypy to exact versions and declared an explicit lint rule selection, so
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
+
+## Unreleased
+
+### Safety
+
+- **The derived retry policy is now acted on.** The manifest computed `retry` and
+  `idempotency_key_required` per tool and the generated server read neither, so `never`
+  retried nothing only because nothing retried at all. That is the third value in a row that
+  was derived, written into the artifact and acted on by nobody, after the confirmation time
+  to live and the credential placement.
+- A `safe` policy retries 429 and the gateway codes, and transport failures where nothing was
+  answered. **500 is deliberately not retried**: it may mean the effect happened and the
+  answer was lost, which is precisely what the policy exists to prevent. Client errors are
+  never retried.
+- A tool whose policy requires an idempotency key generates one per invocation and holds it
+  across that invocation's retries. A fresh key per attempt would make every retry a new
+  operation; a key derived from the arguments would make two deliberate identical calls
+  collide.
+- `Retry-After` is honoured over the backoff curve, because a service that names its window
+  knows better than any curve here. Attempts are bounded at three, so a wedged upstream is
+  reported rather than hammered.
+- The SOAP path retries on the same transport codes and sends no idempotency key, because
+  WSDL declares nothing equivalent and a header invented here would be honoured by nobody.
+
+### Documentation
+
+- The README and the guide now lead with what is demonstrated, and state what is not
+  immediately after. Nothing about the four inconclusive comparisons was removed or softened;
+  it was placed after the reader knows what the software does, because a null result about
+  one component was reading as a verdict on all of it.
 
 ## 0.2.0
 

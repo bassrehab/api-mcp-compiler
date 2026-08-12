@@ -41,16 +41,23 @@ of the specification it came from.
   does the same walk with every intermediate value printed, and its outputs are re-executed by
   the verification gate so they cannot go stale.
 
-## What this project claims, and what it does not
+## What is demonstrated
 
-It claims that a tool surface should be designed rather than transliterated, that judgement
-should be proposed rather than applied, and that a write or destructive tool should not exist
-in executable form until a human has approved it.
+The conversion and the governance. OpenAPI 3.x, Swagger 2.0 and WSDL 1.1 all compile to a
+governed surface, exercised against specifications this project did not write: 40 Spotify
+operations, the 20-operation Swagger 2 Petstore, 40 WSDL documents from a public collection,
+and two live SOAP services that answered real calls from a generated server.
 
-It does **not** claim that a semantically planned surface measurably beats one tool per
-operation. That question has been [pre-registered and measured four times](evaluation.md), and
-every result was inconclusive. The claim remains argued, not demonstrated, and this
-documentation says so wherever it comes up.
+Judgement is proposed rather than applied, a write or destructive tool is not emitted in
+executable form until a human approves it by class, and what cannot be demonstrated is
+recorded as unresolved instead of assumed.
+
+## What is not demonstrated
+
+That a semantically planned surface measurably beats one tool per operation. That question has
+been [pre-registered and measured four times](evaluation.md), and every result was
+inconclusive. The claim remains argued, not demonstrated, and this documentation says so
+wherever it comes up.
 
 ## Design properties in one page
 

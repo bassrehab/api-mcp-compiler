@@ -33,6 +33,7 @@ from api_mcp_compiler.models import (
     EmissionStatus,
     ParameterLocation,
     PolicyManifest,
+    RetryPolicy,
     RiskClass,
     ToolDescriptor,
     ToolSurface,
@@ -108,6 +109,10 @@ def _tool_function(
     }
     policy = manifest.policy_for(tool.tool_id) if manifest else None
     confirm = policy is not None and policy.confirmation is not None
+    # Derived governance the server has to act on, not merely carry: a retry policy nothing
+    # reads is the same defect as a confirmation nobody expires.
+    retry = policy.retry.value if policy else RetryPolicy.NEVER.value
+    needs_key = policy.idempotency_key_required if policy else False
     confirmation_ttl = (
         policy.confirmation.token_ttl_seconds
         if policy is not None and policy.confirmation is not None
@@ -130,6 +135,8 @@ async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
         bindings={_binding_map(tool)!r},
         requires_confirmation={confirm!r},
         confirmation_ttl_seconds={confirmation_ttl!r},
+        retry={retry!r},
+        idempotency_key_required={needs_key!r},
         destructive={destructive!r},
         max_output_bytes={max_bytes!r},
         redact_fields={redact!r},
@@ -152,9 +159,11 @@ registered them would undo the decision at the last step.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import time
+import uuid
 from typing import Any
 
 import httpx
@@ -183,6 +192,73 @@ def _digest(tool_name: str, arguments: dict[str, Any]) -> str:
 
     payload = json.dumps([tool_name, arguments], sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+#: Attempts in total, not retries in addition. Three is a compromise: enough to ride out a
+#: single restart or rate-limit window, few enough that a wedged upstream is reported rather
+#: than hammered.
+_MAX_ATTEMPTS = 3
+
+#: Status codes worth sending again. Deliberately excludes 500: a server error may mean the
+#: effect happened and the response was lost, and repeating that is exactly what the retry
+#: policy exists to prevent. 429 and the gateway codes are unambiguous about not having acted.
+_RETRYABLE_STATUS = frozenset({{429, 502, 503, 504}})
+
+
+def _backoff(attempt: int, response: Any) -> float:
+    """How long to wait, preferring what the service asked for over what we guessed."""
+    if response is not None:
+        requested = getattr(response, "headers", {{}}) or {{}}
+        raw = requested.get("Retry-After") or requested.get("retry-after")
+        if raw:
+            try:
+                return max(0.0, float(raw))
+            except (TypeError, ValueError):
+                pass
+    return float(2**attempt) / 2
+
+
+async def _send(
+    client: Any,
+    method: str,
+    path: str,
+    *,
+    params: Any,
+    headers: dict[str, str],
+    json_body: Any,
+    retry: str,
+    idempotency_key: str | None,
+) -> Any:
+    """Make one request, repeating it only as far as the derived policy allows.
+
+    `never` means one attempt. It is the policy for an operation whose idempotency could not
+    be determined, where a repeat could duplicate an effect nobody asked for twice.
+
+    An idempotency key is generated per invocation and held across that invocation's retries,
+    which is the whole point: a fresh key per attempt would make every retry a new operation,
+    and a key derived from the arguments would make two deliberate identical calls collide.
+    """
+    attempts = 1 if retry == "never" else _MAX_ATTEMPTS
+    for attempt in range(attempts):
+        sending = dict(headers)
+        if idempotency_key is not None:
+            sending["Idempotency-Key"] = idempotency_key
+        last_error: Exception | None = None
+        try:
+            response = await client.request(
+                method, path, params=params, headers=sending or None, json=json_body
+            )
+        except Exception as error:  # transport failure: nothing was answered, so it is safe
+            last_error = error
+            if attempt + 1 >= attempts:
+                raise
+            await asyncio.sleep(_backoff(attempt, None))
+            continue
+        if response.status_code in _RETRYABLE_STATUS and attempt + 1 < attempts:
+            await asyncio.sleep(_backoff(attempt, response))
+            continue
+        return response
+    raise last_error if last_error is not None else RuntimeError("no attempt was made")
 
 
 def _credentials(tool_name: str) -> tuple[dict[str, str], dict[str, str]]:
@@ -263,6 +339,8 @@ async def _invoke(
     bindings: dict[str, tuple[str, str, str | None]],
     requires_confirmation: bool,
     confirmation_ttl_seconds: int,
+    retry: str,
+    idempotency_key_required: bool,
     destructive: bool,
     max_output_bytes: int | None,
     redact_fields: list[str],
@@ -316,6 +394,7 @@ async def _invoke(
     carried = dict(arguments)
     responses: list[Any] = []
     status_code = 0
+    idempotency_key = str(uuid.uuid4()) if idempotency_key_required else None
 
     async with httpx.AsyncClient(base_url=BASE_URL, timeout=30) as client:
         for position, (method, route, operation_id) in enumerate(steps):
@@ -352,8 +431,15 @@ async def _invoke(
             headers.update(authorization)
             query.update(authorized_query)
 
-            response = await client.request(
-                method, path, params=query or None, headers=headers or None, json=body
+            response = await _send(
+                client,
+                method,
+                path,
+                params=query or None,
+                headers=headers,
+                json_body=body,
+                retry=retry,
+                idempotency_key=idempotency_key,
             )
             status_code = response.status_code
             try:

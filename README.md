@@ -43,8 +43,9 @@ specification -> ingestion -> API Semantic IR -> planner -> tool plan
 
 ## Contents
 
-- [Status](#status)
-- [Install and verify](#install-and-verify)
+- [What it does](#what-it-does)
+- [What is not demonstrated](#what-is-not-demonstrated)
+- [Install](#install)
 - [Try it](#try-it)
 - [How it works](#how-it-works)
 - [Design properties](#design-properties)
@@ -54,22 +55,32 @@ specification -> ingestion -> API Semantic IR -> planner -> tool plan
 - [Author](#author)
 - [Licence](#licence)
 
-## Status
+## What it does
 
-Working software, and recorded comparisons that did not find a difference.
+Ingests **OpenAPI 3.x, Swagger 2.0 and WSDL 1.1**, normalizes them into one provider-independent
+intermediate representation, plans a tool surface, derives a policy manifest, and emits a
+runnable MCP server for the approved part: over HTTP for OpenAPI, over SOAP envelopes for WSDL.
+The compiler itself binds to no MCP SDK, never calls a model, and never reaches the network.
 
-The compiler ingests OpenAPI 3.x, Swagger 2.0 and WSDL 1.1, produces an intermediate
-representation, plans a tool surface, derives a policy manifest, and generates a
-transport-independent surface that runs against a deterministic mock. An evaluation harness
-scores a surface against a task corpus using deterministic oracles over real service state,
-driven either by a replay of a recorded solution or by a model that sees only the goal and the
-tools. It emits a runnable MCP server for the approved part of a surface, over HTTP for
-OpenAPI and over SOAP envelopes for WSDL, while the compiler itself binds to no MCP SDK, never
-calls a model, and never reaches the network.
+This has been exercised on specifications and services written by other people, which is where
+the interesting defects live:
 
-The central question, whether a semantically planned surface beats one-tool-per-operation on
-task success, unsafe-action rate and cost, **has been measured four times and is still
-unanswered**.
+| Exercised against | Result |
+|---|---|
+| Spotify Web API, 40 operations (RestBench) | Parsed with no blocking ambiguities; least-privilege scopes derived from a real OAuth2 surface |
+| Swagger 2.0 Petstore, 20 operations | Parsed, 13 tools executable, runnable server emitted |
+| 40 WSDL documents (SAWSDL collection) | Parsed, with what cannot be translated recorded rather than approximated |
+| Two live public SOAP services | Real calls made and answered through generated servers |
+
+The governance is the part worth having. Every field carries provenance, judgement is proposed
+rather than applied, write and destructive tools are not emitted in executable form until a
+human approves them by class, and what the compiler cannot demonstrate it records as
+unresolved instead of assuming.
+
+## What is not demonstrated
+
+The design thesis, that a semantically planned surface beats one tool per operation on task
+success, unsafe-action rate and cost, **has been measured four times and is still unanswered**.
 
 Every comparison was pre-registered: the hypothesis, corpus, arms, model, success definition
 and significance threshold were fixed in a digested document before the run, and each run
@@ -77,17 +88,18 @@ records that digest. All returned inconclusive, and the nominal direction revers
 them. Nothing here should be read as evidence that the semantic surface performs better. It is
 an argued position that has so far survived no test capable of confirming it.
 
-What the runs did establish is mostly about the instrument. Several defects were found only by
-pointing the system at a specification and a task set written by other people: a parser that
-marked every optional argument required, generated schemas no client would load, a store in
-which a read mutated state and a bulk delete removed everything, and oracles that scored the
-route an annotator took rather than the outcome a goal asked for. Each is fixed, and the rules
-that would have prevented the last class now fail the build.
+The most distinctive claim, that operations should be composed into workflow tools, is
+untested rather than unsupported. The rule that proposes composites fires nowhere on the first
+benchmark API, and designing a better one after reading that benchmark's solution paths would
+fit the treatment to the test set. It needs a benchmark whose tasks have not been read here.
 
-The most distinctive claim, that operations should be composed into workflow tools, remains
-untested. The rule that proposes composites fires nowhere on the first benchmark API, and
-designing a better one after reading that benchmark's solution paths would fit the treatment
-to the test set. It needs a benchmark whose tasks have not been read here.
+What the runs did establish is mostly about the instrument, and it was worth the tokens.
+Several defects were found only by pointing the system at a specification and a task set
+written by other people: a parser that marked every optional argument required, generated
+schemas no client would load, a store in which a read mutated state and a bulk delete removed
+everything, and oracles that scored the route an annotator took rather than the outcome a goal
+asked for. Each is fixed, and the rules that would have prevented the last class now fail the
+build.
 
 ## Install
 
