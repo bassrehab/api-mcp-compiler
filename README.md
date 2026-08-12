@@ -6,16 +6,16 @@
 **that are semantically designed, policy-governed, and evaluation-backed.**
 
 [![CI](https://github.com/bassrehab/api-mcp-compiler/actions/workflows/ci.yml/badge.svg)](https://github.com/bassrehab/api-mcp-compiler/actions/workflows/ci.yml)
-[![Licence](https://img.shields.io/badge/licence-Apache--2.0-blue.svg)](LICENSE)
+[![Licence](https://img.shields.io/badge/licence-Apache--2.0-blue.svg)](https://github.com/bassrehab/api-mcp-compiler/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/downloads/)
 [![Typed](https://img.shields.io/badge/mypy-strict-blue.svg)](https://mypy.readthedocs.io/en/stable/)
-[![Contracts](https://img.shields.io/badge/contracts-JSON%20Schema%202020--12-blue.svg)](src/api_mcp_compiler/schemas)
-[![Results](https://img.shields.io/badge/results-pre--registered-8A2BE2.svg)](preregistrations/)
+[![Contracts](https://img.shields.io/badge/contracts-JSON%20Schema%202020--12-blue.svg)](https://github.com/bassrehab/api-mcp-compiler/blob/main/src/api_mcp_compiler/schemas)
+[![Results](https://img.shields.io/badge/results-pre--registered-8A2BE2.svg)](https://github.com/bassrehab/api-mcp-compiler/tree/main/preregistrations)
 
 [Documentation](https://api-mcp.subhadipmitra.com/) &middot;
-[Notebook walkthrough](notebooks/from_specification_to_server.ipynb) &middot;
-[Pre-registrations](preregistrations/) &middot;
-[Changelog](CHANGELOG.md)
+[Notebook walkthrough](https://github.com/bassrehab/api-mcp-compiler/blob/main/notebooks/from_specification_to_server.ipynb) &middot;
+[Pre-registrations](https://github.com/bassrehab/api-mcp-compiler/tree/main/preregistrations) &middot;
+[Changelog](https://github.com/bassrehab/api-mcp-compiler/blob/main/CHANGELOG.md)
 
 </div>
 
@@ -144,7 +144,7 @@ type-checker versions are pinned exactly, so the gate means the same thing on ev
 To read the same walk with every intermediate value printed, the provenance on a field, the
 rationale behind a rename, the scope chosen over the union of its alternatives, the gate
 holding a destructive tool and the review decision that releases it, open
-[`notebooks/from_specification_to_server.ipynb`](notebooks/from_specification_to_server.ipynb).
+[`notebooks/from_specification_to_server.ipynb`](https://github.com/bassrehab/api-mcp-compiler/blob/main/notebooks/from_specification_to_server.ipynb).
 Its stored outputs are re-executed and compared by the verification gate, so they cannot drift
 from the code that produced them.
 
@@ -227,7 +227,7 @@ committed. Regenerate them deliberately and review the diff:
 
 The full guide lives at **[api-mcp.subhadipmitra.com](https://api-mcp.subhadipmitra.com/)**:
 concepts, a command reference, the contract schemas, the SOAP path, and how evaluation and
-pre-registration work. Its source is in [`guide/`](guide/).
+pre-registration work. Its source is in [`guide/`](https://github.com/bassrehab/api-mcp-compiler/tree/main/guide).
 
 ## Scope
 
@@ -239,12 +239,12 @@ proprietary schemas belong in this repository.
 **Subhadip Mitra**
 [subhadipmitra.com](https://subhadipmitra.com) &middot; contact@subhadipmitra.com
 
-If you use this in academic work, please cite it. [`CITATION.cff`](CITATION.cff) has the
+If you use this in academic work, please cite it. [`CITATION.cff`](https://github.com/bassrehab/api-mcp-compiler/blob/main/CITATION.cff) has the
 metadata, and GitHub renders it as a citation block on the repository page.
 
 ## Licence
 
-Apache-2.0. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
+Apache-2.0. See [`LICENSE`](https://github.com/bassrehab/api-mcp-compiler/blob/main/LICENSE) and [`NOTICE`](https://github.com/bassrehab/api-mcp-compiler/blob/main/NOTICE).
 
 Apache rather than a copyleft licence, deliberately. The interesting part of this project is
 what it decides a good tool surface looks like and what it refuses to emit; restricting who
