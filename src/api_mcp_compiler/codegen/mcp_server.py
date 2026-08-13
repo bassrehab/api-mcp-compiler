@@ -91,6 +91,31 @@ def _method_and_route(ir: ApiSemanticIR, operation_id: str) -> tuple[str, str]:
     return operation.source_pointer.rsplit("/", 1)[-1].upper(), operation.route
 
 
+def _budgets(
+    tools: list[ToolDescriptor], manifest: PolicyManifest | None
+) -> dict[str, dict[str, int]]:
+    """The call budget each tool was given, so the server can hold it to it."""
+    if manifest is None:
+        return {}
+    budgets: dict[str, dict[str, int]] = {}
+    for tool in tools:
+        policy = manifest.policy_for(tool.tool_id)
+        if policy is None:
+            continue
+        # A limit the policy leaves unset is omitted rather than written as zero. Zero is a
+        # budget of none, and a server that refused every call would be enforcing a number
+        # nobody chose.
+        declared = {
+            "calls_per_minute": policy.rate.calls_per_minute,
+            "max_concurrent": policy.rate.max_concurrent,
+            "daily_call_budget": policy.rate.daily_call_budget,
+        }
+        budgets[tool.name] = {
+            name: value for name, value in declared.items() if value is not None
+        }
+    return budgets
+
+
 def _path_parameters(tool: ToolDescriptor) -> list[str]:
     """The arguments a resource's address carries, named as the template names them.
 
@@ -244,6 +269,92 @@ _MAX_ATTEMPTS = 3
 #: effect happened and the response was lost, and repeating that is exactly what the retry
 #: policy exists to prevent. 429 and the gateway codes are unambiguous about not having acted.
 _RETRYABLE_STATUS = frozenset({{429, 502, 503, 504}})
+
+
+#: Calls per minute, concurrent calls and calls per day, per tool, as policy derived them.
+_BUDGETS: dict[str, dict[str, int]] = json.loads({budgets!r})
+
+#: When each recent call happened, when the current day's window opened and how many it has
+#: spent, and how many calls are in flight. In this process only: a deployment that runs
+#: several workers needs a shared counter, and this one cannot pretend to be that.
+_RECENT: dict[str, list[float]] = {{}}
+_DAILY: dict[str, tuple[float, int]] = {{}}
+_ACTIVE: dict[str, int] = {{}}
+
+_MINUTE = 60.0
+_DAY = 86_400.0
+
+
+def _reserve(tool_name: str) -> dict[str, Any] | None:
+    """Take one call out of the tool's budget, or explain why it cannot be taken.
+
+    Refusing rather than queueing is deliberate. A queued call looks to an agent like a slow
+    service, and it will wait, retry, or give up on a goal it could have achieved. A refusal
+    that names the limit and when it lifts is something an agent can reason about.
+
+    A call that never reaches the service does not spend budget, so this runs after argument
+    validation and after the confirmation gate rather than before them.
+    """
+    budget = _BUDGETS.get(tool_name)
+    if budget is None:
+        return None
+    now = time.monotonic()
+
+    recent = [stamp for stamp in _RECENT.get(tool_name, []) if now - stamp < _MINUTE]
+    per_minute = budget.get("calls_per_minute", 0)
+    if per_minute and len(recent) >= per_minute:
+        return {{
+            "error": "rate_limited",
+            "limit": "calls_per_minute",
+            "allowed": per_minute,
+            "retry_after_seconds": round(_MINUTE - (now - recent[0]), 3),
+            "detail": (
+                f"{{tool_name}} is limited to {{per_minute}} calls per minute by its derived "
+                "policy, and that many have been made in the last minute."
+            ),
+        }}
+
+    opened, spent = _DAILY.get(tool_name, (now, 0))
+    if now - opened >= _DAY:
+        opened, spent = now, 0
+    daily = budget.get("daily_call_budget", 0)
+    if daily and spent >= daily:
+        return {{
+            "error": "rate_limited",
+            "limit": "daily_call_budget",
+            "allowed": daily,
+            "retry_after_seconds": round(_DAY - (now - opened), 3),
+            "detail": (
+                f"{{tool_name}} is limited to {{daily}} calls per day by its derived policy, "
+                "and the budget for this window is spent."
+            ),
+        }}
+
+    concurrent = budget.get("max_concurrent", 0)
+    active = _ACTIVE.get(tool_name, 0)
+    if concurrent and active >= concurrent:
+        return {{
+            "error": "rate_limited",
+            "limit": "max_concurrent",
+            "allowed": concurrent,
+            "retry_after_seconds": None,
+            "detail": (
+                f"{{tool_name}} allows {{concurrent}} concurrent call(s) by its derived "
+                f"policy, and {{active}} are in flight."
+            ),
+        }}
+
+    recent.append(now)
+    _RECENT[tool_name] = recent
+    _DAILY[tool_name] = (opened, spent + 1)
+    _ACTIVE[tool_name] = active + 1
+    return None
+
+
+def _release(tool_name: str) -> None:
+    """Give back the concurrency slot. The minute and day counts are spent, not borrowed."""
+    if tool_name in _ACTIVE:
+        _ACTIVE[tool_name] = max(0, _ACTIVE[tool_name] - 1)
 
 
 def _backoff(attempt: int, response: Any) -> float:
@@ -432,84 +543,91 @@ async def _invoke(
                 ),
             }}
 
+    refusal = _reserve(tool_name)
+    if refusal is not None:
+        return refusal
+
     carried = dict(arguments)
     responses: list[Any] = []
     status_code = 0
     idempotency_key = str(uuid.uuid4()) if idempotency_key_required else None
 
-    async with httpx.AsyncClient(base_url=BASE_URL, timeout=30) as client:
-        for position, (method, route, operation_id) in enumerate(steps):
-            for argument, (step_index, from_step, field) in threading.items():
-                if step_index != position:
-                    continue
-                source = responses[from_step] if from_step < len(responses) else None
-                value = _threaded(source, field)
-                if value is None:
+    try:
+        async with httpx.AsyncClient(base_url=BASE_URL, timeout=30) as client:
+            for position, (method, route, operation_id) in enumerate(steps):
+                for argument, (step_index, from_step, field) in threading.items():
+                    if step_index != position:
+                        continue
+                    source = responses[from_step] if from_step < len(responses) else None
+                    value = _threaded(source, field)
+                    if value is None:
+                        return {{
+                            "error": "composite_step_unresolved",
+                            "detail": (
+                                f"step {{position}} needs {{argument!r}}, and step {{from_step}} "
+                                f"returned no {{field!r}} to take it from"
+                            ),
+                        }}
+                    carried[argument] = value
+
+                path, query, headers, body = route, {{}}, {{}}, None
+                for argument, value in carried.items():
+                    location, wire_name, owner = bindings.get(argument, ("query", argument, None))
+                    if owner not in (None, operation_id):
+                        continue
+                    if location == "path":
+                        path = path.replace("{{" + wire_name + "}}", str(value))
+                    elif location == "query":
+                        query[wire_name] = value
+                    elif location == "header":
+                        headers[wire_name] = str(value)
+                    else:
+                        body = value
+
+                authorization, authorized_query = _credentials(tool_name)
+                headers.update(authorization)
+                query.update(authorized_query)
+
+                response = await _send(
+                    client,
+                    method,
+                    path,
+                    params=query or None,
+                    headers=headers,
+                    json_body=body,
+                    retry=retry,
+                    idempotency_key=idempotency_key,
+                )
+                status_code = response.status_code
+                try:
+                    parsed = response.json()
+                except ValueError:
+                    parsed = {{"text": response.text}}
+                responses.append(parsed)
+                if response.status_code >= 400:
+                    # A composite stops at its first failure. Continuing would perform later steps
+                    # against a resource the earlier one did not create.
                     return {{
-                        "error": "composite_step_unresolved",
-                        "detail": (
-                            f"step {{position}} needs {{argument!r}}, and step {{from_step}} "
-                            f"returned no {{field!r}} to take it from"
-                        ),
+                        "error": "composite_step_failed",
+                        "step": position,
+                        "status_code": response.status_code,
+                        "body": _redact(parsed, redact_fields),
                     }}
-                carried[argument] = value
 
-            path, query, headers, body = route, {{}}, {{}}, None
-            for argument, value in carried.items():
-                location, wire_name, owner = bindings.get(argument, ("query", argument, None))
-                if owner not in (None, operation_id):
-                    continue
-                if location == "path":
-                    path = path.replace("{{" + wire_name + "}}", str(value))
-                elif location == "query":
-                    query[wire_name] = value
-                elif location == "header":
-                    headers[wire_name] = str(value)
-                else:
-                    body = value
-
-            authorization, authorized_query = _credentials(tool_name)
-            headers.update(authorization)
-            query.update(authorized_query)
-
-            response = await _send(
-                client,
-                method,
-                path,
-                params=query or None,
-                headers=headers,
-                json_body=body,
-                retry=retry,
-                idempotency_key=idempotency_key,
-            )
-            status_code = response.status_code
-            try:
-                parsed = response.json()
-            except ValueError:
-                parsed = {{"text": response.text}}
-            responses.append(parsed)
-            if response.status_code >= 400:
-                # A composite stops at its first failure. Continuing would perform later steps
-                # against a resource the earlier one did not create.
-                return {{
-                    "error": "composite_step_failed",
-                    "step": position,
-                    "status_code": response.status_code,
-                    "body": _redact(parsed, redact_fields),
-                }}
-
-    payload = _redact(responses[-1] if responses else None, redact_fields)
-    encoded = json.dumps(payload)
-    if max_output_bytes is not None and len(encoded.encode("utf-8")) > max_output_bytes:
-        return {{
-            "status": "truncated",
-            "detail": (
-                f"The response exceeded the {{max_output_bytes}} byte ceiling this tool's "
-                "policy sets, so it was withheld rather than flooding the context."
-            ),
-            "status_code": status_code,
-        }}
-    return {{"status_code": status_code, "body": payload}}
+        payload = _redact(responses[-1] if responses else None, redact_fields)
+        encoded = json.dumps(payload)
+        if max_output_bytes is not None and len(encoded.encode("utf-8")) > max_output_bytes:
+            return {{
+                "status": "truncated",
+                "detail": (
+                    f"The response exceeded the {{max_output_bytes}} byte ceiling this tool's "
+                    "policy sets, so it was withheld rather than flooding the context."
+                ),
+                "status_code": status_code,
+            }}
+        return {{"status_code": status_code, "body": payload}}
+    finally:
+        _release(tool_name)
 '''
 
 
@@ -546,6 +664,7 @@ def emit_server(
         env_var=f"{slug}_BASE_URL",
         auth=json.dumps(placements(ir, slug)),
         tool_schemes=json.dumps(tool_schemes(registered, manifest)),
+        budgets=json.dumps(_budgets(registered, manifest)),
         schemas=json.dumps({item.name: item.input_schema for item in registered}),
         withheld=json.dumps(withheld),
     )

@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+### Safety
+
+- **Call budgets are enforced rather than declared.** Policy has always scaled calls per
+  minute, concurrency and a daily budget by risk, and the generated server counted nothing, so
+  a destructive tool with a budget of two calls a minute would make two hundred. Fourth in a
+  row of the same shape after the confirmation time to live, the credential placement and the
+  retry policy.
+- Over budget, a call is refused rather than queued, and the refusal names the limit, the
+  number allowed and when it lifts. A queued call looks to an agent like a slow service; a
+  refusal it can reason about is more useful than a wait it cannot see.
+- A call that never reaches the service spends nothing: validation and the confirmation gate
+  both run before the budget is taken. The concurrency slot is returned on every path out,
+  including a failed composite step and a truncated response.
+- The counting is per process, and the guide says so. A deployment running several workers
+  needs a shared counter, which a generated artifact cannot be.
+
 ### Evaluation
 
 - **Tool selection is measured.** A run records the operations the agent reached for and the
@@ -351,6 +367,22 @@ First published release, on PyPI as `api-mcp-compiler`.
   the generated file.
 - The generated module needs `mcp` and `httpx`. The compiler depends on neither.
 
+### Safety
+
+- **Call budgets are enforced rather than declared.** Policy has always scaled calls per
+  minute, concurrency and a daily budget by risk, and the generated server counted nothing, so
+  a destructive tool with a budget of two calls a minute would make two hundred. Fourth in a
+  row of the same shape after the confirmation time to live, the credential placement and the
+  retry policy.
+- Over budget, a call is refused rather than queued, and the refusal names the limit, the
+  number allowed and when it lifts. A queued call looks to an agent like a slow service; a
+  refusal it can reason about is more useful than a wait it cannot see.
+- A call that never reaches the service spends nothing: validation and the confirmation gate
+  both run before the budget is taken. The concurrency slot is returned on every path out,
+  including a failed composite step and a truncated response.
+- The counting is per process, and the guide says so. A deployment running several workers
+  needs a shared counter, which a generated artifact cannot be.
+
 ### Evaluation
 
 - A bulk delete naming identifiers now removes those and leaves the rest. It previously
@@ -397,6 +429,22 @@ First published release, on PyPI as `api-mcp-compiler`.
   `get_artist_s_albums`. Single-letter tokens are now dropped. Found only by running against
   a specification nobody here wrote.
 
+
+### Safety
+
+- **Call budgets are enforced rather than declared.** Policy has always scaled calls per
+  minute, concurrency and a daily budget by risk, and the generated server counted nothing, so
+  a destructive tool with a budget of two calls a minute would make two hundred. Fourth in a
+  row of the same shape after the confirmation time to live, the credential placement and the
+  retry policy.
+- Over budget, a call is refused rather than queued, and the refusal names the limit, the
+  number allowed and when it lifts. A queued call looks to an agent like a slow service; a
+  refusal it can reason about is more useful than a wait it cannot see.
+- A call that never reaches the service spends nothing: validation and the confirmation gate
+  both run before the budget is taken. The concurrency slot is returned on every path out,
+  including a failed composite step and a truncated response.
+- The counting is per process, and the guide says so. A deployment running several workers
+  needs a shared counter, which a generated artifact cannot be.
 
 ### Evaluation harness
 
@@ -583,6 +631,22 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - CLI: added `plan` and `validate` commands alongside `inspect`.
 
 ## Unreleased
+
+### Safety
+
+- **Call budgets are enforced rather than declared.** Policy has always scaled calls per
+  minute, concurrency and a daily budget by risk, and the generated server counted nothing, so
+  a destructive tool with a budget of two calls a minute would make two hundred. Fourth in a
+  row of the same shape after the confirmation time to live, the credential placement and the
+  retry policy.
+- Over budget, a call is refused rather than queued, and the refusal names the limit, the
+  number allowed and when it lifts. A queued call looks to an agent like a slow service; a
+  refusal it can reason about is more useful than a wait it cannot see.
+- A call that never reaches the service spends nothing: validation and the confirmation gate
+  both run before the budget is taken. The concurrency slot is returned on every path out,
+  including a failed composite step and a truncated response.
+- The counting is per process, and the guide says so. A deployment running several workers
+  needs a shared counter, which a generated artifact cannot be.
 
 ### Evaluation
 

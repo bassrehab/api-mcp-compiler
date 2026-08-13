@@ -17,6 +17,7 @@ import json
 from dataclasses import dataclass, field
 
 from api_mcp_compiler.codegen.credentials import placements, tool_schemes, variables
+from api_mcp_compiler.codegen.mcp_server import _budgets
 from api_mcp_compiler.models import (
     ApiSemanticIR,
     EmissionStatus,
@@ -163,6 +164,92 @@ _MAX_ATTEMPTS = 3
 #: Transport-level codes worth sending again. A SOAP fault arrives as 500 and is an answer,
 #: not a failure to answer, so 500 is never retried here.
 _RETRYABLE_STATUS = frozenset({{429, 502, 503, 504}})
+
+
+#: Calls per minute, concurrent calls and calls per day, per tool, as policy derived them.
+_BUDGETS: dict[str, dict[str, int]] = json.loads({budgets!r})
+
+#: When each recent call happened, when the current day's window opened and how many it has
+#: spent, and how many calls are in flight. In this process only: a deployment that runs
+#: several workers needs a shared counter, and this one cannot pretend to be that.
+_RECENT: dict[str, list[float]] = {{}}
+_DAILY: dict[str, tuple[float, int]] = {{}}
+_ACTIVE: dict[str, int] = {{}}
+
+_MINUTE = 60.0
+_DAY = 86_400.0
+
+
+def _reserve(tool_name: str) -> dict[str, Any] | None:
+    """Take one call out of the tool's budget, or explain why it cannot be taken.
+
+    Refusing rather than queueing is deliberate. A queued call looks to an agent like a slow
+    service, and it will wait, retry, or give up on a goal it could have achieved. A refusal
+    that names the limit and when it lifts is something an agent can reason about.
+
+    A call that never reaches the service does not spend budget, so this runs after argument
+    validation and after the confirmation gate rather than before them.
+    """
+    budget = _BUDGETS.get(tool_name)
+    if budget is None:
+        return None
+    now = time.monotonic()
+
+    recent = [stamp for stamp in _RECENT.get(tool_name, []) if now - stamp < _MINUTE]
+    per_minute = budget.get("calls_per_minute", 0)
+    if per_minute and len(recent) >= per_minute:
+        return {{
+            "error": "rate_limited",
+            "limit": "calls_per_minute",
+            "allowed": per_minute,
+            "retry_after_seconds": round(_MINUTE - (now - recent[0]), 3),
+            "detail": (
+                f"{{tool_name}} is limited to {{per_minute}} calls per minute by its derived "
+                "policy, and that many have been made in the last minute."
+            ),
+        }}
+
+    opened, spent = _DAILY.get(tool_name, (now, 0))
+    if now - opened >= _DAY:
+        opened, spent = now, 0
+    daily = budget.get("daily_call_budget", 0)
+    if daily and spent >= daily:
+        return {{
+            "error": "rate_limited",
+            "limit": "daily_call_budget",
+            "allowed": daily,
+            "retry_after_seconds": round(_DAY - (now - opened), 3),
+            "detail": (
+                f"{{tool_name}} is limited to {{daily}} calls per day by its derived policy, "
+                "and the budget for this window is spent."
+            ),
+        }}
+
+    concurrent = budget.get("max_concurrent", 0)
+    active = _ACTIVE.get(tool_name, 0)
+    if concurrent and active >= concurrent:
+        return {{
+            "error": "rate_limited",
+            "limit": "max_concurrent",
+            "allowed": concurrent,
+            "retry_after_seconds": None,
+            "detail": (
+                f"{{tool_name}} allows {{concurrent}} concurrent call(s) by its derived "
+                f"policy, and {{active}} are in flight."
+            ),
+        }}
+
+    recent.append(now)
+    _RECENT[tool_name] = recent
+    _DAILY[tool_name] = (opened, spent + 1)
+    _ACTIVE[tool_name] = active + 1
+    return None
+
+
+def _release(tool_name: str) -> None:
+    """Give back the concurrency slot. The minute and day counts are spent, not borrowed."""
+    if tool_name in _ACTIVE:
+        _ACTIVE[tool_name] = max(0, _ACTIVE[tool_name] - 1)
 
 
 def _backoff(attempt: int, response: Any) -> float:
@@ -352,6 +439,10 @@ async def _invoke(
                 ),
             }}
 
+    refusal = _reserve(tool_name)
+    if refusal is not None:
+        return refusal
+
     if style == "rpc":
         # An rpc body wraps the parts, under their own names, in an element named for the
         # operation. A document body carries the element each part references, namespaced.
@@ -379,8 +470,11 @@ async def _invoke(
     authorization, query = _credentials(tool_name)
     headers.update(authorization)
 
-    async with httpx.AsyncClient(timeout=30) as client:
-        response = await _post(client, envelope, headers, query, retry)
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await _post(client, envelope, headers, query, retry)
+    finally:
+        _release(tool_name)
 
     try:
         root = ElementTree.fromstring(response.text)
@@ -457,6 +551,7 @@ def emit_soap_server(
         env_var=f"{slug}_ENDPOINT",
         auth=json.dumps(placements(ir, slug)),
         tool_schemes=json.dumps(tool_schemes(registered, manifest)),
+        budgets=json.dumps(_budgets(registered, manifest)),
         schemas=json.dumps({item.name: item.input_schema for item in registered}),
         withheld=json.dumps(withheld),
     )

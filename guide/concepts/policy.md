@@ -111,6 +111,39 @@ The SOAP path retries on the same transport codes and sends no idempotency key. 
 nothing equivalent, so a key here would be a header this compiler invented that no service was
 built to honour.
 
+## Call budgets, and what enforcing them here can and cannot mean
+
+Policy scales three limits by risk, and the generated server counts calls against all three.
+
+| Limit | Read | Destructive |
+|---|---|---|
+| `calls_per_minute` | 60 | 2 |
+| `max_concurrent` | 4 | 1 |
+| `daily_call_budget` | 5000 | 20 |
+
+Over budget, a call is **refused rather than queued**. A queued call looks to an agent like a
+slow service, and it will wait, retry, or abandon a goal it could have reached. A refusal that
+names the limit, the number allowed and when it lifts is something an agent can act on:
+
+```json
+{
+  "error": "rate_limited",
+  "limit": "calls_per_minute",
+  "allowed": 2,
+  "retry_after_seconds": 41.2,
+  "detail": "..."
+}
+```
+
+A call that never reaches the service costs nothing. Argument validation and the confirmation
+gate both run first, so a malformed call or an unconfirmed destructive one does not spend a
+budget it never used.
+
+**The counting is per process.** A deployment running several workers needs a shared counter,
+and a generated server cannot pretend to be one. This is a real limit on what the artifact
+enforces, and it is stated here rather than left for someone to discover after splitting a
+service across two replicas.
+
 ## What the compiler cannot enforce, it says so
 
 Server-side authorization, protection against confused-deputy designs, and end-user identity
