@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.5.1
+
+Released 2026-08-13. A WSDL document that declares an empty response is no longer refused for
+saying so. Patch rather than minor: no contract changed, and an artifact written by 0.5.0
+still validates.
 
 ### Fixed
 
@@ -844,7 +848,11 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
 
-## Unreleased
+## 0.5.1
+
+Released 2026-08-13. A WSDL document that declares an empty response is no longer refused for
+saying so. Patch rather than minor: no contract changed, and an artifact written by 0.5.0
+still validates.
 
 ### Fixed
 
