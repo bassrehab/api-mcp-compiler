@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
+
+Released 2026-08-13. Call budgets are enforced rather than declared, grouping follows the
+tags a document declares, a reclassified read is addressable, and tool selection is measured.
+
+Minor rather than patch because three contracts moved: an IR, a surface or an evaluation run
+written by 0.3.0 no longer validates. The policy manifest is unchanged.
 
 ### Safety
 
@@ -660,7 +666,13 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
 
-## Unreleased
+## 0.4.0
+
+Released 2026-08-13. Call budgets are enforced rather than declared, grouping follows the
+tags a document declares, a reclassified read is addressable, and tool selection is measured.
+
+Minor rather than patch because three contracts moved: an IR, a surface or an evaluation run
+written by 0.3.0 no longer validates. The policy manifest is unchanged.
 
 ### Safety
 
