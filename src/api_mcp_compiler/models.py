@@ -16,7 +16,7 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-IR_SCHEMA_VERSION = "0.5.0"
+IR_SCHEMA_VERSION = "0.6.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
 TOOL_SURFACE_SCHEMA_VERSION = "0.3.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
@@ -640,6 +640,12 @@ class OperationIR(ProvenanceBearing):
     idempotency: Idempotency = Idempotency.UNKNOWN
     description: str | None = None
     deprecated: bool = False
+    tags: list[str] = Field(
+        default_factory=list,
+        description="The groupings the document itself declares for this operation. Kept "
+        "because a specification's own taxonomy is a source fact, and the alternative is a "
+        "grouping the planner invents from path shape.",
+    )
     inputs: list[FieldIR] = Field(default_factory=list)
     outputs: list[ResponseIR] = Field(default_factory=list)
     faults: list[FaultIR] = Field(default_factory=list)

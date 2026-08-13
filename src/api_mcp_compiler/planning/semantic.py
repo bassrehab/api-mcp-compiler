@@ -179,7 +179,20 @@ def derive_kind(operation: OperationIR) -> tuple[ArtifactKind, float, str]:
 
 
 def derive_group(operation: OperationIR) -> tuple[str, float, str]:
-    """Propose a grouping key so a surface does not present as a flat list of endpoints."""
+    """Propose a grouping key so a surface does not present as a flat list of endpoints.
+
+    A declared tag wins over anything derived from the path, because it is the taxonomy the
+    API's own authors chose and the path shape is a guess at one. Where an operation declares
+    several, the first is used: OpenAPI puts the primary tag first by convention, and picking
+    by any other rule would be this planner overruling the document about its own structure.
+    """
+    if operation.tags:
+        return (
+            operation.tags[0],
+            0.9,
+            f"Grouped by the tag {operation.tags[0]!r}, which the specification declares. "
+            "A declared grouping is a source fact where a path prefix is an inference.",
+        )
     if operation.route:
         segments = [
             segment

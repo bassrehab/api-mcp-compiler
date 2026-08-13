@@ -579,3 +579,71 @@ def test_a_collision_is_resolved_by_naming_the_resource(tmp_path: Path) -> None:
     }
     assert names["getMovie"] != names["getTv"]
     assert "movie" in names["getMovie"] or "tv" in names["getTv"]
+
+
+TAGGED = """openapi: 3.0.3
+info: {title: Tagged Service, version: 1.0.0}
+servers: [{url: https://tagged.example.invalid}]
+paths:
+  /v2/resources/{id}:
+    get:
+      operationId: getThing
+      summary: Get a thing
+      tags: [Catalogue, Legacy]
+      parameters: [{in: path, name: id, required: true, schema: {type: string}}]
+      responses:
+        '200': {description: ok, content: {application/json: {schema: {type: object}}}}
+  /v2/other/{id}:
+    get:
+      operationId: getOther
+      summary: Get another thing
+      parameters: [{in: path, name: id, required: true, schema: {type: string}}]
+      responses:
+        '200': {description: ok, content: {application/json: {schema: {type: object}}}}
+"""
+
+
+def _tagged(tmp_path: Path) -> ApiSemanticIR:
+    spec = tmp_path / "tagged.yaml"
+    spec.write_text(TAGGED, encoding="utf-8")
+    return parse_openapi(spec)
+
+
+def test_a_declared_tag_is_kept_rather_than_swept(tmp_path: Path) -> None:
+    """The sweep reported every tag on a real 40-operation document as unread."""
+    ir = _tagged(tmp_path)
+    tagged = next(item for item in ir.operations if item.operation_id == "getThing")
+
+    assert tagged.tags == ["Catalogue", "Legacy"]
+    assert not [item for item in ir.ambiguities if "tags" in (item.field or "")]
+
+
+def test_grouping_prefers_what_the_document_declares(tmp_path: Path) -> None:
+    """A tag is a source fact where a path prefix is an inference."""
+    ir = _tagged(tmp_path)
+    plan = plan_semantic(ir)
+
+    grouped = {item.source_operations[0]: item.group for item in plan.artifacts}
+    assert grouped["getThing"] == "Catalogue"
+
+
+def test_the_first_tag_is_used_when_several_are_declared(tmp_path: Path) -> None:
+    """Choosing by any other rule would overrule the document about its own structure."""
+    ir = _tagged(tmp_path)
+    decision = next(
+        item
+        for item in plan_semantic(ir).decisions
+        if item.kind is DecisionKind.GROUP and item.target == "getThing"
+    )
+
+    assert "'Catalogue'" in decision.rationale
+    assert decision.confidence > 0.65
+
+
+def test_the_path_prefix_remains_the_fallback(tmp_path: Path) -> None:
+    """A specification that declares no tags still gets a grouping."""
+    ir = _tagged(tmp_path)
+    plan = plan_semantic(ir)
+
+    grouped = {item.source_operations[0]: item.group for item in plan.artifacts}
+    assert grouped["getOther"] == "v2"

@@ -254,10 +254,11 @@
         "target_namespace": "urn:example:customer",
         "transport": "http://schemas.xmlsoap.org/soap/http"
       },
-      "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+      "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']",
+      "tags": []
     }
   ],
-  "schema_version": "0.5.0",
+  "schema_version": "0.6.0",
   "service": {
     "auth_schemes": [],
     "provenance": [

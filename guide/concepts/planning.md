@@ -13,12 +13,30 @@ a kind, a target, a rationale written for a person, and a confidence.
 | Decision | What it does |
 |---|---|
 | `rename` | Names a tool after the task rather than the API. `listWarehouseItems` becomes `list_items_held_warehouse`, from the operation summary. |
-| `group` | Groups by the first path segment, the coarsest grouping the specification states rather than one the planner invents. |
+| `group` | Groups by a tag the document declares, falling back to the first path segment. |
 | `project` | Withholds arguments that are transport rather than task, such as pagination cursors that are optional and have server defaults. |
 | `describe` | Rewrites the description for an agent reading a tool list, dropping formatting written for a rendered page and stating the side effect where a model is actually looking. The source text is unchanged in the IR. |
 | `reclassify` | Turns an addressable read into a resource, so a lookup does not spend a tool slot. The resource carries the address it is read by. |
 | `omit` | Drops a deprecated operation, so agent attention is not spent on a surface the provider intends to withdraw. |
 | `compose` | Proposes a composite workflow tool over a lookup-then-act chain. |
+
+## Grouping follows the document, not the path shape
+
+A specification that declares `tags` has already said how its authors group their own
+operations, and that is a better signal than anything derived from path shape. The planner
+uses the first declared tag, at a higher confidence than the fallback, because a declared
+grouping is a source fact where a path prefix is an inference.
+
+Where an operation declares several tags the first is used. OpenAPI puts the primary tag
+first by convention, and choosing by any other rule would be this planner overruling the
+document about its own structure.
+
+The path prefix remains the fallback for documents that declare no tags, and a SOAP operation
+groups by its port type, which plays the role a path prefix plays for HTTP.
+
+This was found by running the compiler at a real third-party specification for the first time:
+all 40 operations of the Spotify document carry tags, and every one of them was being reported
+by the completeness sweep as a key nothing had read.
 
 ## A resource is addressable, or it is not a resource
 

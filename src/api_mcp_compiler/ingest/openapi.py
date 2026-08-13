@@ -128,6 +128,7 @@ _OPERATION_KEYS = frozenset(
         "security",
         "deprecated",
         "servers",
+        "tags",
     }
 )
 _PARAMETER_KEYS = frozenset(
@@ -1238,6 +1239,16 @@ def _build_operation(
             rule="openapi.operation.deprecated",
         )
     )
+    tags = [item for item in operation.get("tags", []) if isinstance(item, str) and item]
+    if tags:
+        records.append(
+            Provenance(
+                field="tags",
+                source_pointer=openapi_pointer(*op_base, "tags"),
+                derivation=Derivation.SOURCE,
+                rule="openapi.operation.tags",
+            )
+        )
 
     inputs = [
         *_merged_parameters(path_item, operation, route, method, ctx),
@@ -1270,6 +1281,7 @@ def _build_operation(
         )
 
     return OperationIR(
+        tags=tags,
         operation_id=operation_id,
         protocol=Protocol.HTTP,
         source_pointer=pointer,

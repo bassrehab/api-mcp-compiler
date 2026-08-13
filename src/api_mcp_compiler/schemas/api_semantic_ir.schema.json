@@ -13,7 +13,7 @@
   "properties": {
     "schema_version": {
       "description": "Pinned contract version. A document written against a different version fails validation loudly rather than being silently misread.",
-      "const": "0.5.0"
+      "const": "0.6.0"
     },
     "service": {
       "$ref": "#/$defs/service"
@@ -640,6 +640,13 @@
             "string",
             "null"
           ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Groupings the document declares for this operation. Preferred over a grouping derived from the path, because it is what the API's authors said rather than what the planner worked out."
         }
       }
     },

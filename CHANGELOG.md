@@ -18,6 +18,16 @@
 - The counting is per process, and the guide says so. A deployment running several workers
   needs a shared counter, which a generated artifact cannot be.
 
+### Planning
+
+- **Grouping follows the tags a document declares**, falling back to the first path segment
+  only where none exist. A declared grouping is a source fact where a path prefix is an
+  inference, and the confidence recorded for the decision says so.
+- Operation `tags` are now kept in the IR rather than swept. Every one of the 40 operations in
+  a real third-party specification carried a tag that nothing read, which is what the
+  completeness sweep exists to surface.
+- `api_semantic_ir` schema version raised to `0.6.0`.
+
 ### Evaluation
 
 - **Tool selection is measured.** A run records the operations the agent reached for and the
@@ -383,6 +393,16 @@ First published release, on PyPI as `api-mcp-compiler`.
 - The counting is per process, and the guide says so. A deployment running several workers
   needs a shared counter, which a generated artifact cannot be.
 
+### Planning
+
+- **Grouping follows the tags a document declares**, falling back to the first path segment
+  only where none exist. A declared grouping is a source fact where a path prefix is an
+  inference, and the confidence recorded for the decision says so.
+- Operation `tags` are now kept in the IR rather than swept. Every one of the 40 operations in
+  a real third-party specification carried a tag that nothing read, which is what the
+  completeness sweep exists to surface.
+- `api_semantic_ir` schema version raised to `0.6.0`.
+
 ### Evaluation
 
 - A bulk delete naming identifiers now removes those and leaves the rest. It previously
@@ -445,6 +465,16 @@ First published release, on PyPI as `api-mcp-compiler`.
   including a failed composite step and a truncated response.
 - The counting is per process, and the guide says so. A deployment running several workers
   needs a shared counter, which a generated artifact cannot be.
+
+### Planning
+
+- **Grouping follows the tags a document declares**, falling back to the first path segment
+  only where none exist. A declared grouping is a source fact where a path prefix is an
+  inference, and the confidence recorded for the decision says so.
+- Operation `tags` are now kept in the IR rather than swept. Every one of the 40 operations in
+  a real third-party specification carried a tag that nothing read, which is what the
+  completeness sweep exists to surface.
+- `api_semantic_ir` schema version raised to `0.6.0`.
 
 ### Evaluation harness
 
@@ -647,6 +677,16 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
   including a failed composite step and a truncated response.
 - The counting is per process, and the guide says so. A deployment running several workers
   needs a shared counter, which a generated artifact cannot be.
+
+### Planning
+
+- **Grouping follows the tags a document declares**, falling back to the first path segment
+  only where none exist. A declared grouping is a source fact where a path prefix is an
+  inference, and the confidence recorded for the decision says so.
+- Operation `tags` are now kept in the IR rather than swept. Every one of the 40 operations in
+  a real third-party specification carried a tag that nothing read, which is what the
+  completeness sweep exists to surface.
+- `api_semantic_ir` schema version raised to `0.6.0`.
 
 ### Evaluation
 

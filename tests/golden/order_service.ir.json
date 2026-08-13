@@ -188,7 +188,8 @@
       "servers": [],
       "side_effect": "read",
       "soap": null,
-      "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+      "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get",
+      "tags": []
     },
     {
       "authentication": null,
@@ -343,7 +344,8 @@
       "servers": [],
       "side_effect": "read",
       "soap": null,
-      "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+      "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get",
+      "tags": []
     },
     {
       "authentication": null,
@@ -544,7 +546,8 @@
       "servers": [],
       "side_effect": "write",
       "soap": null,
-      "source_pointer": "openapi:#/paths/~1refunds/post"
+      "source_pointer": "openapi:#/paths/~1refunds/post",
+      "tags": []
     },
     {
       "authentication": null,
@@ -699,10 +702,11 @@
       "servers": [],
       "side_effect": "write",
       "soap": null,
-      "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+      "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post",
+      "tags": []
     }
   ],
-  "schema_version": "0.5.0",
+  "schema_version": "0.6.0",
   "service": {
     "auth_schemes": [],
     "provenance": [
