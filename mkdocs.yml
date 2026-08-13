@@ -51,6 +51,7 @@ nav:
       - Policy: concepts/policy.md
       - The emission gate: concepts/gate.md
       - Reproducibility: concepts/reproducibility.md
+  - Deploying: deploying.md
   - SOAP and WSDL: soap.md
   - Evaluation: evaluation.md
   - CLI reference: cli.md

@@ -149,3 +149,6 @@ service across two replicas.
 Server-side authorization, protection against confused-deputy designs, and end-user identity
 propagation are properties of a deployed service rather than of a generated artifact. The
 manifest records them as requirements and never reports them as satisfied.
+
+Recording them is honest and, on its own, useless. [Deploying](../deploying.md) says what to
+do about each, including the limits on the controls the artifact does enforce.

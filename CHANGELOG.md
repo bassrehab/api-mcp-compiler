@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Documentation
+
+- **A deployment page for the controls a generated artifact cannot provide.** The manifest has
+  always recorded server-side authorization, confused-deputy exposure and identity propagation
+  as requirements it never reports as satisfied, which is honest and, alone, useless. The
+  guide now says what to do about each.
+- It also states the limits on the controls the artifact does enforce: call budgets are counted
+  per process, so four replicas are four budgets, and confirmation tokens live in memory, so a
+  restart forgets outstanding ones.
+
 ### Ingestion
 
 - **An operation that only accepts work now says so.** HTTP 202 means the request was taken,
@@ -657,6 +667,16 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Added `ServiceIR.source_digest`, tying every generated artifact to the exact
   specification bytes it was compiled from.
 
+### Documentation
+
+- **A deployment page for the controls a generated artifact cannot provide.** The manifest has
+  always recorded server-side authorization, confused-deputy exposure and identity propagation
+  as requirements it never reports as satisfied, which is honest and, alone, useless. The
+  guide now says what to do about each.
+- It also states the limits on the controls the artifact does enforce: call budgets are counted
+  per process, so four replicas are four budgets, and confirmation tokens live in memory, so a
+  restart forgets outstanding ones.
+
 ### Ingestion
 
 - OpenAPI: request bodies, path-item parameter inheritance with operation override,
@@ -684,6 +704,16 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - CLI: added `plan` and `validate` commands alongside `inspect`.
 
 ## Unreleased
+
+### Documentation
+
+- **A deployment page for the controls a generated artifact cannot provide.** The manifest has
+  always recorded server-side authorization, confused-deputy exposure and identity propagation
+  as requirements it never reports as satisfied, which is honest and, alone, useless. The
+  guide now says what to do about each.
+- It also states the limits on the controls the artifact does enforce: call budgets are counted
+  per process, so four replicas are four budgets, and confirmation tokens live in memory, so a
+  restart forgets outstanding ones.
 
 ### Ingestion
 
