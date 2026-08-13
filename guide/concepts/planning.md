@@ -15,7 +15,7 @@ a kind, a target, a rationale written for a person, and a confidence.
 | `rename` | Names a tool after the task rather than the API. `listWarehouseItems` becomes `list_items_held_warehouse`, from the operation summary. |
 | `group` | Groups by a tag the document declares, falling back to the first path segment. |
 | `project` | Withholds arguments that are transport rather than task, such as pagination cursors that are optional and have server defaults. |
-| `describe` | Rewrites the description for an agent reading a tool list, dropping formatting written for a rendered page and stating the side effect where a model is actually looking. The source text is unchanged in the IR. |
+| `describe` | Rewrites the description for an agent reading a tool list, dropping formatting written for a rendered page and stating the side effect, and whether the call only accepts the work, where a model is actually looking. The source text is unchanged in the IR. |
 | `reclassify` | Turns an addressable read into a resource, so a lookup does not spend a tool slot. The resource carries the address it is read by. |
 | `omit` | Drops a deprecated operation, so agent attention is not spent on a surface the provider intends to withdraw. |
 | `compose` | Proposes a composite workflow tool over a lookup-then-act chain. |

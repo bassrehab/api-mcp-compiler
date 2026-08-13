@@ -10,6 +10,7 @@
   ],
   "operations": [
     {
+      "async_job": null,
       "authentication": null,
       "confidence": null,
       "deprecated": false,
@@ -258,9 +259,10 @@
       "tags": []
     }
   ],
-  "schema_version": "0.6.0",
+  "schema_version": "0.7.0",
   "service": {
     "auth_schemes": [],
+    "description": null,
     "provenance": [
       {
         "confidence": 1.0,
@@ -339,6 +341,7 @@
     "source_format": "wsdl",
     "source_uri": "examples/wsdl/customer_service.wsdl",
     "spec_version": null,
+    "terms_of_service": null,
     "title": "CustomerService",
     "version": null
   }

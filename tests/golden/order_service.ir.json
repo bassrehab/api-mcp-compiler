@@ -2,6 +2,7 @@
   "ambiguities": [],
   "operations": [
     {
+      "async_job": null,
       "authentication": null,
       "confidence": null,
       "deprecated": false,
@@ -192,6 +193,7 @@
       "tags": []
     },
     {
+      "async_job": null,
       "authentication": null,
       "confidence": null,
       "deprecated": false,
@@ -348,6 +350,19 @@
       "tags": []
     },
     {
+      "async_job": {
+        "poll_header": null,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "source",
+            "field": "status",
+            "rule": "openapi.async.accepted_status",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          }
+        ],
+        "status": "202"
+      },
       "authentication": null,
       "confidence": null,
       "deprecated": false,
@@ -550,6 +565,7 @@
       "tags": []
     },
     {
+      "async_job": null,
       "authentication": null,
       "confidence": null,
       "deprecated": false,
@@ -706,9 +722,10 @@
       "tags": []
     }
   ],
-  "schema_version": "0.6.0",
+  "schema_version": "0.7.0",
   "service": {
     "auth_schemes": [],
+    "description": null,
     "provenance": [
       {
         "confidence": 1.0,
@@ -794,6 +811,7 @@
     "source_format": "openapi",
     "source_uri": "examples/openapi/order_service.yaml",
     "spec_version": "3.1.0",
+    "terms_of_service": null,
     "title": "Synthetic Order and Refund Service",
     "version": "1.0.0"
   }

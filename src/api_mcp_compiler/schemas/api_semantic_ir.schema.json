@@ -13,7 +13,7 @@
   "properties": {
     "schema_version": {
       "description": "Pinned contract version. A document written against a different version fails validation loudly rather than being silently misread.",
-      "const": "0.6.0"
+      "const": "0.7.0"
     },
     "service": {
       "$ref": "#/$defs/service"
@@ -647,6 +647,17 @@
             "type": "string"
           },
           "description": "Groupings the document declares for this operation. Preferred over a grouping derived from the path, because it is what the API's authors said rather than what the planner worked out."
+        },
+        "async_job": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/asyncJob"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Present when the operation accepts work rather than performing it, so a surface can say so rather than letting an agent read acceptance as completion."
         }
       }
     },
@@ -717,6 +728,19 @@
           "items": {
             "$ref": "#/$defs/sourceDocument"
           }
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "What the document says the service is, carried through as agent context."
+        },
+        "terms_of_service": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -918,6 +942,30 @@
         },
         "provenance": {
           "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "asyncJob": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance",
+        "status"
+      ],
+      "properties": {
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "status": {
+          "type": "string",
+          "description": "The accepted-rather-than-performed status the document declares."
+        },
+        "poll_header": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The response header naming where progress can be read, or null where the document declares acceptance without saying where to look."
         }
       }
     }

@@ -40,6 +40,22 @@ Examples that occur in the shipped specifications:
   Ingestion records their union, keeps every alternative, and defers the choice, because
   choosing is a [policy](policy.md) decision rather than a parsing one.
 
+## Accepted is not done
+
+An operation whose response is 202 has been *accepted*, not performed. A surface that says
+nothing about this lets an agent read acceptance as completion, report the goal met, and move
+on while the work has not started. That is among the most misleading things a tool surface can
+do, because everything about it looks like success.
+
+Ingestion records an `async_job` for such an operation, with the status as a source fact and a
+`Location` header on that response as an inferred poll target. The planner then says so in the
+tool description, which is where a model actually looks.
+
+Where a document declares acceptance and names nowhere to look, `poll_header` stays null and
+the description says the document does not say. Inventing a polling convention would be this
+compiler making a promise the service never made. One of the shipped examples is exactly this
+case.
+
 ## Completeness
 
 A consumption ledger records every key an adapter read. Anything left over is reported, so a
@@ -56,6 +72,14 @@ unimplemented behaviour is worse than refusing plainly.
 
 A self-referencing schema is legitimate and common, so a cycle leaves the innermost `$ref` in
 place and records a non-blocking ambiguity rather than raising. Depth overrun still raises.
+
+## Service-level context
+
+`info.description` and `info.termsOfService` are kept rather than swept. The description
+becomes the generated server's instructions, capped in length, so an agent is told the domain
+it is working in instead of inferring it from tool names. A description written for a
+documentation page can run to paragraphs, and an agent pays for every token of it on every
+request, so only the opening is carried.
 
 ## Digests
 

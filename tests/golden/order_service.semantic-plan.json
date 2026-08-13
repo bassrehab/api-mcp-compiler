@@ -189,7 +189,7 @@
     {
       "artifact_id": "tool:create_refund_request",
       "confidence": 0.8333,
-      "description": "Create a refund request. This changes stored state.",
+      "description": "Create a refund request. This changes stored state. The service accepts this and returns before the work is done, so the result is not final. The document does not say where progress can be read.",
       "group": "refunds",
       "kind": "tool",
       "name": "create_refund_request",
@@ -1258,7 +1258,7 @@
       "members": [],
       "origin": "planner",
       "previous_value": "Create a refund request",
-      "proposed_value": "Create a refund request. This changes stored state.",
+      "proposed_value": "Create a refund request. This changes stored state. The service accepts this and returns before the work is done, so the result is not final. The document does not say where progress can be read.",
       "provenance": [
         {
           "confidence": 1.0,

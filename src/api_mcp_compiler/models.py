@@ -16,7 +16,7 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-IR_SCHEMA_VERSION = "0.6.0"
+IR_SCHEMA_VERSION = "0.7.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
 TOOL_SURFACE_SCHEMA_VERSION = "0.3.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
@@ -536,6 +536,23 @@ class HeaderIR(ProvenanceBearing):
     type_schema: dict[str, Any] | None = None
 
 
+class AsyncJobIR(ProvenanceBearing):
+    """An operation that accepts work rather than performing it.
+
+    Inferred, never stated. HTTP 202 means the request was accepted and not that it was
+    carried out, and a `Location` header on that response is where the document says progress
+    can be read. An agent told nothing about this treats acceptance as completion, which is
+    among the most misleading things a tool surface can do: the goal looks met, and nothing
+    has happened yet.
+
+    `poll_header` stays null when a document declares acceptance without saying where to
+    look, which is worth reporting rather than filling in with a convention.
+    """
+
+    status: str
+    poll_header: str | None = None
+
+
 class PaginationIR(ProvenanceBearing):
     """A proposed pagination mechanism.
 
@@ -655,6 +672,7 @@ class OperationIR(ProvenanceBearing):
         description="Overrides the service endpoints when the operation declares its own.",
     )
     pagination: PaginationIR | None = None
+    async_job: AsyncJobIR | None = None
     soap: SoapBindingIR | None = None
     confidence: float | None = Field(default=None, ge=0.0, le=1.0)
 
@@ -674,6 +692,12 @@ class ServiceIR(ProvenanceBearing):
         pattern=r"^sha256:[0-9a-f]{64}$",
         description="Prefixed sha256 digest of the root document's raw bytes.",
     )
+    description: str | None = Field(
+        default=None,
+        description="What the document says the service is. Carried through so an agent can "
+        "be told the domain it is working in rather than inferring it from tool names.",
+    )
+    terms_of_service: str | None = None
     source_documents: list[SourceDocumentIR] = Field(default_factory=list)
     servers: list[ServerIR] = Field(default_factory=list)
     auth_schemes: list[AuthSchemeIR] = Field(default_factory=list)

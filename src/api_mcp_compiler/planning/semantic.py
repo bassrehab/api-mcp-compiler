@@ -337,6 +337,18 @@ def rewrite_description(operation: OperationIR) -> tuple[str, str] | None:
         text += " This removes data and cannot be undone."
     elif operation.side_effect is SideEffectClass.WRITE:
         text += " This changes stored state."
+    if operation.async_job is not None:
+        # Said in the description because that is where a model looks. An agent that reads
+        # acceptance as completion reports a goal met while the work has not started, and no
+        # amount of correctness elsewhere in the surface recovers from that.
+        text += " The service accepts this and returns before the work is done"
+        text += (
+            f", so the result is not final; poll the {operation.async_job.poll_header} header "
+            "of the response to follow it."
+            if operation.async_job.poll_header
+            else ", so the result is not final. The document does not say where progress can "
+            "be read."
+        )
     text = _WHITESPACE.sub(" ", text).strip()
     if not text or text == source:
         return None

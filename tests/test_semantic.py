@@ -647,3 +647,29 @@ def test_the_path_prefix_remains_the_fallback(tmp_path: Path) -> None:
 
     grouped = {item.source_operations[0]: item.group for item in plan.artifacts}
     assert grouped["getOther"] == "v2"
+
+
+def test_an_asynchronous_operation_says_so_where_a_model_reads(tmp_path: Path) -> None:
+    """An agent that reads acceptance as completion reports a goal met before work starts."""
+    spec = tmp_path / "batch.yaml"
+    spec.write_text(
+        "openapi: 3.0.3\n"
+        "info: {title: Batch Service, version: 1.0.0}\n"
+        "servers: [{url: https://batch.example.invalid}]\n"
+        "paths:\n"
+        "  /exports:\n"
+        "    post:\n"
+        "      operationId: startExport\n"
+        "      summary: Start an export\n"
+        "      responses:\n"
+        "        '202':\n"
+        "          description: Accepted\n"
+        "          headers:\n"
+        "            Location: {description: poll here, schema: {type: string}}\n",
+        encoding="utf-8",
+    )
+    plan = plan_semantic(parse_openapi(spec))
+    artifact = plan.artifacts[0]
+
+    assert "returns before the work is done" in artifact.description
+    assert "poll the Location header" in artifact.description

@@ -91,6 +91,22 @@ def _method_and_route(ir: ApiSemanticIR, operation_id: str) -> tuple[str, str]:
     return operation.source_pointer.rsplit("/", 1)[-1].upper(), operation.route
 
 
+#: A service description is written for a documentation page and can run to paragraphs. An
+#: agent pays for every token of it on every request, so only the opening is carried.
+_INSTRUCTION_LIMIT = 600
+
+
+def _instructions(ir: ApiSemanticIR) -> str | None:
+    """What to tell an agent about the service before it reads the tool list."""
+    described = (ir.service.description or "").strip()
+    if not described:
+        return None
+    collapsed = " ".join(described.split())
+    if len(collapsed) <= _INSTRUCTION_LIMIT:
+        return collapsed
+    return collapsed[:_INSTRUCTION_LIMIT].rsplit(" ", 1)[0] + "..."
+
+
 def _budgets(
     tools: list[ToolDescriptor], manifest: PolicyManifest | None
 ) -> dict[str, dict[str, int]]:
@@ -242,7 +258,7 @@ _AUTH: dict[str, dict[str, str]] = json.loads({auth!r})
 #: Which schemes each tool needs, as least-privilege selection chose them.
 _TOOL_SCHEMES: dict[str, list[str]] = json.loads({tool_schemes!r})
 
-mcp = FastMCP({service_id!r})
+mcp = FastMCP({service_id!r}, instructions={instructions!r})
 
 _SCHEMAS: dict[str, dict[str, Any]] = json.loads({schemas!r})
 _WITHHELD: dict[str, str] = json.loads({withheld!r})
@@ -660,6 +676,7 @@ def emit_server(
     header = _PREAMBLE.format(
         banner=banner,
         service_id=ir.service.service_id,
+        instructions=_instructions(ir),
         base_url=base_url,
         env_var=f"{slug}_BASE_URL",
         auth=json.dumps(placements(ir, slug)),

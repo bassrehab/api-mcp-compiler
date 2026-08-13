@@ -346,7 +346,7 @@
       "blockers": [
         "policy_unresolved"
       ],
-      "description": "Create a refund request. This changes stored state.",
+      "description": "Create a refund request. This changes stored state. The service accepts this and returns before the work is done, so the result is not final. The document does not say where progress can be read.",
       "emission": "disabled",
       "input_schema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",

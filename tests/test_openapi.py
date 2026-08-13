@@ -9,6 +9,7 @@ import pytest
 
 from api_mcp_compiler.ingest.openapi import OpenApiIngestionError, parse_openapi
 from api_mcp_compiler.models import (
+    ApiSemanticIR,
     Derivation,
     Idempotency,
     ParameterLocation,
@@ -550,3 +551,87 @@ def test_the_media_types_not_chosen_are_reported(tmp_path: Path) -> None:
     reported = [item for item in ir.ambiguities if item.code == "multiple_request_media_types"]
     assert reported and not reported[0].blocking
     assert "application/xml" in reported[0].detail
+
+
+ASYNC_SERVICE = """openapi: 3.0.3
+info:
+  title: Batch Service
+  version: 1.0.0
+  description: Runs long jobs over customer records.
+  termsOfService: https://batch.example.invalid/terms
+servers: [{url: https://batch.example.invalid}]
+paths:
+  /exports:
+    post:
+      operationId: startExport
+      summary: Start an export
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location: {description: Where to poll, schema: {type: string}}
+  /reports:
+    post:
+      operationId: startReport
+      summary: Start a report
+      responses:
+        '202': {description: Accepted with nowhere named}
+  /instant:
+    post:
+      operationId: doItNow
+      summary: Do it now
+      responses:
+        '200': {description: done, content: {application/json: {schema: {type: object}}}}
+"""
+
+
+def _async_ir(tmp_path: Path) -> ApiSemanticIR:
+    spec = tmp_path / "batch.yaml"
+    spec.write_text(ASYNC_SERVICE, encoding="utf-8")
+    return parse_openapi(spec)
+
+
+def test_service_level_context_is_kept_rather_than_swept(tmp_path: Path) -> None:
+    """Both were reported as unread keys on a real specification."""
+    ir = _async_ir(tmp_path)
+
+    assert ir.service.description == "Runs long jobs over customer records."
+    assert ir.service.terms_of_service == "https://batch.example.invalid/terms"
+    assert not [item for item in ir.ambiguities if "info" in (item.source_pointer or "")]
+
+
+def test_an_accepted_response_marks_the_operation_asynchronous(tmp_path: Path) -> None:
+    """202 says the request was taken, not that the work was done."""
+    ir = _async_ir(tmp_path)
+    started = next(item for item in ir.operations if item.operation_id == "startExport")
+
+    assert started.async_job is not None
+    assert started.async_job.status == "202"
+    assert started.async_job.poll_header == "Location"
+
+
+def test_acceptance_without_a_poll_target_is_reported_as_such(tmp_path: Path) -> None:
+    """Inventing a polling convention would be a promise the service never made."""
+    ir = _async_ir(tmp_path)
+    started = next(item for item in ir.operations if item.operation_id == "startReport")
+
+    assert started.async_job is not None
+    assert started.async_job.poll_header is None
+
+
+def test_a_synchronous_operation_is_not_marked_asynchronous(tmp_path: Path) -> None:
+    ir = _async_ir(tmp_path)
+    immediate = next(item for item in ir.operations if item.operation_id == "doItNow")
+
+    assert immediate.async_job is None
+
+
+def test_the_poll_header_is_inferred_not_asserted(tmp_path: Path) -> None:
+    """The status is what the document said; reading it as a poll target is a guess."""
+    ir = _async_ir(tmp_path)
+    started = next(item for item in ir.operations if item.operation_id == "startExport")
+
+    assert started.async_job is not None
+    derivations = {item.field: item.derivation for item in started.async_job.provenance}
+    assert derivations["status"] is Derivation.SOURCE
+    assert derivations["poll_header"] is Derivation.INFERRED

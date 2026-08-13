@@ -17,7 +17,7 @@ import json
 from dataclasses import dataclass, field
 
 from api_mcp_compiler.codegen.credentials import placements, tool_schemes, variables
-from api_mcp_compiler.codegen.mcp_server import _budgets
+from api_mcp_compiler.codegen.mcp_server import _budgets, _instructions
 from api_mcp_compiler.models import (
     ApiSemanticIR,
     EmissionStatus,
@@ -140,7 +140,7 @@ _AUTH: dict[str, dict[str, str]] = json.loads({auth!r})
 _TOOL_SCHEMES: dict[str, list[str]] = json.loads({tool_schemes!r})
 ENVELOPE_NS = "http://schemas.xmlsoap.org/soap/envelope/"
 
-mcp = FastMCP({service_id!r})
+mcp = FastMCP({service_id!r}, instructions={instructions!r})
 
 _SCHEMAS: dict[str, dict[str, Any]] = json.loads({schemas!r})
 _WITHHELD: dict[str, str] = json.loads({withheld!r})
@@ -547,6 +547,7 @@ def emit_soap_server(
     header = _PREAMBLE.format(
         banner=banner,
         service_id=ir.service.service_id,
+        instructions=_instructions(ir),
         endpoint=endpoint,
         env_var=f"{slug}_ENDPOINT",
         auth=json.dumps(placements(ir, slug)),

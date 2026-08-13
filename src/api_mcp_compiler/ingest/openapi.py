@@ -26,6 +26,7 @@ from api_mcp_compiler.ingest.swagger2 import is_swagger2, to_openapi3
 from api_mcp_compiler.models import (
     Ambiguity,
     ApiSemanticIR,
+    AsyncJobIR,
     AuthRequirementIR,
     AuthSchemeIR,
     AuthSchemeType,
@@ -115,7 +116,7 @@ _NON_WORD = re.compile(r"[^A-Za-z0-9]+")
 _NON_ALNUM = re.compile(r"[^a-z0-9]+")
 
 _ROOT_KEYS = frozenset({"openapi", "info", "servers", "paths", "components", "security"})
-_INFO_KEYS = frozenset({"title", "version"})
+_INFO_KEYS = frozenset({"title", "version", "description", "termsOfService"})
 _PATH_ITEM_KEYS = frozenset({"parameters", "servers", *HTTP_METHODS})
 _OPERATION_KEYS = frozenset(
     {
@@ -985,6 +986,53 @@ def _authentication(
     )
 
 
+def _async_job(outputs: list[ResponseIR], pointer: str) -> AsyncJobIR | None:
+    """Infer that an operation accepts work rather than performing it.
+
+    202 is the whole signal. It says the request was accepted and deliberately does not say
+    it was carried out, so a tool built from it that reports success is telling an agent the
+    goal is met when nothing has happened yet.
+
+    A `Location` header on that response is where the document says progress can be read.
+    Where the document declares acceptance and names nowhere to look, that is recorded as
+    such: inventing a polling convention would be this compiler making a promise the service
+    never made.
+    """
+    accepted = next((item for item in outputs if item.status == "202"), None)
+    if accepted is None:
+        return None
+    pollable = {"location", "content-location"}
+    poll = next(
+        (item.name for item in accepted.headers if item.name.lower() in pollable), None
+    )
+    return AsyncJobIR(
+        status=accepted.status,
+        poll_header=poll,
+        provenance=[
+            Provenance(
+                field="status",
+                source_pointer=pointer,
+                derivation=Derivation.SOURCE,
+                rule="openapi.async.accepted_status",
+                confidence=1.0,
+            ),
+            *(
+                [
+                    Provenance(
+                        field="poll_header",
+                        source_pointer=pointer,
+                        derivation=Derivation.INFERRED,
+                        rule="openapi.async.poll_header",
+                        confidence=0.8,
+                    )
+                ]
+                if poll
+                else []
+            ),
+        ],
+    )
+
+
 def _pagination(
     operation_id: str, inputs: list[FieldIR], outputs: list[ResponseIR], pointer: str
 ) -> PaginationIR | None:
@@ -1297,6 +1345,7 @@ def _build_operation(
         authentication=_authentication(operation, route, method, ctx),
         servers=servers,
         pagination=pagination,
+        async_job=_async_job(outputs, pointer),
         provenance=records,
     )
 
@@ -1335,10 +1384,21 @@ def _service(ctx: _Context, path: Path, digest: str, spec_version: str) -> Servi
     ]
     if version is not None:
         records.append(_source("version", ("info", "version"), "openapi.info.version"))
+    description = _optional_str(info.get("description"))
+    if description:
+        records.append(_source("description", ("info", "description"), "openapi.info.description"))
+    terms = _optional_str(info.get("termsOfService"))
+    if terms:
+        records.append(
+            _source("terms_of_service", ("info", "termsOfService"), "openapi.info.termsOfService")
+        )
+
     return ServiceIR(
         service_id=slug(title),
         title=title,
         version=version,
+        description=description,
+        terms_of_service=terms,
         spec_version=spec_version,
         source_format=SourceFormat.OPENAPI,
         source_uri=path.as_posix(),

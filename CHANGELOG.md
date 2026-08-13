@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+### Ingestion
+
+- **An operation that only accepts work now says so.** HTTP 202 means the request was taken,
+  not carried out, and a surface silent about that lets an agent read acceptance as completion
+  and report a goal met before anything has happened. The IR records an `async_job`, and the
+  planner states it in the tool description, which is where a model looks. One of the shipped
+  examples turns out to be exactly this case.
+- A `Location` header on that response is recorded as the poll target, marked inferred rather
+  than source. Where a document declares acceptance and names nowhere to look, that is
+  reported as such rather than filled in with a convention nobody promised.
+- **`info.description` and `info.termsOfService` are kept rather than swept.** The description
+  becomes the generated server's instructions, capped in length, so an agent is told the
+  domain it works in instead of inferring it from tool names.
+- `api_semantic_ir` schema version raised to `0.7.0`.
+
 ## 0.4.0
 
 Released 2026-08-13. Call budgets are enforced rather than declared, grouping follows the
@@ -665,6 +682,23 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Pinned ruff and mypy to exact versions and declared an explicit lint rule selection, so
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
+
+## Unreleased
+
+### Ingestion
+
+- **An operation that only accepts work now says so.** HTTP 202 means the request was taken,
+  not carried out, and a surface silent about that lets an agent read acceptance as completion
+  and report a goal met before anything has happened. The IR records an `async_job`, and the
+  planner states it in the tool description, which is where a model looks. One of the shipped
+  examples turns out to be exactly this case.
+- A `Location` header on that response is recorded as the poll target, marked inferred rather
+  than source. Where a document declares acceptance and names nowhere to look, that is
+  reported as such rather than filled in with a convention nobody promised.
+- **`info.description` and `info.termsOfService` are kept rather than swept.** The description
+  becomes the generated server's instructions, capped in length, so an agent is told the
+  domain it works in instead of inferring it from tool names.
+- `api_semantic_ir` schema version raised to `0.7.0`.
 
 ## 0.4.0
 
