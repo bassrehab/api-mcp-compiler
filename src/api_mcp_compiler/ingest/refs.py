@@ -11,7 +11,7 @@ caller records provenance naming the original reference site, so traceability su
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlsplit
@@ -77,6 +77,9 @@ class RefResolver:
     root_data: dict[str, Any]
     root_digest: str
     policy: RefPolicy = field(default_factory=RefPolicy)
+    #: Remote documents already fetched and pinned, as URL to file and expected digest. Empty
+    #: by default, which is what keeps a plain compile unable to reach the network at all.
+    vendored: dict[str, tuple[Path, str]] = field(default_factory=dict)
     ambiguities: list[Ambiguity] = field(default_factory=list)
     _documents: dict[str, _Document] = field(default_factory=dict, init=False)
 
@@ -215,20 +218,7 @@ class RefResolver:
         split = urlsplit(target)
         fragment = unquote(split.fragment)
         if split.scheme in {"http", "https"}:
-            return (
-                "",
-                "",
-                Ambiguity(
-                    code="remote_ref_refused",
-                    field=field_path,
-                    source_pointer=pointer,
-                    detail=(
-                        f"Reference {target!r} is remote. Ingestion never reaches the network, "
-                        "so the target was not loaded."
-                    ),
-                    blocking=True,
-                ),
-            )
+            return self._locate_vendored(target, field_path, pointer, fragment)
         if not split.path:
             return document_uri, fragment, None
 
@@ -253,6 +243,60 @@ class RefResolver:
         uri = candidate.as_posix()
         if uri not in self._documents:
             self._documents[uri] = _load_document(candidate)
+        return uri, fragment, None
+
+
+    def _locate_vendored(
+        self, target: str, field_path: str, pointer: str, fragment: str
+    ) -> tuple[str, str, Ambiguity | None]:
+        """Resolve a remote reference from what was vendored, or refuse it.
+
+        Still no network. The bytes were fetched by a separate, deliberate command and pinned
+        by digest; this reads them from disk and checks they are the ones that were pinned.
+        A reference the lock does not name is refused exactly as it was before.
+        """
+        from api_mcp_compiler.ingest.vendoring import VendoringError, read_cached, strip_fragment
+
+        document_url = strip_fragment(target)
+        entry = self.vendored.get(document_url)
+        if entry is None:
+            return (
+                "",
+                "",
+                Ambiguity(
+                    code="remote_ref_refused",
+                    field=field_path,
+                    source_pointer=pointer,
+                    detail=(
+                        f"Reference {target!r} is remote. Ingestion never reaches the network, "
+                        "so the target was not loaded. Vendor it first with `vendor-refs`, "
+                        "which fetches it once, pins it by digest and records a lock."
+                    ),
+                    blocking=True,
+                ),
+            )
+
+        path, expected = entry
+        uri = path.as_posix()
+        if uri not in self._documents:
+            try:
+                read_cached(document_url, path, expected)
+            except VendoringError as error:
+                return (
+                    "",
+                    "",
+                    Ambiguity(
+                        code="vendored_ref_unusable",
+                        field=field_path,
+                        source_pointer=pointer,
+                        detail=str(error),
+                        blocking=True,
+                    ),
+                )
+            loaded = _load_document(path)
+            # Recorded under the URL it came from, so an artifact says where the bytes
+            # originated rather than where they happen to sit in someone's cache.
+            self._documents[uri] = replace(loaded, uri=document_url)
         return uri, fragment, None
 
 

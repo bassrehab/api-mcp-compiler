@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+### Remote references
+
+- **A specification with remote references now compiles, and ingestion still never reaches
+  the network.** Those two facts are only compatible because fetching is a separate command:
+  `vendor-refs` fetches each remote document once over HTTPS, pins it by digest and records a
+  lock, and ingestion reads the pinned files, verifies them, and refuses anything the lock
+  does not name.
+- A reference the lock does not already name requires `--record`, and is refused **before
+  anything is fetched**. Trusting a source should be a decision someone made rather than
+  something that happened while a build ran.
+- An upstream edit is visible rather than adopted: a document that now serves different bytes
+  fails the vendor step, and bytes edited in the cache after locking fail at compile time with
+  nothing loaded.
+- Reproducibility is unchanged in kind. A compile needs the specification, the lock and the
+  cache, and neither the network nor the clock. There is no time-based revalidation, because
+  a cache that refreshed itself would reintroduce exactly the dependency this avoids.
+- `--refs-lock` is accepted by every command that parses a document.
+
 ### Documentation
 
 - **A deployment page for the controls a generated artifact cannot provide.** The manifest has
@@ -117,6 +135,24 @@ No contract changed, so an artifact written by 0.2.0 still validates.
 - The SOAP path retries on the same transport codes and sends no idempotency key, because
   WSDL declares nothing equivalent and a header invented here would be honoured by nobody.
 
+### Remote references
+
+- **A specification with remote references now compiles, and ingestion still never reaches
+  the network.** Those two facts are only compatible because fetching is a separate command:
+  `vendor-refs` fetches each remote document once over HTTPS, pins it by digest and records a
+  lock, and ingestion reads the pinned files, verifies them, and refuses anything the lock
+  does not name.
+- A reference the lock does not already name requires `--record`, and is refused **before
+  anything is fetched**. Trusting a source should be a decision someone made rather than
+  something that happened while a build ran.
+- An upstream edit is visible rather than adopted: a document that now serves different bytes
+  fails the vendor step, and bytes edited in the cache after locking fail at compile time with
+  nothing loaded.
+- Reproducibility is unchanged in kind. A compile needs the specification, the lock and the
+  cache, and neither the network nor the clock. There is no time-based revalidation, because
+  a cache that refreshed itself would reintroduce exactly the dependency this avoids.
+- `--refs-lock` is accepted by every command that parses a document.
+
 ### Documentation
 
 - The README and the guide now lead with what is demonstrated, and state what is not
@@ -227,6 +263,24 @@ First published release, on PyPI as `api-mcp-compiler`.
   editable install wins the import and freezes the code under test, so the suite passes while
   describing a snapshot. It happened here. A test now asserts the package under test is this
   working tree.
+
+### Remote references
+
+- **A specification with remote references now compiles, and ingestion still never reaches
+  the network.** Those two facts are only compatible because fetching is a separate command:
+  `vendor-refs` fetches each remote document once over HTTPS, pins it by digest and records a
+  lock, and ingestion reads the pinned files, verifies them, and refuses anything the lock
+  does not name.
+- A reference the lock does not already name requires `--record`, and is refused **before
+  anything is fetched**. Trusting a source should be a decision someone made rather than
+  something that happened while a build ran.
+- An upstream edit is visible rather than adopted: a document that now serves different bytes
+  fails the vendor step, and bytes edited in the cache after locking fail at compile time with
+  nothing loaded.
+- Reproducibility is unchanged in kind. A compile needs the specification, the lock and the
+  cache, and neither the network nor the clock. There is no time-based revalidation, because
+  a cache that refreshed itself would reintroduce exactly the dependency this avoids.
+- `--refs-lock` is accepted by every command that parses a document.
 
 ### Documentation
 
@@ -667,6 +721,24 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Added `ServiceIR.source_digest`, tying every generated artifact to the exact
   specification bytes it was compiled from.
 
+### Remote references
+
+- **A specification with remote references now compiles, and ingestion still never reaches
+  the network.** Those two facts are only compatible because fetching is a separate command:
+  `vendor-refs` fetches each remote document once over HTTPS, pins it by digest and records a
+  lock, and ingestion reads the pinned files, verifies them, and refuses anything the lock
+  does not name.
+- A reference the lock does not already name requires `--record`, and is refused **before
+  anything is fetched**. Trusting a source should be a decision someone made rather than
+  something that happened while a build ran.
+- An upstream edit is visible rather than adopted: a document that now serves different bytes
+  fails the vendor step, and bytes edited in the cache after locking fail at compile time with
+  nothing loaded.
+- Reproducibility is unchanged in kind. A compile needs the specification, the lock and the
+  cache, and neither the network nor the clock. There is no time-based revalidation, because
+  a cache that refreshed itself would reintroduce exactly the dependency this avoids.
+- `--refs-lock` is accepted by every command that parses a document.
+
 ### Documentation
 
 - **A deployment page for the controls a generated artifact cannot provide.** The manifest has
@@ -704,6 +776,24 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - CLI: added `plan` and `validate` commands alongside `inspect`.
 
 ## Unreleased
+
+### Remote references
+
+- **A specification with remote references now compiles, and ingestion still never reaches
+  the network.** Those two facts are only compatible because fetching is a separate command:
+  `vendor-refs` fetches each remote document once over HTTPS, pins it by digest and records a
+  lock, and ingestion reads the pinned files, verifies them, and refuses anything the lock
+  does not name.
+- A reference the lock does not already name requires `--record`, and is refused **before
+  anything is fetched**. Trusting a source should be a decision someone made rather than
+  something that happened while a build ran.
+- An upstream edit is visible rather than adopted: a document that now serves different bytes
+  fails the vendor step, and bytes edited in the cache after locking fail at compile time with
+  nothing loaded.
+- Reproducibility is unchanged in kind. A compile needs the specification, the lock and the
+  cache, and neither the network nor the clock. There is no time-based revalidation, because
+  a cache that refreshed itself would reintroduce exactly the dependency this avoids.
+- `--refs-lock` is accepted by every command that parses a document.
 
 ### Documentation
 
@@ -819,6 +909,24 @@ No contract changed, so an artifact written by 0.2.0 still validates.
   reported rather than hammered.
 - The SOAP path retries on the same transport codes and sends no idempotency key, because
   WSDL declares nothing equivalent and a header invented here would be honoured by nobody.
+
+### Remote references
+
+- **A specification with remote references now compiles, and ingestion still never reaches
+  the network.** Those two facts are only compatible because fetching is a separate command:
+  `vendor-refs` fetches each remote document once over HTTPS, pins it by digest and records a
+  lock, and ingestion reads the pinned files, verifies them, and refuses anything the lock
+  does not name.
+- A reference the lock does not already name requires `--record`, and is refused **before
+  anything is fetched**. Trusting a source should be a decision someone made rather than
+  something that happened while a build ran.
+- An upstream edit is visible rather than adopted: a document that now serves different bytes
+  fails the vendor step, and bytes edited in the cache after locking fail at compile time with
+  nothing loaded.
+- Reproducibility is unchanged in kind. A compile needs the specification, the lock and the
+  cache, and neither the network nor the clock. There is no time-based revalidation, because
+  a cache that refreshed itself would reintroduce exactly the dependency this avoids.
+- `--refs-lock` is accepted by every command that parses a document.
 
 ### Documentation
 

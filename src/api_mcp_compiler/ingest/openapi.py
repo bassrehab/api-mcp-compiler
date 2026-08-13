@@ -1410,12 +1410,22 @@ def _service(ctx: _Context, path: Path, digest: str, spec_version: str) -> Servi
     )
 
 
-def parse_openapi(path: Path, *, policy: RefPolicy | None = None) -> ApiSemanticIR:
+def parse_openapi(
+    path: Path,
+    *,
+    policy: RefPolicy | None = None,
+    vendored: dict[str, tuple[Path, str]] | None = None,
+) -> ApiSemanticIR:
     """Parse an OpenAPI 3.x document into the API Semantic IR.
 
     `policy` controls which reference targets may be loaded. The default denies everything
     outside the root document, so parsing a third-party specification cannot read files it
     was not explicitly pointed at, and never reaches the network.
+
+    `vendored` maps a remote reference URL to the file it was fetched into and the digest it
+    was pinned to, produced by the `vendor-refs` command. Ingestion still performs no network
+    access: it reads those files and refuses any whose bytes have changed. Without it, a
+    remote reference is refused exactly as before.
 
     Raises `OpenApiIngestionError` if the document is not OpenAPI 3.x. Swagger 2 is a
     separate adapter rather than a special case here, so that a downgrade cannot silently
@@ -1434,6 +1444,7 @@ def parse_openapi(path: Path, *, policy: RefPolicy | None = None) -> ApiSemantic
         root_data=doc,
         root_digest=digest,
         policy=policy or RefPolicy(),
+        vendored=dict(vendored or {}),
     )
     ctx = _Context(doc=doc, resolver=resolver)
     # Anything the Swagger 2 translation could not carry over is reported alongside everything

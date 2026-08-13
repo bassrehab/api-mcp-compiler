@@ -24,8 +24,16 @@ from api_mcp_compiler.contracts import (
     validate_tool_surface,
 )
 from api_mcp_compiler.evaluation.harness import run_corpus
+from api_mcp_compiler.ingest.documents import load_document
 from api_mcp_compiler.ingest.openapi import parse_openapi
 from api_mcp_compiler.ingest.refs import RefPolicy
+from api_mcp_compiler.ingest.vendoring import (
+    VendoringError,
+    cached_documents,
+    load_lock,
+    remote_references,
+    vendor,
+)
 from api_mcp_compiler.ingest.wsdl import parse_wsdl
 from api_mcp_compiler.models import (
     ApiSemanticIR,
@@ -56,6 +64,12 @@ class SourceKind(StrEnum):
     WSDL = "wsdl"
 
 
+REFS_LOCK_HELP = (
+    "Path to a reference lock written by `vendor-refs`. Remote references resolve from the "
+    "files it pins, and any whose bytes have changed are refused. Ingestion still performs "
+    "no network access."
+)
+
 OVERLAY_HELP = (
     "Path to a reviewed overlay. Its digest must match the specification, so decisions made "
     "about other bytes are refused rather than silently applied."
@@ -72,13 +86,23 @@ ALLOW_DIR_HELP = (
 )
 
 
-def _parse(source: Path, kind: SourceKind, allow_dir: list[Path] | None = None) -> ApiSemanticIR:
+def _parse(
+    source: Path,
+    kind: SourceKind,
+    allow_dir: list[Path] | None = None,
+    refs_lock: Path | None = None,
+) -> ApiSemanticIR:
     """Dispatch a source document to the matching ingestion adapter."""
     if kind is SourceKind.AUTO:
         kind = SourceKind.WSDL if source.suffix.lower() in _WSDL_SUFFIXES else SourceKind.OPENAPI
     if kind is SourceKind.WSDL:
         return parse_wsdl(source)
-    return parse_openapi(source, policy=RefPolicy(allowed_directories=tuple(allow_dir or ())))
+    vendored = cached_documents(load_lock(refs_lock), refs_lock) if refs_lock else None
+    return parse_openapi(
+        source,
+        policy=RefPolicy(allowed_directories=tuple(allow_dir or ())),
+        vendored=vendored,
+    )
 
 
 def _plan(ir: ApiSemanticIR, planner: PlannerKind, overlay: Path | None) -> ToolPlan:
@@ -93,10 +117,11 @@ def inspect(
     source: Path = typer.Argument(..., help="Path to an OpenAPI 3.x or WSDL 1.1 document."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
     baseline: bool = typer.Option(True, help="Include the baseline tool plan in the output."),
 ) -> None:
     """Parse a source document and print the normalized IR as canonical JSON."""
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     payload: dict[str, object] = {"ir": ir.model_dump(mode="json")}
     if baseline:
         payload["baseline_plan"] = plan_baseline(ir).model_dump(mode="json")
@@ -108,6 +133,7 @@ def plan(
     source: Path = typer.Argument(..., help="Path to an OpenAPI 3.x or WSDL 1.1 document."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
@@ -116,7 +142,7 @@ def plan(
     Every artifact is `proposed` until a reviewer records approval in an overlay, and the
     emission gate refuses to make a write or destructive tool executable before then.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     typer.echo(dump_canonical(_plan(ir, planner, overlay)), nl=False)
 
 
@@ -125,6 +151,7 @@ def generate(
     source: Path = typer.Argument(..., help="Path to an OpenAPI 3.x or WSDL 1.1 document."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
     enforce_policy: bool = typer.Option(
@@ -138,7 +165,7 @@ def generate(
     write, destructive or privileged tool has been approved. Refused tools are still emitted,
     carrying the reason, so the surface stays auditable.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     plan = _plan(ir, planner, overlay)
     manifest = synthesize_policy(ir, plan) if enforce_policy else None
     typer.echo(dump_canonical(generate_surface(ir, plan, manifest)), nl=False)
@@ -150,6 +177,7 @@ def report(
     out_dir: Path = typer.Option(Path("reports"), "--out-dir", help="Directory for reports."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
@@ -160,7 +188,7 @@ def report(
     one set of proposals is not evidence about a different set, so each run writes a file named
     for the source digest it describes.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     plan = _plan(ir, planner, overlay)
     manifest = synthesize_policy(ir, plan)
     written = write_report(out_dir, ir, plan, generate_surface(ir, plan, manifest), manifest)
@@ -184,13 +212,14 @@ def approve_surface(
     name: list[str] = typer.Option([], "--name", help="Approve one named tool. Repeatable."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
 ) -> None:
     """Record approval for a class of tools, writing the overlay so nobody hand-edits JSON.
 
     A selection must name what it covers. There is deliberately no flag that approves a whole
     surface without saying what class of thing it is.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     existing = load_overlay(overlay) if overlay.is_file() else None
     plan = plan_semantic(ir, existing)
     try:
@@ -214,6 +243,7 @@ def serve(
     out: Path = typer.Option(..., "--out", help="Where to write the generated server module."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
@@ -232,7 +262,7 @@ def serve(
 
     The generated module needs `mcp` and `httpx`, which this compiler does not depend on.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     plan = _plan(ir, planner, overlay)
     manifest = synthesize_policy(ir, plan)
     surface = generate_surface(ir, plan, manifest)
@@ -281,6 +311,7 @@ def policy(
     source: Path = typer.Argument(..., help="Path to an OpenAPI 3.x or WSDL 1.1 document."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
@@ -289,7 +320,7 @@ def policy(
     Policy is derived separately from code generation. Anything that cannot be derived is
     named in `unresolved`, and generation then refuses the tool rather than defaulting it.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     typer.echo(dump_canonical(synthesize_policy(ir, _plan(ir, planner, overlay))), nl=False)
 
 
@@ -298,6 +329,7 @@ def review(
     source: Path = typer.Argument(..., help="Path to an OpenAPI 3.x or WSDL 1.1 document."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
     """Print the human review report for the semantic plan.
@@ -305,7 +337,7 @@ def review(
     This is the artifact the approval gate depends on: every proposed rename, omission,
     grouping, projection and composite, with its rationale and confidence.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     typer.echo(review_report(ir, plan_semantic(ir, load_overlay(overlay) if overlay else None)))
 
 
@@ -315,6 +347,7 @@ def overlay_restamp(
     overlay: Path = typer.Argument(..., help="Overlay to re-stamp in place."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
 ) -> None:
     """Bind an overlay to the current specification revision.
 
@@ -322,7 +355,7 @@ def overlay_restamp(
     digest is what stops an approval granted for one revision from applying to another, so
     re-stamping without reviewing defeats the mechanism it exists to provide.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     current = load_overlay(overlay)
     if current.source_digest == ir.service.source_digest:
         typer.echo(f"{overlay}: already bound to {ir.service.source_digest}.")
@@ -340,6 +373,7 @@ def evaluate(
     corpus: Path = typer.Argument(..., help="Path to an evaluation corpus."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
     enforce_policy: bool = typer.Option(
@@ -353,7 +387,7 @@ def evaluate(
     checking that the harness agrees with itself and useless for comparing surfaces. No
     output of this command is evidence that one planner outperforms another.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     plan = _plan(ir, planner, overlay)
     manifest = synthesize_policy(ir, plan) if enforce_policy else None
     loaded = EvalCorpus.model_validate(json.loads(corpus.read_text(encoding="utf-8")))
@@ -362,17 +396,73 @@ def evaluate(
 
 
 @app.command()
+def vendor_refs(
+    source: Path = typer.Argument(..., help="Path to an OpenAPI 3.x document."),
+    lock: Path = typer.Option(..., "--lock", help="Where to write the reference lock."),
+    cache: Path | None = typer.Option(
+        None, "--cache", help="Where to write fetched documents. Defaults to beside the lock."
+    ),
+    record: bool = typer.Option(
+        False,
+        "--record",
+        help="Trust references not already in the lock, on first use. Without this, an "
+        "unrecorded reference is refused before anything is fetched.",
+    ),
+) -> None:
+    """Fetch the remote references a specification names, and pin them by digest.
+
+    This is the only command that reaches the network, and it exists so that ingestion never
+    has to. It fetches over HTTPS with certificate verification, writes nothing until bytes
+    verify, and records a lock naming each URL, the digest of what it served and the file the
+    bytes went into.
+
+    Commit the lock and the cache. A compile then needs neither the network nor the clock: it
+    reads the pinned files and refuses any whose bytes have changed, so an upstream edit
+    surfaces as a mismatch rather than as a surface that quietly became something else.
+    """
+    document, digest = load_document(source)
+    if not isinstance(document, dict):
+        typer.echo(f"{source}: OpenAPI document must be a mapping at the root", err=True)
+        raise typer.Exit(code=1)
+
+    wanted = remote_references(document)
+    if not wanted:
+        typer.echo(f"{source} names no remote references; nothing to vendor.")
+        return
+
+    existing = load_lock(lock) if lock.is_file() else None
+    destination = cache or lock.parent / "refs"
+    try:
+        written, fetched, unchanged = vendor(
+            document, digest, lock, destination, record=record, existing=existing
+        )
+    except VendoringError as error:
+        typer.echo(str(error), err=True)
+        raise typer.Exit(code=1) from error
+
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    lock.write_text(dump_canonical(written), encoding="utf-8")
+    typer.echo(f"wrote {lock} for {source}")
+    for url in fetched:
+        typer.echo(f"  fetched   {url}")
+    for url in unchanged:
+        typer.echo(f"  unchanged {url}")
+    typer.echo(f"  cache {destination}")
+
+
+@app.command()
 def validate(
     source: Path = typer.Argument(..., help="Path to an OpenAPI 3.x or WSDL 1.1 document."),
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
+    refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
 ) -> None:
     """Validate the IR and baseline plan against their schemas and report ambiguities.
 
     Exits non-zero when a contract is violated. Blocking ambiguities are reported but do not
     fail the command: they are the work queue for later phases, not defects in this one.
     """
-    ir = _parse(source, kind, allow_dir)
+    ir = _parse(source, kind, allow_dir, refs_lock)
     baseline = plan_baseline(ir)
     try:
         validate_ir(ir.model_dump(mode="json"), label=f"IR for {source}")
