@@ -22,9 +22,21 @@ A `PUT` with no record identifier sets a singleton rather than creating a record
 `PUT` replaces the resource at a URI, so `PUT /me/player/volume` updates one thing rather than
 creating a `volume` record.
 
-Known remaining limitation: a `POST` used as a command, such as skipping playback, is still
-modelled as creating a record. Telling a command from a creation needs more than the path
-shape offers.
+A bodyless `POST` on a collection root is a command rather than a creation. A creation needs
+something to create from, so `POST /me/player/next` commands a skip where `POST /playlists`
+creates a playlist, and modelling the first as a creation invented a record for every track
+skipped.
+
+Every effect now names the rule that produced it and how much that rule is worth, because the
+model is an approximation and could not previously say which calls it was confident about. A
+result judged against a guess and one judged against a convention that always holds looked
+identical from the outside. `scripts/effect_coverage.py` reports the distribution over a real
+specification, which is how "how often does the approximation hold" stops being a question
+nobody can answer.
+
+Known remaining limitation: a `POST` carrying a body to a collection root is read as a
+creation even when the service treats it as a command, and nothing in the path or the body
+distinguishes those. That case is modelled at 0.75 rather than silently.
 """
 
 from __future__ import annotations
@@ -35,7 +47,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
-from api_mcp_compiler.models import OperationIR, SideEffectClass
+from api_mcp_compiler.models import OperationIR, ParameterLocation, SideEffectClass
 
 _TEMPLATED = re.compile(r"^\{[^}]*\}$")
 
@@ -57,12 +69,20 @@ class EffectKind(StrEnum):
 
 @dataclass(frozen=True)
 class Effect:
-    """The store effect derived for one operation."""
+    """The store effect derived for one operation.
+
+    `basis` names the rule that decided this, and `confidence` says how much the rule is
+    worth. Both exist because the model is an approximation and the previous version of it
+    could not say which calls it was confident about. A result judged against a guess and a
+    result judged against a convention that always holds looked identical.
+    """
 
     kind: EffectKind
     collection: str
     action: str | None = None
     identifier_argument: str | None = None
+    basis: str = "unclassified"
+    confidence: float = 0.0
 
 
 #: What a service does when a caller says nothing about page size. Real APIs page by default
@@ -121,6 +141,11 @@ def _is_put(operation: OperationIR) -> bool:
     return operation.source_pointer.rsplit("/", 1)[-1].lower() == "put"
 
 
+def _has_body(operation: OperationIR) -> bool:
+    """Whether the operation sends anything to create a record from."""
+    return any(item.location is ParameterLocation.BODY for item in operation.inputs)
+
+
 def _segments(route: str) -> list[str]:
     return [item for item in route.split("/") if item]
 
@@ -153,18 +178,40 @@ def derive_effect(operation: OperationIR) -> Effect:
     targets_record = bool(identifier) and _TEMPLATED.match(parts[-1]) is not None
 
     if operation.side_effect is SideEffectClass.READ:
-        return Effect(EffectKind.READ, collection, action, identifier)
+        return Effect(EffectKind.READ, collection, action, identifier, "read", 1.0)
     if operation.side_effect is SideEffectClass.DESTRUCTIVE:
-        return Effect(EffectKind.DELETE, collection, action, identifier)
+        return Effect(EffectKind.DELETE, collection, action, identifier, "destructive", 0.9)
     if operation.side_effect is SideEffectClass.WRITE:
-        if action or targets_record:
-            return Effect(EffectKind.UPDATE, collection, action, identifier)
+        if action:
+            return Effect(EffectKind.UPDATE, collection, action, identifier, "action_segment", 0.8)
+        if targets_record:
+            return Effect(EffectKind.UPDATE, collection, action, identifier, "identified", 0.9)
         if _is_put(operation):
             # PUT replaces the resource at a URI, so with no record identifier it sets one
             # thing rather than adding to a collection.
-            return Effect(EffectKind.UPDATE, collection, action, identifier or collection)
-        return Effect(EffectKind.CREATE, collection, action, identifier)
-    return Effect(EffectKind.NONE, collection, action, identifier)
+            return Effect(
+                EffectKind.UPDATE,
+                collection,
+                action,
+                identifier or collection,
+                "put_singleton",
+                0.85,
+            )
+        if not _has_body(operation):
+            # A creation needs something to create from. A bodyless POST on a collection root
+            # is a command, and modelling it as a creation invented a record for every skipped
+            # track. The final segment is what was commanded, whether or not it is a verb this
+            # module happens to know.
+            return Effect(
+                EffectKind.UPDATE,
+                collection,
+                action or (parts[-1] if parts else None),
+                identifier or collection,
+                "bodyless_command",
+                0.6,
+            )
+        return Effect(EffectKind.CREATE, collection, action, identifier, "collection_post", 0.75)
+    return Effect(EffectKind.NONE, collection, action, identifier, "unclassified", 0.0)
 
 
 @dataclass

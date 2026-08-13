@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### Evaluation
+
+- **A bodyless `POST` commands rather than creates.** A creation needs something to create
+  from, so `POST /me/player/next` skips a track where `POST /playlists` makes a playlist. The
+  old model invented a record for every skip, which the module's own docstring had listed as a
+  known limitation. On the Spotify document it affects three operations.
+- **Every derived effect names the rule that produced it and how much that rule is worth.** A
+  result judged against a guess and one judged against a convention that always holds looked
+  identical from the outside.
+- `scripts/effect_coverage.py` reports the distribution over a real specification. On the 40
+  operations of the Spotify document, 35 are modelled at 0.8 confidence or above and 5 below,
+  which is the measurement the issue asked for rather than an assurance.
+
 ### Remote references
 
 - **A specification with remote references now compiles, and ingestion still never reaches
@@ -135,6 +148,19 @@ No contract changed, so an artifact written by 0.2.0 still validates.
 - The SOAP path retries on the same transport codes and sends no idempotency key, because
   WSDL declares nothing equivalent and a header invented here would be honoured by nobody.
 
+### Evaluation
+
+- **A bodyless `POST` commands rather than creates.** A creation needs something to create
+  from, so `POST /me/player/next` skips a track where `POST /playlists` makes a playlist. The
+  old model invented a record for every skip, which the module's own docstring had listed as a
+  known limitation. On the Spotify document it affects three operations.
+- **Every derived effect names the rule that produced it and how much that rule is worth.** A
+  result judged against a guess and one judged against a convention that always holds looked
+  identical from the outside.
+- `scripts/effect_coverage.py` reports the distribution over a real specification. On the 40
+  operations of the Spotify document, 35 are modelled at 0.8 confidence or above and 5 below,
+  which is the measurement the issue asked for rather than an assurance.
+
 ### Remote references
 
 - **A specification with remote references now compiles, and ingestion still never reaches
@@ -263,6 +289,19 @@ First published release, on PyPI as `api-mcp-compiler`.
   editable install wins the import and freezes the code under test, so the suite passes while
   describing a snapshot. It happened here. A test now asserts the package under test is this
   working tree.
+
+### Evaluation
+
+- **A bodyless `POST` commands rather than creates.** A creation needs something to create
+  from, so `POST /me/player/next` skips a track where `POST /playlists` makes a playlist. The
+  old model invented a record for every skip, which the module's own docstring had listed as a
+  known limitation. On the Spotify document it affects three operations.
+- **Every derived effect names the rule that produced it and how much that rule is worth.** A
+  result judged against a guess and one judged against a convention that always holds looked
+  identical from the outside.
+- `scripts/effect_coverage.py` reports the distribution over a real specification. On the 40
+  operations of the Spotify document, 35 are modelled at 0.8 confidence or above and 5 below,
+  which is the measurement the issue asked for rather than an assurance.
 
 ### Remote references
 
@@ -721,6 +760,19 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Added `ServiceIR.source_digest`, tying every generated artifact to the exact
   specification bytes it was compiled from.
 
+### Evaluation
+
+- **A bodyless `POST` commands rather than creates.** A creation needs something to create
+  from, so `POST /me/player/next` skips a track where `POST /playlists` makes a playlist. The
+  old model invented a record for every skip, which the module's own docstring had listed as a
+  known limitation. On the Spotify document it affects three operations.
+- **Every derived effect names the rule that produced it and how much that rule is worth.** A
+  result judged against a guess and one judged against a convention that always holds looked
+  identical from the outside.
+- `scripts/effect_coverage.py` reports the distribution over a real specification. On the 40
+  operations of the Spotify document, 35 are modelled at 0.8 confidence or above and 5 below,
+  which is the measurement the issue asked for rather than an assurance.
+
 ### Remote references
 
 - **A specification with remote references now compiles, and ingestion still never reaches
@@ -776,6 +828,19 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - CLI: added `plan` and `validate` commands alongside `inspect`.
 
 ## Unreleased
+
+### Evaluation
+
+- **A bodyless `POST` commands rather than creates.** A creation needs something to create
+  from, so `POST /me/player/next` skips a track where `POST /playlists` makes a playlist. The
+  old model invented a record for every skip, which the module's own docstring had listed as a
+  known limitation. On the Spotify document it affects three operations.
+- **Every derived effect names the rule that produced it and how much that rule is worth.** A
+  result judged against a guess and one judged against a convention that always holds looked
+  identical from the outside.
+- `scripts/effect_coverage.py` reports the distribution over a real specification. On the 40
+  operations of the Spotify document, 35 are modelled at 0.8 confidence or above and 5 below,
+  which is the measurement the issue asked for rather than an assurance.
 
 ### Remote references
 
@@ -909,6 +974,19 @@ No contract changed, so an artifact written by 0.2.0 still validates.
   reported rather than hammered.
 - The SOAP path retries on the same transport codes and sends no idempotency key, because
   WSDL declares nothing equivalent and a header invented here would be honoured by nobody.
+
+### Evaluation
+
+- **A bodyless `POST` commands rather than creates.** A creation needs something to create
+  from, so `POST /me/player/next` skips a track where `POST /playlists` makes a playlist. The
+  old model invented a record for every skip, which the module's own docstring had listed as a
+  known limitation. On the Spotify document it affects three operations.
+- **Every derived effect names the rule that produced it and how much that rule is worth.** A
+  result judged against a guess and one judged against a convention that always holds looked
+  identical from the outside.
+- `scripts/effect_coverage.py` reports the distribution over a real specification. On the 40
+  operations of the Spotify document, 35 are modelled at 0.8 confidence or above and 5 below,
+  which is the measurement the issue asked for rather than an assurance.
 
 ### Remote references
 

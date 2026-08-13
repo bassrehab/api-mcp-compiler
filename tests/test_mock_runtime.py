@@ -13,9 +13,20 @@ import pytest
 from jsonschema import Draft202012Validator
 
 from api_mcp_compiler.codegen.tools import generate_surface
+from api_mcp_compiler.evaluation.state import EffectKind, derive_effect
 from api_mcp_compiler.ingest.openapi import parse_openapi
 from api_mcp_compiler.ingest.wsdl import parse_wsdl
-from api_mcp_compiler.models import ApiSemanticIR, ToolSurface
+from api_mcp_compiler.models import (
+    ApiSemanticIR,
+    Derivation,
+    FieldIR,
+    OperationIR,
+    ParameterLocation,
+    Protocol,
+    Provenance,
+    SideEffectClass,
+    ToolSurface,
+)
 from api_mcp_compiler.planning.baseline import plan_baseline
 from api_mcp_compiler.runtime.mock import (
     ArgumentValidationError,
@@ -165,3 +176,92 @@ def test_executor_reaches_no_network_or_filesystem() -> None:
     source = Path("src/api_mcp_compiler/runtime/mock.py").read_text(encoding="utf-8")
     for forbidden in ("import requests", "import httpx", "urllib", "socket", "open("):
         assert forbidden not in source
+
+
+def _write(route: str, method: str, *, body: bool = False) -> OperationIR:
+    """One write operation, shaped only enough for the effect model to read it."""
+    inputs = (
+        [
+            FieldIR(
+                name="body",
+                location=ParameterLocation.BODY,
+                required=True,
+                provenance=[
+                    Provenance(
+                        field=item,
+                        source_pointer=f"openapi:#/paths/{route}/{method}",
+                        derivation=Derivation.SOURCE,
+                        rule="test",
+                    )
+                    for item in ("name", "location", "required", "deprecated")
+                ],
+            )
+        ]
+        if body
+        else []
+    )
+    return OperationIR(
+        operation_id="op",
+        intent="do the thing",
+        protocol=Protocol.HTTP,
+        source_pointer=f"openapi:#/paths/{route}/{method}",
+        route=route,
+        side_effect=SideEffectClass.WRITE,
+        inputs=inputs,
+        provenance=[
+            *(
+                Provenance(
+                    field=item,
+                    source_pointer=f"openapi:#/paths/{route}/{method}",
+                    derivation=Derivation.SOURCE,
+                    rule="test",
+                )
+                for item in ("operation_id", "protocol", "source_pointer", "route", "intent",
+                             "idempotency", "deprecated")
+            ),
+            Provenance(
+                field="side_effect",
+                source_pointer=f"openapi:#/paths/{route}/{method}",
+                derivation=Derivation.INFERRED,
+                rule="test",
+                confidence=0.6,
+            ),
+        ],
+    )
+
+
+def test_a_bodyless_post_commands_rather_than_creates() -> None:
+    """Skipping a track invented a `next` record on every call."""
+    effect = derive_effect(_write("/me/player/next", "post"))
+
+    assert effect.kind is EffectKind.UPDATE
+    assert effect.action == "next"
+    assert effect.basis == "bodyless_command"
+
+
+def test_a_post_with_a_body_still_creates() -> None:
+    """A creation needs something to create from, and this has it."""
+    effect = derive_effect(_write("/playlists", "post", body=True))
+
+    assert effect.kind is EffectKind.CREATE
+    assert effect.basis == "collection_post"
+
+
+def test_every_effect_says_which_rule_produced_it() -> None:
+    """A result judged against a guess looked identical to one judged against a certainty."""
+    for route, method, body in (
+        ("/playlists", "post", True),
+        ("/me/player/volume", "put", False),
+        ("/playlists/{id}", "post", True),
+    ):
+        effect = derive_effect(_write(route, method, body=body))
+        assert effect.basis != "unclassified"
+        assert 0.0 < effect.confidence <= 1.0
+
+
+def test_the_command_rule_is_the_least_confident_write_rule() -> None:
+    """It is the one telling a command from a creation on the least evidence."""
+    command = derive_effect(_write("/me/player/next", "post"))
+    identified = derive_effect(_write("/playlists/{id}", "post", body=True))
+
+    assert command.confidence < identified.confidence

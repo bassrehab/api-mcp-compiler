@@ -51,6 +51,33 @@ No safety or success number depends on a judge. Latency and token cost are recor
 under a deterministic driver rather than estimated, because a fabricated number sitting in the
 same record as measured ones is indistinguishable from a measured one.
 
+## The store is an approximation, and says which parts it is sure of
+
+Success is judged against the state a mock service ends in, and that mock derives what each
+call does from the route and the side-effect class. That is a REST-convention approximation. A
+service that does not follow the conventions is modelled wrongly.
+
+What changed is that it now says so per call. Every derived effect names the rule that
+produced it and how much that rule is worth:
+
+| Rule | Confidence | When |
+|---|---|---|
+| `read` | 1.0 | A read, which never mutates. |
+| `identified` | 0.9 | A write on a route ending in a record identifier. |
+| `destructive` | 0.9 | A destructive operation. |
+| `put_singleton` | 0.85 | `PUT` with no record identifier, which replaces one thing. |
+| `action_segment` | 0.8 | A write whose final segment is an action verb. |
+| `collection_post` | 0.75 | A `POST` carrying a body to a collection root. |
+| `bodyless_command` | 0.6 | A `POST` with no body, which commands rather than creates. |
+
+`scripts/effect_coverage.py` prints the distribution for a specification, which is how "how
+often does the approximation hold" stops being a question nobody can answer. On the 40
+operations of the Spotify document: 35 are modelled at 0.8 or above, and 5 below.
+
+A task whose success depends on a low-confidence call should state its expectation directly
+rather than rely on the model. That escape hatch always existed and was only useful to someone
+who knew which operations to distrust.
+
 ## Two drivers
 
 **The replay driver** follows a recorded solution path. It is deterministic, needs no model,
