@@ -156,6 +156,10 @@ type-checker versions are pinned exactly, so the gate means the same thing on ev
 .venv/bin/python -m api_mcp_compiler.cli evaluate examples/openapi/order_service.yaml \
   examples/evals/order_tasks.json
 
+# Fetch and pin the remote references a specification names. The only command that
+# reaches the network, so that compiling never has to.
+.venv/bin/python -m api_mcp_compiler.cli vendor-refs SPEC --lock refs.lock.json --record
+
 # Check every artifact against its schema and list what is unresolved
 .venv/bin/python -m api_mcp_compiler.cli validate examples/openapi/inventory_service.yaml
 ```
@@ -196,8 +200,18 @@ swept.
 
 **Ingestion never reaches the network.** `$ref` resolution defaults to deny. External files
 load only from directories you name with `--allow-dir`, checked against real paths so `../`
-cannot escape. Remote references are always refused. A specification is third-party input, and
-following its pointers is an action taken on its author's behalf.
+cannot escape. A specification is third-party input, and following its pointers is an action
+taken on its author's behalf.
+
+A document that splits its schemas across URLs still compiles, because fetching is a separate
+command rather than a flag on ingestion. `vendor-refs` fetches each remote document once, pins
+it by digest and writes a lock; a compile then reads the pinned files, verifies them, and
+refuses anything the lock does not name. An upstream edit surfaces as a mismatch rather than
+as a surface that quietly became something else.
+
+**Accepted is not done.** An operation answering 202 has been accepted, not performed. The
+surface says so, and names the header to poll where the document declares one, because an
+agent told nothing reports a goal met before the work has started.
 
 **Inference can only make an operation look less safe, never more.** Destructive wording raises
 a write to destructive; it never lowers a class, and a read described destructively is flagged
@@ -215,14 +229,28 @@ unclassified risk, or policy that could not be derived keeps a tool disabled reg
 approval. Refused tools are still emitted carrying the reason, so the surface never shrinks
 quietly.
 
-**Governance is derived, not assumed.** Policy is generated separately from code:
-least-privilege scopes chosen from the security alternatives rather than their union, approval
-and confirmation classes, retry rules from inferred idempotency, rate budgets, output ceilings,
-redaction and audit rules. A destructive action needs a confirmation token bound to the exact
-arguments it was issued for, so confirming one action cannot authorise another.
+**Governance is derived, not assumed, and then obeyed.** Policy is generated separately from
+code: least-privilege scopes chosen from the security alternatives rather than their union,
+approval and confirmation classes, retry rules from inferred idempotency, call budgets, output
+ceilings, redaction and audit rules.
 
-**Evaluation is decided by state, never by a model.** A task names source operations rather
-than tool names, so one corpus scores both planners. Success is judged by the state the
+The generated server acts on all of it. A confirmation token is bound to a digest of the exact
+arguments, expires, and is single use. Each credential is placed where the specification said
+it goes, read from the environment at call time and never written into a file. Retries are
+bounded by the derived policy and never repeat a call that may already have taken effect. Call
+budgets are counted and a call over them is refused with the limit and when it lifts, rather
+than queued.
+
+An earlier version derived every one of those and acted on none of them, which is the failure
+this property is worded to exclude.
+
+**Evaluation is decided by state, never by a model, and says where it is guessing.** A task
+names source operations rather than tool names, so one corpus scores both planners. A run
+records which operations an agent reached for and how many of its calls the task permitted,
+measured against the permitted set and never against a recorded solution. The mock service
+that decides final state names the rule behind every effect and how much it is worth: on a
+real 40-operation API, 35 are modelled at high confidence and 5 are not, and a script reports
+which. Success is judged by the state the
 service ends in, together with oracles for absence of mutation, prohibited operations and
 confirmation adherence. No safety or success number depends on a judge, and latency and token
 cost are recorded as null rather than estimated, because a fabricated number sitting beside
