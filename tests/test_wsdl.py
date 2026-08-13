@@ -233,3 +233,72 @@ def test_wsdl_imports_are_reported(tmp_path: Path) -> None:
     )
     ir = parse_wsdl(spec)
     assert [item.code for item in ir.ambiguities] == ["unresolved_wsdl_import"]
+
+
+VOID_RESPONSE = """<?xml version="1.0"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:tns="urn:void" targetNamespace="urn:void">
+  <message name="pingRequest">
+    <part name="who" type="xsd:string"/>
+  </message>
+  <message name="pingResponse"></message>
+  <portType name="VoidPort">
+    <operation name="ping">
+      <input message="tns:pingRequest"/>
+      <output message="tns:pingResponse"/>
+    </operation>
+  </portType>
+  <binding name="VoidBinding" type="tns:VoidPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="ping">
+      <soap:operation soapAction="urn:void/ping"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  </binding>
+  <service name="VoidService">
+    <port name="VoidPort" binding="tns:VoidBinding">
+      <soap:address location="https://void.example.invalid/soap"/>
+    </port>
+  </service>
+</definitions>
+"""
+
+
+def test_a_message_with_no_parts_is_a_void_response_not_an_unresolved_type(
+    tmp_path: Path,
+) -> None:
+    """WSDL permits an empty message, and services use it the way HTTP uses 204.
+
+    Reporting it as unresolved blocked operations whose documents were perfectly clear. Two of
+    the forty in the third-party collection declared an empty response and were refused for
+    saying so.
+    """
+    path = tmp_path / "void.wsdl"
+    path.write_text(VOID_RESPONSE, encoding="utf-8")
+
+    ir = parse_wsdl(path)
+
+    assert not [item for item in ir.ambiguities if item.code == "unresolved_xsd_type"]
+    operation = ir.operations[0]
+    assert operation.outputs[0].type_schema is None
+    assert [item.name for item in operation.inputs] == ["who"]
+
+
+def test_a_type_that_cannot_be_translated_is_still_reported(tmp_path: Path) -> None:
+    """The change must not have quietened the case it was distinguishing itself from."""
+    path = tmp_path / "unknown.wsdl"
+    path.write_text(
+        VOID_RESPONSE.replace(
+            '<message name="pingResponse"></message>',
+            '<message name="pingResponse"><part name="out" type="tns:Missing"/></message>',
+        ),
+        encoding="utf-8",
+    )
+
+    ir = parse_wsdl(path)
+
+    assert [item for item in ir.ambiguities if item.code == "unresolved_xsd_type"]

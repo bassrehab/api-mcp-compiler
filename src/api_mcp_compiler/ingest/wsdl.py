@@ -151,9 +151,15 @@ def _message_schema(parts: list[etree._Element], index: XsdIndex) -> XsdResoluti
 
     A single part is the response itself; several parts are an object over them, which is what
     a SOAP body containing several elements amounts to.
+
+    A message with no parts carries nothing, and that is a statement rather than a gap. WSDL
+    permits an empty message and services use it for a void return, the way HTTP uses 204.
+    Reporting it as unresolved blocked operations whose documents were perfectly clear: two of
+    the forty in the third-party collection said their response was empty and were refused for
+    saying so.
     """
     if not parts:
-        return XsdResolution(schema=None, unresolved=["the message declares no parts"])
+        return XsdResolution(schema=None, unresolved=[])
     resolved = []
     for part in parts:
         reference = part.get("element") or part.get("type")
@@ -443,7 +449,11 @@ def _build_operation(
                 ],
             )
         )
-        if output_message is not None and not output_resolution.complete:
+        # A message with no parts resolved to nothing because it carries nothing, which is
+        # not the same as a type this compiler could not translate. Only the caller knows
+        # which of those happened, because `complete` cannot tell an empty answer from a
+        # missing one.
+        if output_message is not None and output_parts and not output_resolution.complete:
             ambiguities.append(
                 Ambiguity(
                     code="unresolved_xsd_type",

@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- **A WSDL message with no parts is a void response, not an unresolved type.** WSDL permits an
+  empty message and services use it the way HTTP uses 204. Reading it as unresolved blocked
+  the operation, so two of the forty documents in the third-party collection were refused for
+  declaring their response empty clearly. Found by asking the completeness sweep what it was
+  still reporting, rather than by guessing where to look.
+
 ## 0.5.0
 
 Released 2026-08-13. Remote references resolve without ingestion ever reaching the network, an
@@ -833,6 +843,16 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Pinned ruff and mypy to exact versions and declared an explicit lint rule selection, so
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
+
+## Unreleased
+
+### Fixed
+
+- **A WSDL message with no parts is a void response, not an unresolved type.** WSDL permits an
+  empty message and services use it the way HTTP uses 204. Reading it as unresolved blocked
+  the operation, so two of the forty documents in the third-party collection were refused for
+  declaring their response empty clearly. Found by asking the completeness sweep what it was
+  still reporting, rather than by guessing where to look.
 
 ## 0.5.0
 

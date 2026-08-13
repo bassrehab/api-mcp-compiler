@@ -24,6 +24,16 @@ approximation of a type system is how a generated client corrupts data.
 WSDL imports are recorded rather than resolved. WS-Security and MTOM are recorded as
 ambiguities.
 
+## An empty message is an answer
+
+WSDL permits a message with no parts, and services use it for a void return the way HTTP uses
+204. That is a statement about the response, not a gap in the document.
+
+It used to be read as an unresolved type and blocked the operation. Two of the forty documents
+in the third-party collection declared an empty response and were refused for saying so
+clearly, which is the opposite of what a compiler that distinguishes absent from unsupported
+is for.
+
 ## Side effects must be recorded by a human
 
 WSDL carries no signal equivalent to an HTTP method. An operation named `DeleteCustomer` might
