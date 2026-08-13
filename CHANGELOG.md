@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.5.0
+
+Released 2026-08-13. Remote references resolve without ingestion ever reaching the network, an
+operation that only accepts work says so, grouping follows the tags a document declares, and
+the evaluation store reports which of its effects are guesses.
+
+Minor rather than patch because the IR contract gained fields: an IR written by 0.4.0 no
+longer validates. Surfaces, plans, policy manifests and evaluation runs are unchanged.
 
 ### Evaluation
 
@@ -827,7 +834,14 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
 
-## Unreleased
+## 0.5.0
+
+Released 2026-08-13. Remote references resolve without ingestion ever reaching the network, an
+operation that only accepts work says so, grouping follows the tags a document declares, and
+the evaluation store reports which of its effects are guesses.
+
+Minor rather than patch because the IR contract gained fields: an IR written by 0.4.0 no
+longer validates. Surfaces, plans, policy manifests and evaluation runs are unchanged.
 
 ### Evaluation
 
