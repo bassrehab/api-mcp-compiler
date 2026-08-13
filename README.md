@@ -14,6 +14,7 @@
 [![Results](https://img.shields.io/badge/results-pre--registered-8A2BE2.svg)](https://github.com/bassrehab/api-mcp-compiler/tree/main/preregistrations)
 
 [Documentation](https://api-mcp.subhadipmitra.com/) &middot;
+[Write-up](https://subhadipmitra.com/blog/2026/api-mcp-compiler/) &middot;
 [Notebook walkthrough](https://github.com/bassrehab/api-mcp-compiler/blob/main/notebooks/from_specification_to_server.ipynb) &middot;
 [Pre-registrations](https://github.com/bassrehab/api-mcp-compiler/tree/main/preregistrations) &middot;
 [Changelog](https://github.com/bassrehab/api-mcp-compiler/blob/main/CHANGELOG.md)
@@ -275,6 +276,11 @@ committed. Regenerate them deliberately and review the diff:
 The full guide lives at **[api-mcp.subhadipmitra.com](https://api-mcp.subhadipmitra.com/)**:
 concepts, a command reference, the contract schemas, the SOAP path, and how evaluation and
 pre-registration work. Its source is in [`guide/`](https://github.com/bassrehab/api-mcp-compiler/tree/main/guide).
+
+**[Your OpenAPI Spec Is Not an Agent Interface](https://subhadipmitra.com/blog/2026/api-mcp-compiler/)**
+is the write-up: why transliterating a specification into tools is the easy half of the
+problem, what the compiler does about the other half, and what four pre-registered
+comparisons did and did not establish.
 
 ## Scope
 

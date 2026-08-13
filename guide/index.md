@@ -33,6 +33,13 @@ specification -> ingestion -> API Semantic IR -> planner -> tool plan
 Each stage has its own versioned [contract](contracts.md), and each artifact carries the digest
 of the specification it came from.
 
+## The write-up
+
+**[Your OpenAPI Spec Is Not an Agent Interface](https://subhadipmitra.com/blog/2026/api-mcp-compiler/)**
+is the argument behind this project: why turning one operation into one tool is the easy half,
+what the compiler does about the other half, and what four pre-registered comparisons did and
+did not establish.
+
 ## Where to start
 
 - **[Install](install.md)**, then run the verification gate to confirm the checkout is sound.
