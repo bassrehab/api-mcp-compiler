@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.6.0
+
+Released 2026-08-14. Generated tools carry MCP annotations derived from the specification
+rather than asserted, which is the first thing in the ecosystem to emit a hint with a
+recorded basis.
+
+Minor rather than patch: a surface written by 0.5.2 no longer validates, because the contract
+gained the annotations. Every other contract is unchanged.
+
+### Annotations
+
+- **Generated tools carry MCP annotations derived from the specification.** `readOnlyHint`,
+  `destructiveHint` and `idempotentHint` come from the risk class and the inferred idempotency,
+  both of which already carry provenance back to a source pointer.
+- The protocol says a client must treat annotations as untrusted because a server can assert
+  whatever it likes, and there is no verification mechanism anywhere in the ecosystem. A hint
+  with a recorded basis is a different kind of claim, and this is the first thing that emits
+  one.
+- **`openWorldHint` is deliberately not emitted.** Nothing in a specification answers what it
+  asks, and one invented value beside three derived ones is how a set of trustworthy hints
+  stops being checked.
+- Sensitivity and reversibility are emitted under an `x-rotaforge/` prefix, because both were
+  proposed to the specification and neither was merged. Sensitivity is null rather than false
+  where no policy was synthesised: false would assert a tool touches nothing sensitive, and
+  nothing determined that.
+- `mcp_tool_surface` schema version raised to `0.4.0`.
+
 ## 0.5.2
 
 Released 2026-08-14. The package declares `Typing :: Typed` and now ships the `py.typed`
@@ -856,6 +883,33 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Pinned ruff and mypy to exact versions and declared an explicit lint rule selection, so
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
+
+## 0.6.0
+
+Released 2026-08-14. Generated tools carry MCP annotations derived from the specification
+rather than asserted, which is the first thing in the ecosystem to emit a hint with a
+recorded basis.
+
+Minor rather than patch: a surface written by 0.5.2 no longer validates, because the contract
+gained the annotations. Every other contract is unchanged.
+
+### Annotations
+
+- **Generated tools carry MCP annotations derived from the specification.** `readOnlyHint`,
+  `destructiveHint` and `idempotentHint` come from the risk class and the inferred idempotency,
+  both of which already carry provenance back to a source pointer.
+- The protocol says a client must treat annotations as untrusted because a server can assert
+  whatever it likes, and there is no verification mechanism anywhere in the ecosystem. A hint
+  with a recorded basis is a different kind of claim, and this is the first thing that emits
+  one.
+- **`openWorldHint` is deliberately not emitted.** Nothing in a specification answers what it
+  asks, and one invented value beside three derived ones is how a set of trustworthy hints
+  stops being checked.
+- Sensitivity and reversibility are emitted under an `x-rotaforge/` prefix, because both were
+  proposed to the specification and neither was merged. Sensitivity is null rather than false
+  where no policy was synthesised: false would assert a tool touches nothing sensitive, and
+  nothing determined that.
+- `mcp_tool_surface` schema version raised to `0.4.0`.
 
 ## 0.5.2
 

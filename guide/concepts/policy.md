@@ -144,6 +144,39 @@ and a generated server cannot pretend to be one. This is a real limit on what th
 enforces, and it is stated here rather than left for someone to discover after splitting a
 service across two replicas.
 
+## Annotations a client can check
+
+MCP defines `readOnlyHint`, `destructiveHint` and `idempotentHint`, and clients read them to
+decide whether to auto-approve a call. The protocol is explicit that they are hints:
+
+> annotations are not guaranteed to faithfully describe tool behavior, and clients must treat
+> them as untrusted unless they come from a trusted server
+
+There is no verification mechanism in the ecosystem, no provenance and no attestation. A
+server asserts them and a client believes them or does not.
+
+This compiler does not assert them. Each is derived from a classification that already carries
+provenance back to a source pointer, so the question "on what basis does this tool claim to be
+read-only" has an answer:
+
+| Hint | Derived from |
+|---|---|
+| `readOnlyHint` | The risk class, which is what the emission gate acts on |
+| `destructiveHint` | The same, so the hints cannot disagree with the gate |
+| `idempotentHint` | Idempotency inferred at ingestion, per RFC 9110 for HTTP |
+| `x-rotaforge/sensitiveHint` | The policy manifest's sensitivity classification |
+| `x-rotaforge/reversibleHint` | Present only when rollback guidance says an effect cannot be undone |
+
+**`openWorldHint` is absent.** It asks whether a tool reaches outside a closed domain, and
+nothing in an OpenAPI or WSDL document answers that. One invented value beside three derived
+ones is how a set of trustworthy hints stops being checked.
+
+The two extensions are namespaced because both were proposed to the specification and neither
+was merged. Shipping them unprefixed would claim a standard that does not exist.
+
+Sensitivity is null rather than false when no policy manifest was synthesised. False would
+assert that a tool touches nothing sensitive, which is a claim, and no claim was made.
+
 ## What the compiler cannot enforce, it says so
 
 Server-side authorization, protection against confused-deputy designs, and end-user identity

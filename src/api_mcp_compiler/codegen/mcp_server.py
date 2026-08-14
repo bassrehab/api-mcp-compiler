@@ -146,6 +146,36 @@ def _path_parameters(tool: ToolDescriptor) -> list[str]:
     ]
 
 
+def _annotations(tool: ToolDescriptor) -> dict[str, bool]:
+    """The MCP annotations to register this tool with.
+
+    Emitted because a client reads them to decide whether to auto-approve a call, and because
+    the protocol's own position is that a client must treat them as untrusted since a server
+    can assert whatever it likes. These are derived from the specification and carry provenance
+    in the surface artifact, which is a different kind of claim than an assertion.
+
+    `openWorldHint` is absent. It asks whether a tool reaches outside a closed domain, nothing
+    in a specification answers that, and one invented value beside three derived ones is how a
+    set of trustworthy hints stops being checked.
+
+    The two extensions are namespaced. `sensitiveHint` and a reversibility hint were both
+    proposed to the specification and neither was merged, so shipping them unprefixed would be
+    claiming a standard that does not exist.
+    """
+    if tool.annotations is None:
+        return {}
+    described: dict[str, bool] = {
+        "readOnlyHint": tool.annotations.read_only,
+        "destructiveHint": tool.annotations.destructive,
+        "idempotentHint": tool.annotations.idempotent,
+    }
+    if tool.annotations.sensitive is not None:
+        described["x-rotaforge/sensitiveHint"] = tool.annotations.sensitive
+    if tool.annotations.reversible is not None:
+        described["x-rotaforge/reversibleHint"] = tool.annotations.reversible
+    return described
+
+
 def _tool_function(
     ir: ApiSemanticIR,
     tool: ToolDescriptor,
@@ -176,6 +206,7 @@ def _tool_function(
     max_bytes = policy.output.max_bytes if policy else None
     redact = sorted(policy.output.redact_fields) if policy else []
     destructive = tool.risk is RiskClass.DESTRUCTIVE
+    annotations = _annotations(tool)
 
     if tool.uri_template is not None:
         # A resource is read by address, so it is registered as one. Emitting it with
@@ -205,7 +236,7 @@ async def {tool.name}({parameters}) -> dict[str, Any]:
 '''
 
     return f'''
-@mcp.tool(name={tool.name!r}, description={tool.description!r})
+@mcp.tool(name={tool.name!r}, description={tool.description!r}, annotations={annotations!r})
 async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
     """{tool.description}"""
     return await _invoke(

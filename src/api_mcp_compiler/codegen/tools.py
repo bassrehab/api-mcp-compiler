@@ -24,11 +24,13 @@ from api_mcp_compiler.models import (
     ArgumentBinding,
     ArtifactKind,
     ConfirmationPolicy,
+    DataSensitivity,
     DecisionKind,
     DecisionOrigin,
     Derivation,
     EmissionBlocker,
     EmissionStatus,
+    Idempotency,
     OperationIR,
     ParameterLocation,
     PolicyManifest,
@@ -36,6 +38,7 @@ from api_mcp_compiler.models import (
     ReviewStatus,
     RiskClass,
     SideEffectClass,
+    ToolAnnotationsIR,
     ToolArtifact,
     ToolDescriptor,
     ToolPlan,
@@ -210,6 +213,17 @@ def _descriptor(
             )
         )
 
+    annotations = annotations_for(artifact, operation, policy)
+    if annotations is not None:
+        records.append(
+            Provenance(
+                field="annotations",
+                source_pointer=operation.source_pointer,
+                derivation=Derivation.NORMALIZED,
+                rule="codegen.tool.annotations",
+            )
+        )
+
     template = uri_template(service_id, artifact, operation)
     if template is not None:
         records.append(
@@ -233,9 +247,68 @@ def _descriptor(
         input_schema=input_schema,
         output_schema=output_schema,
         argument_bindings=bindings,
+        annotations=annotations,
         uri_template=template,
         source_operations=list(artifact.source_operations),
         provenance=records,
+    )
+
+
+def annotations_for(
+    artifact: ToolArtifact, operation: OperationIR, policy: ToolPolicy | None
+) -> ToolAnnotationsIR | None:
+    """Derive the MCP hints a client reads when deciding whether to auto-approve a call.
+
+    Every value here comes from a classification that already exists and already carries
+    provenance back to a source pointer. That is the whole point: the protocol says a client
+    must treat these as untrusted because a server can simply assert them, and a hint derived
+    from the document with a recorded basis is a different kind of claim.
+
+    `read_only` follows the risk class rather than the side effect, because the risk class is
+    what the emission gate and the reviewer both act on, and a surface whose hints disagreed
+    with its own gate would be worse than one with no hints.
+
+    The three hints the specification defines need no policy: they come from the risk class
+    and the idempotency, both of which exist as soon as the document is parsed. Sensitivity is
+    derived during policy synthesis, so without a manifest it stays null rather than being
+    emitted as false, which would assert that a tool touches nothing sensitive.
+    """
+    destructive = artifact.risk is RiskClass.DESTRUCTIVE
+    read_only = artifact.risk is RiskClass.READ
+    # Stated only when the policy has something to say. A destructive operation carrying
+    # rollback guidance is one somebody thought about; silence is not a claim of
+    # reversibility and must not be emitted as one.
+    reversible = (
+        False if destructive and policy is not None and policy.rollback_guidance else None
+    )
+    return ToolAnnotationsIR(
+        read_only=read_only,
+        destructive=destructive,
+        idempotent=operation.idempotency is Idempotency.IDEMPOTENT,
+        # Anything above internal is worth a client knowing before it puts the result in a
+        # context window it may later send somewhere else.
+        sensitive=(
+            policy.sensitivity
+            in {DataSensitivity.CONFIDENTIAL, DataSensitivity.PERSONAL, DataSensitivity.FINANCIAL}
+            if policy is not None
+            else None
+        ),
+        reversible=reversible,
+        provenance=[
+            Provenance(
+                field=name,
+                source_pointer=operation.source_pointer,
+                derivation=Derivation.NORMALIZED,
+                rule=f"codegen.annotations.{name}",
+            )
+            for name in (
+                "read_only",
+                "destructive",
+                "idempotent",
+                *(("sensitive",) if policy is not None else ()),
+                *(("reversible",) if reversible is not None else ()),
+            )
+        ],
     )
 
 

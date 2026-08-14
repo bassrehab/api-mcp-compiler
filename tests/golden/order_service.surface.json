@@ -1,10 +1,40 @@
 {
   "planner": "baseline",
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "service_id": "synthetic-order-and-refund-service",
   "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935",
   "tools": [
     {
+      "annotations": {
+        "destructive": false,
+        "idempotent": true,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "read_only",
+            "rule": "codegen.annotations.read_only",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "destructive",
+            "rule": "codegen.annotations.destructive",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "idempotent",
+            "rule": "codegen.annotations.idempotent",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+          }
+        ],
+        "read_only": true,
+        "reversible": null,
+        "sensitive": null
+      },
       "argument_bindings": [
         {
           "argument": "customer_id",
@@ -147,6 +177,13 @@
           "field": "output_schema",
           "rule": "codegen.tool.output_schema",
           "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "annotations",
+          "rule": "codegen.tool.annotations",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
         }
       ],
       "risk": "read",
@@ -157,6 +194,36 @@
       "uri_template": null
     },
     {
+      "annotations": {
+        "destructive": false,
+        "idempotent": true,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "read_only",
+            "rule": "codegen.annotations.read_only",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "destructive",
+            "rule": "codegen.annotations.destructive",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "idempotent",
+            "rule": "codegen.annotations.idempotent",
+            "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+          }
+        ],
+        "read_only": true,
+        "reversible": null,
+        "sensitive": null
+      },
       "argument_bindings": [
         {
           "argument": "customer_id",
@@ -272,6 +339,13 @@
           "field": "source_operations",
           "rule": "codegen.tool.source_operations",
           "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "annotations",
+          "rule": "codegen.tool.annotations",
+          "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
         }
       ],
       "risk": "read",
@@ -282,6 +356,36 @@
       "uri_template": null
     },
     {
+      "annotations": {
+        "destructive": false,
+        "idempotent": false,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "read_only",
+            "rule": "codegen.annotations.read_only",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "destructive",
+            "rule": "codegen.annotations.destructive",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "idempotent",
+            "rule": "codegen.annotations.idempotent",
+            "source_pointer": "openapi:#/paths/~1refunds/post"
+          }
+        ],
+        "read_only": false,
+        "reversible": null,
+        "sensitive": null
+      },
       "argument_bindings": [
         {
           "argument": "body",
@@ -452,6 +556,13 @@
           "field": "output_schema",
           "rule": "codegen.tool.output_schema",
           "source_pointer": "openapi:#/paths/~1refunds/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "annotations",
+          "rule": "codegen.tool.annotations",
+          "source_pointer": "openapi:#/paths/~1refunds/post"
         }
       ],
       "risk": "write",
@@ -462,6 +573,36 @@
       "uri_template": null
     },
     {
+      "annotations": {
+        "destructive": false,
+        "idempotent": false,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "read_only",
+            "rule": "codegen.annotations.read_only",
+            "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "destructive",
+            "rule": "codegen.annotations.destructive",
+            "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "idempotent",
+            "rule": "codegen.annotations.idempotent",
+            "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+          }
+        ],
+        "read_only": false,
+        "reversible": null,
+        "sensitive": null
+      },
       "argument_bindings": [
         {
           "argument": "refund_id",
@@ -592,6 +733,13 @@
           "derivation": "normalized",
           "field": "blocker_detail",
           "rule": "codegen.tool.emission_gate.detail",
+          "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "annotations",
+          "rule": "codegen.tool.annotations",
           "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
         }
       ],

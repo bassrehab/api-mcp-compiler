@@ -1,10 +1,40 @@
 {
   "planner": "baseline",
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "service_id": "customerservice",
   "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554",
   "tools": [
     {
+      "annotations": {
+        "destructive": false,
+        "idempotent": false,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "read_only",
+            "rule": "codegen.annotations.read_only",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "destructive",
+            "rule": "codegen.annotations.destructive",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "idempotent",
+            "rule": "codegen.annotations.idempotent",
+            "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+          }
+        ],
+        "read_only": false,
+        "reversible": null,
+        "sensitive": null
+      },
       "argument_bindings": [
         {
           "argument": "parameters",
@@ -146,6 +176,13 @@
           "derivation": "normalized",
           "field": "output_schema",
           "rule": "codegen.tool.output_schema",
+          "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "annotations",
+          "rule": "codegen.tool.annotations",
           "source_pointer": "wsdl:/w:definitions/w:portType[@name='CustomerPortType']/w:operation[@name='GetCustomer']"
         }
       ],

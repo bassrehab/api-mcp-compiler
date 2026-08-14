@@ -17,7 +17,7 @@ import json
 from dataclasses import dataclass, field
 
 from api_mcp_compiler.codegen.credentials import placements, tool_schemes, variables
-from api_mcp_compiler.codegen.mcp_server import _budgets, _instructions
+from api_mcp_compiler.codegen.mcp_server import _annotations, _budgets, _instructions
 from api_mcp_compiler.models import (
     ApiSemanticIR,
     EmissionStatus,
@@ -66,6 +66,7 @@ def _tool_function(ir: ApiSemanticIR, tool: ToolDescriptor, manifest: PolicyMani
     if soap is None:
         raise SoapEmissionError(f"{tool.name!r} carries no SOAP binding record")
     policy = manifest.policy_for(tool.tool_id) if manifest else None
+    annotations = _annotations(tool)
     confirm = policy is not None and policy.confirmation is not None
     retry = policy.retry.value if policy else RetryPolicy.NEVER.value
     confirmation_ttl = (
@@ -85,7 +86,7 @@ def _tool_function(ir: ApiSemanticIR, tool: ToolDescriptor, manifest: PolicyMani
         if item.location is ParameterLocation.SOAP_BODY
     ]
     return f'''
-@mcp.tool(name={tool.name!r}, description={tool.description!r})
+@mcp.tool(name={tool.name!r}, description={tool.description!r}, annotations={annotations!r})
 async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
     """{tool.description}"""
     return await _invoke(

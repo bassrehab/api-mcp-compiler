@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 IR_SCHEMA_VERSION = "0.7.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
-TOOL_SURFACE_SCHEMA_VERSION = "0.3.0"
+TOOL_SURFACE_SCHEMA_VERSION = "0.4.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
 POLICY_MANIFEST_SCHEMA_VERSION = "0.3.0"
 EVAL_CORPUS_SCHEMA_VERSION = "0.3.0"
@@ -812,6 +812,46 @@ class ArgumentBinding(ProvenanceBearing):
     )
 
 
+class ToolAnnotationsIR(ProvenanceBearing):
+    """The hints MCP clients read when deciding whether to auto-approve a call.
+
+    The protocol defines these as hints and says plainly that they are not guaranteed to
+    describe behaviour faithfully, that a client must treat them as untrusted unless the
+    server is trusted, and that an untrusted server can lie. There is no verification
+    mechanism anywhere in the ecosystem, and most clients treat installation as the trust
+    signal.
+
+    That is a gap this compiler is unusually placed to close, because it does not assert these
+    facts: it derives them from the specification and records where each came from. A hint
+    emitted here carries the same provenance as the classification behind it, so the question
+    "on what basis does this tool claim to be read-only" has an answer.
+
+    `open_world` is deliberately absent. It asks whether a tool interacts with entities outside
+    a closed domain, and nothing in an OpenAPI or WSDL document answers that. Guessing it would
+    put an invented value beside three derived ones, which is how a set of trustworthy hints
+    becomes a set nobody checks.
+
+    `sensitive` and `reversible` are not in the specification. Both were proposed and neither
+    was merged, and the policy manifest computes both already, so they are emitted as
+    extensions rather than withheld until a committee agrees.
+    """
+
+    read_only: bool
+    destructive: bool
+    idempotent: bool
+    sensitive: bool | None = Field(
+        default=None,
+        description="Null where no policy was synthesised, because sensitivity is derived "
+        "there. False would assert that a tool touches nothing sensitive, which is a claim "
+        "and not the absence of one.",
+    )
+    reversible: bool | None = Field(
+        default=None,
+        description="Null where the source says nothing about whether an effect can be "
+        "undone, which is most of the time and is not the same as saying it cannot.",
+    )
+
+
 class ToolDescriptor(ProvenanceBearing):
     """One generated tool, independent of any transport or SDK.
 
@@ -831,6 +871,11 @@ class ToolDescriptor(ProvenanceBearing):
     input_schema: dict[str, Any]
     output_schema: dict[str, Any] | None = None
     argument_bindings: list[ArgumentBinding] = Field(default_factory=list)
+    annotations: ToolAnnotationsIR | None = Field(
+        default=None,
+        description="MCP tool annotations, derived rather than asserted. Null only where no "
+        "policy was supplied, since the classification behind them always exists.",
+    )
     uri_template: str | None = Field(
         default=None,
         description="For a resource, the addressable form a client reads it by. A resource "

@@ -14,7 +14,7 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": "0.3.0"
+      "const": "0.4.0"
     },
     "service_id": {
       "type": "string"
@@ -220,6 +220,16 @@
             "null"
           ],
           "description": "For a resource, the addressable form a client reads it by, as a URI template whose placeholders are the operation's path parameters. Null for a tool."
+        },
+        "annotations": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/toolAnnotations"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "allOf": [
@@ -265,6 +275,45 @@
           }
         }
       ]
+    },
+    "toolAnnotations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance",
+        "read_only",
+        "destructive",
+        "idempotent"
+      ],
+      "description": "MCP tool annotations, derived from the specification rather than asserted. The protocol treats these as untrusted hints because a server can claim anything; these carry provenance to the classification behind them. `openWorldHint` is deliberately absent, because no specification answers it.",
+      "properties": {
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "read_only": {
+          "type": "boolean"
+        },
+        "destructive": {
+          "type": "boolean"
+        },
+        "idempotent": {
+          "type": "boolean"
+        },
+        "sensitive": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Null where no policy was synthesised, since sensitivity is derived there."
+        },
+        "reversible": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Null where the source says nothing, which is not a claim that an effect can be undone."
+        }
+      }
     }
   }
 }

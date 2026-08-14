@@ -1,10 +1,47 @@
 {
   "planner": "semantic",
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "service_id": "synthetic-inventory-service",
   "source_digest": "sha256:3a0ae2f79c0d5b4b13e73266f61df6e77c6729e0a5d94a17716776ee9e2730a0",
   "tools": [
     {
+      "annotations": {
+        "destructive": false,
+        "idempotent": true,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "read_only",
+            "rule": "codegen.annotations.read_only",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "destructive",
+            "rule": "codegen.annotations.destructive",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "idempotent",
+            "rule": "codegen.annotations.idempotent",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "sensitive",
+            "rule": "codegen.annotations.sensitive",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+          }
+        ],
+        "read_only": true,
+        "reversible": null,
+        "sensitive": false
+      },
       "argument_bindings": [
         {
           "argument": "warehouse_id",
@@ -138,6 +175,13 @@
           "field": "output_schema",
           "rule": "codegen.tool.output_schema",
           "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "annotations",
+          "rule": "codegen.tool.annotations",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/get"
         }
       ],
       "risk": "read",
@@ -148,6 +192,50 @@
       "uri_template": null
     },
     {
+      "annotations": {
+        "destructive": true,
+        "idempotent": true,
+        "provenance": [
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "read_only",
+            "rule": "codegen.annotations.read_only",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "destructive",
+            "rule": "codegen.annotations.destructive",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "idempotent",
+            "rule": "codegen.annotations.idempotent",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "sensitive",
+            "rule": "codegen.annotations.sensitive",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          },
+          {
+            "confidence": 1.0,
+            "derivation": "normalized",
+            "field": "reversible",
+            "rule": "codegen.annotations.reversible",
+            "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+          }
+        ],
+        "read_only": false,
+        "reversible": false,
+        "sensitive": false
+      },
       "argument_bindings": [
         {
           "argument": "warehouse_id",
@@ -280,6 +368,13 @@
           "derivation": "normalized",
           "field": "blocker_detail",
           "rule": "codegen.tool.emission_gate.detail",
+          "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
+        },
+        {
+          "confidence": 1.0,
+          "derivation": "normalized",
+          "field": "annotations",
+          "rule": "codegen.tool.annotations",
           "source_pointer": "openapi:#/paths/~1warehouses~1{warehouse_id}~1items/delete"
         }
       ],

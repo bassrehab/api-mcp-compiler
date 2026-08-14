@@ -15,7 +15,13 @@ from api_mcp_compiler.codegen.mcp_server import ServerEmissionError, emit_server
 from api_mcp_compiler.codegen.tools import generate_surface
 from api_mcp_compiler.ingest.openapi import parse_openapi
 from api_mcp_compiler.ingest.wsdl import parse_wsdl
-from api_mcp_compiler.models import EmissionStatus, ReviewStatus, ToolPlan
+from api_mcp_compiler.models import (
+    EmissionStatus,
+    ReviewStatus,
+    RiskClass,
+    ToolPlan,
+    ToolSurface,
+)
 from api_mcp_compiler.planning.baseline import plan_baseline
 from api_mcp_compiler.planning.overlay import load_overlay
 from api_mcp_compiler.planning.semantic import plan_semantic
@@ -130,3 +136,94 @@ def test_a_soap_surface_is_refused_rather_than_served_wrongly() -> None:
     surface = generate_surface(ir, plan)
     with pytest.raises(ServerEmissionError):
         emit_server(ir, surface)
+
+
+def _destructive_surface() -> tuple[ToolSurface, str]:
+    """A surface with a destructive tool and a policy, which the order service has neither of.
+
+    The destructive tool is approved first, because an unapproved one is withheld and never
+    reaches the emitted server at all. That is the gate working, and a test that forgot it
+    would be asserting against a surface the product would never produce.
+    """
+    from api_mcp_compiler.planning.approval import approve
+
+    ir = parse_openapi(Path("examples/openapi/inventory_service.yaml"))
+    proposed = plan_semantic(ir)
+    overlay = approve(
+        proposed, overlay=None, risk=RiskClass.DESTRUCTIVE, group=None, names=[]
+    ).overlay
+    plan = plan_semantic(ir, overlay)
+    manifest = synthesize_policy(ir, plan)
+    surface = generate_surface(ir, plan, manifest)
+    return surface, emit_server(ir, surface, manifest).source
+
+
+def test_the_surface_carries_annotations_derived_from_the_document() -> None:
+    """The protocol says a client must treat hints as untrusted because a server can lie.
+
+    These are not asserted. Every one comes from a classification the compiler derived from
+    the specification and recorded provenance for, which is a different kind of claim.
+    """
+    surface, _ = _destructive_surface()
+    destructive = next(item for item in surface.tools if item.risk is RiskClass.DESTRUCTIVE)
+    read = next(item for item in surface.tools if item.risk is RiskClass.READ)
+
+    assert destructive.annotations is not None
+    assert destructive.annotations.destructive is True
+    assert destructive.annotations.read_only is False
+    assert read.annotations is not None
+    assert read.annotations.read_only is True
+    assert read.annotations.destructive is False
+
+
+def test_every_annotation_says_where_it_came_from() -> None:
+    """A hint with no basis is the thing the ecosystem already has too many of."""
+    surface, _ = _destructive_surface()
+    annotated = next(item for item in surface.tools if item.annotations is not None)
+
+    fields = {record.field for record in annotated.annotations.provenance}
+    assert {"read_only", "destructive", "idempotent", "sensitive"} <= fields
+
+
+def test_sensitivity_is_null_rather_than_false_without_a_policy() -> None:
+    """False would assert a tool touches nothing sensitive, which nothing has determined."""
+    _, surface, _ = _emit()
+    tool = next(item for item in surface.tools if item.annotations is not None)
+
+    assert tool.annotations.sensitive is None
+
+
+def test_the_hint_nobody_can_derive_is_not_invented() -> None:
+    """`openWorldHint` asks something no specification answers.
+
+    One invented value beside three derived ones is how a set of trustworthy hints stops
+    being checked.
+    """
+    _, _, emitted = _emit()
+
+    assert "openWorldHint" not in emitted.source
+
+
+def test_the_unmerged_hints_are_namespaced() -> None:
+    """Shipping `sensitiveHint` unprefixed would claim a standard that does not exist."""
+    _, source = _destructive_surface()
+
+    assert "x-rotaforge/sensitiveHint" in source
+    assert "'sensitiveHint'" not in source
+
+
+def test_silence_about_reversibility_is_not_a_claim_about_it() -> None:
+    """A read carries no reversibility hint at all, rather than one saying it is reversible."""
+    surface, _ = _destructive_surface()
+    read = next(item for item in surface.tools if item.risk is RiskClass.READ)
+
+    assert read.annotations is not None
+    assert read.annotations.reversible is None
+
+
+def test_the_generated_server_registers_the_annotations() -> None:
+    """Deriving them and not emitting them would be the same defect as every other one here."""
+    _, source = _destructive_surface()
+
+    assert "annotations={" in source
+    assert "'destructiveHint': True" in source
