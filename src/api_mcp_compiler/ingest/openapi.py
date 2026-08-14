@@ -23,6 +23,7 @@ from api_mcp_compiler.ingest.coverage import ConsumptionLedger
 from api_mcp_compiler.ingest.documents import load_document
 from api_mcp_compiler.ingest.refs import RefPolicy, RefResolver
 from api_mcp_compiler.ingest.swagger2 import is_swagger2, to_openapi3
+from api_mcp_compiler.language import DESTRUCTIVE_TOKENS, word_tokens
 from api_mcp_compiler.models import (
     Ambiguity,
     ApiSemanticIR,
@@ -97,10 +98,6 @@ _LOCATIONS = {
 
 # Whole-token destructive verbs. Matching whole tokens rather than substrings keeps
 # `listDeletedItems` from reading as a delete, while `purgeItem` still does.
-_DESTRUCTIVE_TOKENS = frozenset(
-    {"delete", "purge", "destroy", "erase", "wipe", "drop", "remove", "revoke", "terminate"}
-)
-
 _CURSOR_PARAMS = frozenset(
     {"cursor", "nextcursor", "pagetoken", "continuation", "continuationtoken", "startcursor"}
 )
@@ -222,9 +219,13 @@ def _optional_str(value: Any) -> str | None:
 
 
 def _word_tokens(text: str) -> set[str]:
-    """Split an identifier or sentence into lowercase whole words."""
-    spaced = _CAMEL_BOUNDARY.sub(" ", text)
-    return {piece.lower() for piece in _NON_WORD.split(spaced) if piece}
+    """Split an identifier or sentence into lowercase whole words.
+
+    Kept as a local alias so this module reads unchanged. The definition moved to
+    `api_mcp_compiler.language`, because a caller outside this package asks the same question
+    about a surface this compiler did not produce.
+    """
+    return word_tokens(text)
 
 
 def _normalize_name(text: str) -> str:
@@ -1162,7 +1163,7 @@ def _side_effect(
         ]
 
     tokens = _word_tokens(operation_id) | (_word_tokens(summary) if summary else set())
-    signals = sorted(_DESTRUCTIVE_TOKENS & tokens)
+    signals = sorted(DESTRUCTIVE_TOKENS & tokens)
     if not signals or base is SideEffectClass.DESTRUCTIVE:
         return base, records
 

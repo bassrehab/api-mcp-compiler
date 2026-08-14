@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.3
+
+Released 2026-08-14. `api_mcp_compiler.language` is public: `DESTRUCTIVE_TOKENS`,
+`word_tokens()` and `destructive_signals()`, moved out of the OpenAPI adapter that happened to
+need them first.
+
+One question recurs wherever a surface is judged, which is whether the language contradicts the
+declared class, and it is asked about surfaces this compiler did not produce. Two lists of what
+destructive sounds like give two answers about the same word. Patch: the adapter behaves
+identically.
+
 ## 0.6.2
 
 Released 2026-08-14. `blocked_operations()` is public. It attributes a blocking ambiguity to
