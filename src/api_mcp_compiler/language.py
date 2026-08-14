@@ -43,14 +43,37 @@ def word_tokens(text: str) -> set[str]:
     return {piece.lower() for piece in _NON_WORD.split(spaced) if piece}
 
 
+def base_form(token: str) -> str:
+    """A token reduced to the form the vocabulary is written in.
+
+    Only the third-person singular is folded, so `deletes` matches `delete`. That is how
+    descriptions are written, because a summary says "Deletes a customer" while a name says
+    `deleteCustomer`, and matching only the second missed the more common half.
+
+    Past participles and gerunds are deliberately **not** folded. `deleted` and `removing` are
+    overwhelmingly how columns and flags are named, not how actions are described, so folding
+    them would flag `deleted_at` on every schema that records when something was removed. The
+    grammatical distinction is doing real work here: it separates a verb somebody performs
+    from an adjective describing a row.
+    """
+    if len(token) > 3 and token.endswith("s") and not token.endswith("ss"):
+        return token[:-1]
+    return token
+
+
 def destructive_signals(*texts: str) -> list[str]:
     """Every destructive word appearing in any of these texts, sorted.
 
     Sorted rather than a set so a message built from it reads the same on every run, which
-    matters when the message ends up in a report somebody compares against last month's.
+    matters when the message ends up in a report somebody compares against last month's. The
+    base form is reported rather than the form found, for the same reason.
     """
-    tokens: set[str] = set()
+    found: set[str] = set()
     for text in texts:
-        if text:
-            tokens |= word_tokens(text)
-    return sorted(DESTRUCTIVE_TOKENS & tokens)
+        if not text:
+            continue
+        for token in word_tokens(text):
+            candidate = base_form(token)
+            if candidate in DESTRUCTIVE_TOKENS:
+                found.add(candidate)
+    return sorted(found)

@@ -23,7 +23,7 @@ from api_mcp_compiler.ingest.coverage import ConsumptionLedger
 from api_mcp_compiler.ingest.documents import load_document
 from api_mcp_compiler.ingest.refs import RefPolicy, RefResolver
 from api_mcp_compiler.ingest.swagger2 import is_swagger2, to_openapi3
-from api_mcp_compiler.language import DESTRUCTIVE_TOKENS, word_tokens
+from api_mcp_compiler.language import destructive_signals, word_tokens
 from api_mcp_compiler.models import (
     Ambiguity,
     ApiSemanticIR,
@@ -1162,8 +1162,10 @@ def _side_effect(
             )
         ]
 
-    tokens = _word_tokens(operation_id) | (_word_tokens(summary) if summary else set())
-    signals = sorted(DESTRUCTIVE_TOKENS & tokens)
+    # Through `destructive_signals` rather than by intersecting the vocabulary here, so an
+    # improvement to how wording is read reaches this adapter. Matching the set directly meant
+    # "Deletes a record" in a summary was invisible while `deleteRecord` was not.
+    signals = destructive_signals(operation_id, summary or "")
     if not signals or base is SideEffectClass.DESTRUCTIVE:
         return base, records
 

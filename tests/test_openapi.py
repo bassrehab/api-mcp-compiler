@@ -635,3 +635,65 @@ def test_the_poll_header_is_inferred_not_asserted(tmp_path: Path) -> None:
     derivations = {item.field: item.derivation for item in started.async_job.provenance}
     assert derivations["status"] is Derivation.SOURCE
     assert derivations["poll_header"] is Derivation.INFERRED
+
+
+def test_a_read_whose_summary_says_it_deletes_is_raised_for_review(tmp_path: Path) -> None:
+    """The wording people actually use, which the adapter used to read straight past.
+
+    Summaries are written in the third person, so a GET summarised "Deletes a record" was
+    invisible while `deleteRecord` was caught. The asymmetry is what makes this worth
+    blocking: a false positive costs one review, a false negative leaves an agent destroying
+    data through a tool the surface presents as safe.
+    """
+    spec = tmp_path / "spec.yaml"
+    spec.write_text(
+        textwrap.dedent(
+            """
+            openapi: 3.0.3
+            info: {title: Records, version: '1'}
+            paths:
+              /records/{id}:
+                get:
+                  operationId: getRecord
+                  summary: Deletes a record permanently
+                  parameters: [{in: path, name: id, required: true, schema: {type: string}}]
+                  responses: {'200': {description: ok}}
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = parse_openapi(spec)
+
+    conflict = next(
+        item for item in ir.ambiguities if item.code == "side_effect_language_conflict"
+    )
+    assert conflict.blocking
+    assert "delete" in conflict.detail
+
+
+def test_a_read_listing_deleted_records_is_not_raised(tmp_path: Path) -> None:
+    """`deleted` is an adjective on a row, and flagging it would be the false alarm that
+    teaches everybody to ignore this check."""
+    spec = tmp_path / "spec.yaml"
+    spec.write_text(
+        textwrap.dedent(
+            """
+            openapi: 3.0.3
+            info: {title: Records, version: '1'}
+            paths:
+              /records/deleted:
+                get:
+                  operationId: listDeletedRecords
+                  summary: Lists records that were deleted
+                  responses: {'200': {description: ok}}
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = parse_openapi(spec)
+
+    assert not [
+        item for item in ir.ambiguities if item.code == "side_effect_language_conflict"
+    ]

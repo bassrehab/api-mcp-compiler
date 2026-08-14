@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.6.4
+
+Released 2026-08-14. A read whose summary says it deletes something is now raised for review.
+It was not before, and that is the wording people actually use.
+
+Names are written in the base form and summaries in the third person, so matching only
+`deleteRecord` caught the half of a document written by machines and read straight past
+"Deletes a record". Past participles are still not matched, deliberately: `deleted_at` is a
+column on almost every table that has ever existed, and flagging it would end this check's
+credibility on its first run.
+
+Found by a downstream caller reading a tool description rather than a specification. The
+adapter was intersecting the vocabulary itself instead of calling `destructive_signals`, so
+the fix reached nothing until that was routed through as well.
+
 ## 0.6.3
 
 Released 2026-08-14. `api_mcp_compiler.language` is public: `DESTRUCTIVE_TOKENS`,
