@@ -110,3 +110,13 @@ def test_the_version_is_stated_once_in_effect() -> None:
 
     assert api_mcp_compiler.__version__ == declared["project"]["version"]
     assert citation == [api_mcp_compiler.__version__]
+
+
+def test_the_package_declares_itself_typed() -> None:
+    """The `Typing :: Typed` classifier is a claim, and this is the file that makes it true.
+
+    Without the marker, a consumer's type checker treats every symbol in this package as Any.
+    Nothing here fails, nothing at build time fails, and the first downstream project silently
+    loses every type it was told it would get.
+    """
+    assert (PACKAGE_ROOT / "py.typed").is_file()

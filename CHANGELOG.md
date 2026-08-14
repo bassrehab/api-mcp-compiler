@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.2
+
+Released 2026-08-14. The package declares `Typing :: Typed` and now ships the `py.typed`
+marker that makes the claim true. Without it a consumer's type checker treated every symbol
+here as `Any`.
+
+Found by the first downstream project to depend on this one, which is the only place it shows:
+everything imports, everything runs, and the types silently are not there.
+
 ## 0.5.1
 
 Released 2026-08-13. A WSDL document that declares an empty response is no longer refused for
@@ -847,6 +856,15 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Pinned ruff and mypy to exact versions and declared an explicit lint rule selection, so
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
+
+## 0.5.2
+
+Released 2026-08-14. The package declares `Typing :: Typed` and now ships the `py.typed`
+marker that makes the claim true. Without it a consumer's type checker treated every symbol
+here as `Any`.
+
+Found by the first downstream project to depend on this one, which is the only place it shows:
+everything imports, everything runs, and the types silently are not there.
 
 ## 0.5.1
 

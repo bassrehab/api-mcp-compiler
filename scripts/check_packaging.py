@@ -172,6 +172,10 @@ def _check_archive(wheel: Path, expected: list[str], failures: list[str]) -> Non
     for name in expected:
         if f"{PACKAGE_DATA_DIR}/{name}" not in present:
             failures.append(f"{wheel.name} does not contain {PACKAGE_DATA_DIR}/{name}")
+    # The typing marker is package data too, and its absence is invisible here: everything
+    # imports, everything runs, and a consumer's type checker silently sees Any.
+    if "api_mcp_compiler/py.typed" not in present:
+        failures.append(f"{wheel.name} does not contain api_mcp_compiler/py.typed")
 
 
 def _check_unpacked(wheel: Path, expected: list[str], failures: list[str]) -> None:

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "api-mcp-compiler"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
-version = "0.5.1"
+version = "0.5.2"
 description = "Semantic and safe compilation of enterprise APIs into MCP tool surfaces"
 readme = "README.md"
 authors = [{name = "Subhadip Mitra", email = "contact@subhadipmitra.com"}]
@@ -71,7 +71,10 @@ where = ["src"]
 # distribution has to be able to validate the artifacts it produces, and a wheel that ships
 # only the code cannot. `scripts/check_packaging.py` builds the wheel and proves it.
 [tool.setuptools.package-data]
-api_mcp_compiler = ["schemas/*.schema.json"]
+# `py.typed` is what makes the `Typing :: Typed` classifier true. Without it a consumer's
+# type checker treats every symbol here as Any, so the classifier was a claim with nothing
+# behind it. Found by the first downstream consumer, which is the only place it shows.
+api_mcp_compiler = ["schemas/*.schema.json", "py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
