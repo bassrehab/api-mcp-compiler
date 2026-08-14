@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.1
+
+Released 2026-08-14. `readiness_signals()` exposes the signals behind a suitability score as
+data rather than only as a sentence, so a caller aggregating across an estate can count them.
+
+Recomputing that definition elsewhere would let two answers to "is this ready" drift apart,
+and the one people act on would be whichever they happened to read. Patch: nothing changed for
+an existing caller.
+
 ## 0.6.0
 
 Released 2026-08-14. Generated tools carry MCP annotations derived from the specification
@@ -883,6 +892,15 @@ identically; a test asserts exactly that. Nothing here is evidence about surface
 - Pinned ruff and mypy to exact versions and declared an explicit lint rule selection, so
   the gate does not change meaning between machines.
 - CLI: added `plan` and `validate` commands alongside `inspect`.
+
+## 0.6.1
+
+Released 2026-08-14. `readiness_signals()` exposes the signals behind a suitability score as
+data rather than only as a sentence, so a caller aggregating across an estate can count them.
+
+Recomputing that definition elsewhere would let two answers to "is this ready" drift apart,
+and the one people act on would be whichever they happened to read. Patch: nothing changed for
+an existing caller.
 
 ## 0.6.0
 

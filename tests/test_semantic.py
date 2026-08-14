@@ -37,7 +37,9 @@ from api_mcp_compiler.planning.semantic import (
     derive_argument_projection,
     plan_semantic,
     propose_lookup_then_use,
+    readiness_signals,
     rewrite_description,
+    suitability,
 )
 from tests.conftest import (
     INVENTORY_SERVICE,
@@ -673,3 +675,36 @@ def test_an_asynchronous_operation_says_so_where_a_model_reads(tmp_path: Path) -
 
     assert "returns before the work is done" in artifact.description
     assert "poll the Location header" in artifact.description
+
+
+def test_readiness_signals_are_available_as_data() -> None:
+    """A caller aggregating across an estate counts signals; it cannot count a sentence.
+
+    Exposed rather than recomputed elsewhere, so two answers to "is this ready" cannot drift
+    apart and leave people acting on whichever they happened to read.
+    """
+    ir = _ir(ORDER_SERVICE)
+    operation = next(item for item in ir.operations if item.operation_id == "getCustomer")
+
+    signals = readiness_signals(operation, blocked=False)
+
+    assert set(signals) == {
+        "has a summary",
+        "has a description",
+        "declares a success schema",
+        "classifies its side effect",
+        "is not deprecated",
+        "has no blocking ambiguity",
+    }
+    assert all(isinstance(value, bool) for value in signals.values())
+
+
+def test_the_score_is_the_signals_it_reports() -> None:
+    """Or the number and the explanation could disagree, which is worse than either alone."""
+    ir = _ir(ORDER_SERVICE)
+    operation = ir.operations[0]
+
+    signals = readiness_signals(operation, blocked=False)
+    score, _ = suitability(operation, blocked=False)
+
+    assert score == round(sum(signals.values()) / len(signals), 4)

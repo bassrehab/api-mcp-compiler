@@ -454,13 +454,14 @@ def propose_lookup_then_use(
     return sorted(proposals, key=lambda item: item[0])
 
 
-def suitability(operation: OperationIR, blocked: bool) -> tuple[float, str]:
-    """Score how ready an operation is to be exposed to an agent.
+def readiness_signals(operation: OperationIR, blocked: bool) -> dict[str, bool]:
+    """The stated signals behind a readiness score, as data rather than as a sentence.
 
-    The score is an average of stated signals rather than an opaque number, so a low score
-    can be explained and acted on.
+    Exposed separately because a caller aggregating across an estate needs to count them.
+    Recomputing this definition elsewhere would let two answers to "is this ready" drift
+    apart, and the one people act on would be whichever they happened to read.
     """
-    signals = {
+    return {
         "has a summary": operation.intent != operation.operation_id,
         "has a description": bool(operation.description),
         "declares a success schema": any(
@@ -470,6 +471,15 @@ def suitability(operation: OperationIR, blocked: bool) -> tuple[float, str]:
         "is not deprecated": not operation.deprecated,
         "has no blocking ambiguity": not blocked,
     }
+
+
+def suitability(operation: OperationIR, blocked: bool) -> tuple[float, str]:
+    """Score how ready an operation is to be exposed to an agent.
+
+    The score is an average of stated signals rather than an opaque number, so a low score
+    can be explained and acted on.
+    """
+    signals = readiness_signals(operation, blocked)
     met = [name for name, value in signals.items() if value]
     missing = [name for name, value in signals.items() if not value]
     score = round(len(met) / len(signals), 4)
