@@ -532,8 +532,14 @@ def _decision(
     )
 
 
-def _blocked_operations(ir: ApiSemanticIR) -> set[str]:
-    """Operation identifiers named by a blocking ambiguity."""
+def blocked_operations(ir: ApiSemanticIR) -> set[str]:
+    """Operation identifiers named by a blocking ambiguity.
+
+    Public because it is half of a readiness answer: `readiness_signals` takes `blocked` as
+    an argument, so a caller scoring an estate needs the same attribution this planner uses.
+    Deriving it independently would let two answers to "is this operation blocked" disagree
+    about the same operation, and the one anybody acted on would be whichever they read.
+    """
     known = {item.operation_id for item in ir.operations}
     found = set()
     for item in ir.blocking_ambiguities:
@@ -555,7 +561,7 @@ def plan_semantic(ir: ApiSemanticIR, overlay: ToolOverlay | None = None) -> Tool
             f"{ir.service.source_digest}; re-review before applying it"
         )
 
-    blocked = _blocked_operations(ir)
+    blocked = blocked_operations(ir)
     artifacts: list[ToolArtifact] = []
     decisions: list[PlanDecision] = []
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.2
+
+Released 2026-08-14. `blocked_operations()` is public. It attributes a blocking ambiguity to
+the operation it names, which is the `blocked` argument `readiness_signals()` already takes.
+
+Half a readiness answer was public and the other half was private, so a caller scoring an
+estate had to re-derive the attribution and could disagree with this planner about the same
+operation. Patch: nothing changed for an existing caller.
+
 ## 0.6.1
 
 Released 2026-08-14. `readiness_signals()` exposes the signals behind a suitability score as

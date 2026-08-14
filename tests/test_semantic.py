@@ -16,6 +16,7 @@ from api_mcp_compiler.codegen.tools import generate_surface
 from api_mcp_compiler.contracts import dump_canonical, validate_overlay
 from api_mcp_compiler.ingest.openapi import parse_openapi
 from api_mcp_compiler.models import (
+    Ambiguity,
     ApiSemanticIR,
     ArtifactKind,
     CompositeEntry,
@@ -29,11 +30,13 @@ from api_mcp_compiler.models import (
     ReviewStatus,
     SideEffectClass,
     ToolOverlay,
+    ToolPlan,
 )
 from api_mcp_compiler.planning.overlay import load_overlay, restamp, save_overlay
 from api_mcp_compiler.planning.report import review_report
 from api_mcp_compiler.planning.semantic import (
     OverlayMismatchError,
+    blocked_operations,
     derive_argument_projection,
     plan_semantic,
     propose_lookup_then_use,
@@ -697,6 +700,47 @@ def test_readiness_signals_are_available_as_data() -> None:
         "has no blocking ambiguity",
     }
     assert all(isinstance(value, bool) for value in signals.values())
+
+
+def test_blocked_attribution_is_the_one_the_planner_scores_with() -> None:
+    """`readiness_signals` takes `blocked` as an argument, so the attribution must be shared.
+
+    A caller deriving it independently would score an operation the planner considers blocked
+    as if it were clear. Asserted through the planned confidence rather than by calling both
+    functions, because agreeing with itself is not the claim.
+    """
+    ir = _ir(ORDER_SERVICE)
+    target = ir.operations[0].operation_id
+    before = _confidence_of(plan_semantic(ir), target)
+
+    blocked = ir.model_copy(
+        update={
+            "ambiguities": [
+                *ir.ambiguities,
+                Ambiguity(
+                    code="unclassified_side_effect",
+                    field=f"operations.{target}.side_effect",
+                    source_pointer="#/paths",
+                    detail="Nothing in the document says whether this changes anything.",
+                    blocking=True,
+                ),
+            ]
+        }
+    )
+
+    assert blocked_operations(blocked) == {target}
+    assert blocked_operations(ir) == set()
+
+    after = _confidence_of(plan_semantic(blocked), target)
+    signals = len(readiness_signals(ir.operations[0], blocked=False))
+    assert after == pytest.approx(before - 1 / signals, abs=1e-4)
+
+
+def _confidence_of(plan: ToolPlan, operation_id: str) -> float:
+    """The score the planner gave the tool built from one operation."""
+    artifact = next(item for item in plan.artifacts if operation_id in item.source_operations)
+    assert artifact.confidence is not None
+    return artifact.confidence
 
 
 def test_the_score_is_the_signals_it_reports() -> None:
