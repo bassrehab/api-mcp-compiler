@@ -1,0 +1,26 @@
+// Synthetic claims service, for testing and for showing what the adapter does with one.
+//
+// Carries a streaming method deliberately: it is the case MCP has no shape for, and an
+// example without one would demonstrate nothing.
+syntax = "proto3";
+
+package claims.v1;
+
+message GetClaimRequest { string id = 1; }
+
+message Claim {
+  string id = 1;
+  string status = 2;
+  int64 amount_cents = 3;
+  repeated string tags = 4;
+}
+
+message DeleteClaimRequest { string id = 1; }
+message Empty {}
+message WatchClaimsRequest { string customer_id = 1; }
+
+service Claims {
+  rpc GetClaim(GetClaimRequest) returns (Claim);
+  rpc DeleteClaim(DeleteClaimRequest) returns (Empty);
+  rpc WatchClaims(WatchClaimsRequest) returns (stream Claim);
+}

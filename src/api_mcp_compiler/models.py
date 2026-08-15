@@ -16,7 +16,7 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-IR_SCHEMA_VERSION = "0.10.0"
+IR_SCHEMA_VERSION = "0.11.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
 TOOL_SURFACE_SCHEMA_VERSION = "0.4.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
@@ -38,6 +38,7 @@ class SourceFormat(StrEnum):
     CATALOGUE = "catalogue"
     ASYNCAPI = "asyncapi"
     GRAPHQL = "graphql"
+    PROTOBUF = "protobuf"
 
 
 class Protocol(StrEnum):
@@ -54,6 +55,9 @@ class Protocol(StrEnum):
     #: A GraphQL root field. One endpoint serves them all, which is why an operation carries no
     #: route: the schema never names the URL.
     GRAPHQL = "graphql"
+    #: A gRPC method. The route is the canonical path protoc derives, which every gRPC client
+    #: builds the same way, so it is normalization rather than invention.
+    GRPC = "grpc"
 
 
 class SideEffectClass(StrEnum):

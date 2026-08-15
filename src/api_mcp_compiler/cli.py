@@ -29,6 +29,7 @@ from api_mcp_compiler.ingest.catalogue import is_catalogue, parse_catalogue
 from api_mcp_compiler.ingest.documents import load_document
 from api_mcp_compiler.ingest.graphql_sdl import is_graphql, parse_graphql
 from api_mcp_compiler.ingest.openapi import parse_openapi
+from api_mcp_compiler.ingest.protobuf import parse_proto
 from api_mcp_compiler.ingest.refs import RefPolicy
 from api_mcp_compiler.ingest.vendoring import (
     VendoringError,
@@ -68,6 +69,7 @@ class SourceKind(StrEnum):
     CATALOGUE = "catalogue"
     ASYNCAPI = "asyncapi"
     GRAPHQL = "graphql"
+    PROTOBUF = "protobuf"
 
 
 REFS_LOCK_HELP = (
@@ -102,6 +104,8 @@ def _detect(source: Path) -> SourceKind:
     adapter is not the place to explain that a document is malformed, and the adapter that
     receives it will say so better.
     """
+    if source.suffix.lower() == ".proto":
+        return SourceKind.PROTOBUF
     if source.suffix.lower() in {".graphql", ".gql", ".graphqls"}:
         return SourceKind.GRAPHQL
     try:
@@ -148,6 +152,8 @@ def _parse(
         return parse_asyncapi(source)
     if kind is SourceKind.GRAPHQL:
         return parse_graphql(source)
+    if kind is SourceKind.PROTOBUF:
+        return parse_proto(source, include=tuple(allow_dir or ()))
     vendored = cached_documents(load_lock(refs_lock), refs_lock) if refs_lock else None
     return parse_openapi(
         source,

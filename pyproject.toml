@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "api-mcp-compiler"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
-version = "0.9.0"
+version = "0.10.0"
 description = "Semantic and safe compilation of enterprise APIs into MCP tool surfaces"
 readme = "README.md"
 authors = [{name = "Subhadip Mitra", email = "contact@subhadipmitra.com"}]
@@ -26,6 +26,9 @@ dependencies = [
     "graphql-core>=3.2","pydantic>=2.7", "typer>=0.12", "PyYAML>=6.0", "lxml>=5.2", "jsonschema>=4.22"]
 
 [project.optional-dependencies]
+# protoc, for reading .proto files. Optional because it is 22MB and most people come here to
+# read an OpenAPI document.
+grpc = ["grpcio-tools>=1.60"]
 # The model-backed evaluation driver imports the Anthropic SDK, and nothing else does. It is
 # an extra so that installing the compiler does not drag in a client for a service the
 # compiler never calls.
@@ -104,3 +107,9 @@ extend-immutable-calls = ["typer.Argument", "typer.Option"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
+
+# protobuf ships no stubs and is an optional dependency. Adding types-protobuf to the base
+# install to satisfy a checker would impose it on everybody who reads OpenAPI.
+[[tool.mypy.overrides]]
+module = ["google.protobuf.*", "grpc_tools.*"]
+ignore_missing_imports = true

@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.10.0
+
+Released 2026-08-15. gRPC service definitions compile, from a `.proto` file.
+
+Minor: `SourceFormat` gained `protobuf`, `Protocol` gained `grpc`, and `IR_SCHEMA_VERSION` is
+now `0.11.0`. `grpcio-tools` is an **optional** extra: `pip install api-mcp-compiler[grpc]`.
+Twenty-two megabytes of protoc is not something to impose on somebody who came here to read an
+OpenAPI document.
+
+### Why protobuf suits this pipeline
+
+A `.proto` is a schema language with no optional parts. Every field has a type, every message
+is closed, and a service block declares exactly which methods exist with exactly which request
+and response messages. There is nothing to infer, which means nothing to guess wrong.
+
+The differentiation was never the parser. An adapter here inherits provenance, policy
+derivation, the emission gate, drift and evidence.
+
+### The one thing a `.proto` does not say
+
+What a method *does*. `DeleteUser` and `GetUser` are the same shape, and only the name separates
+them, so the shared vocabulary classifies them exactly as it does an operation name anywhere
+else. Where a name carries no signal, an empty response to a non-empty request is recorded as
+weak evidence of a command at 0.5 confidence, and everything else is unknown rather than
+guessed.
+
+### Other decisions
+
+- **Parsed with protoc rather than by hand.** Writing a `.proto` parser means disagreeing with
+  the specification the first time somebody uses a feature it had not met, and a compiler that
+  misreads a type produces a tool that corrupts data rather than failing.
+- **Streaming methods are held.** A tool call is one request and one response; returning the
+  first message, or buffering all of them, would be a shape the service did not offer.
+- **64-bit integers are carried as strings**, which is the protobuf JSON mapping rather than a
+  choice made here. A value beyond 2^53 does not survive a JSON number, and an agent handed a
+  silently rounded account identifier has no way to know.
+- **Nothing is marked required.** proto3 has no `required`, and saying otherwise would make an
+  agent fill in fields the service never demanded.
+
 ## 0.9.0
 
 Released 2026-08-15. GraphQL schemas compile.
