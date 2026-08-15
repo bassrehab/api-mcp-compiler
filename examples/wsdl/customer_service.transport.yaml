@@ -1,0 +1,15 @@
+# How the customer service is reached, which its WSDL does not say.
+#
+# WSDL describes messages. The HTTP basic credential or client certificate standing in front
+# of a SOAP endpoint is a property of a deployment, so it is stated here rather than invented
+# by the compiler. Everything read from this file carries `declared` provenance rather than
+# `source`, so an emitted surface always shows which operations were governed on the authority
+# of a contract and which on the authority of whoever ran the compile. See ADR-037.
+#
+#   api-mcp-compiler generate examples/wsdl/customer_service.wsdl \
+#     --transport examples/wsdl/customer_service.transport.yaml
+#
+# A WS-SecurityPolicy published in the document wins over this, and the conflict is recorded.
+transport:
+  scheme: basic
+  description: Behind the corporate gateway, which terminates TLS and adds the credential.

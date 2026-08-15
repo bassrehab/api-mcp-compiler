@@ -17,6 +17,8 @@ from pathlib import Path
 
 from lxml import etree
 
+from api_mcp_compiler.ingest.transport import Transport, declared_requirement, declared_scheme
+from api_mcp_compiler.ingest.wspolicy import collect_policies, read_policy
 from api_mcp_compiler.ingest.xsd import (
     XSD_NAMESPACE,
     XsdIndex,
@@ -27,6 +29,8 @@ from api_mcp_compiler.ingest.xsd import (
 from api_mcp_compiler.models import (
     Ambiguity,
     ApiSemanticIR,
+    AuthRequirementIR,
+    AuthSchemeIR,
     Derivation,
     DocumentRole,
     FaultIR,
@@ -781,12 +785,18 @@ def _service(
     )
 
 
-def parse_wsdl(path: Path) -> ApiSemanticIR:
+def parse_wsdl(path: Path, transport: Transport | None = None) -> ApiSemanticIR:
     """Parse a WSDL 1.1 document into the API Semantic IR.
 
     Raises `WsdlIngestionError` for WSDL 2.0 and for documents whose root is not a WSDL 1.1
     `definitions` element. The seeded parser returned an empty operation list in those
     cases, which is indistinguishable from a service that genuinely has no operations.
+
+    `transport` declares how the service is authenticated when the document does not say. It
+    fills a silence and never overrides a policy the document states, because the contract is
+    the thing under review, and a declaration that contradicted it is recorded as an ambiguity
+    rather than allowed to win. See ADR-037 for why it carries `declared` provenance rather
+    than `source`.
     """
     raw = path.read_bytes()
     digest = source_digest(raw)
@@ -851,8 +861,71 @@ def parse_wsdl(path: Path) -> ApiSemanticIR:
             )
         )
 
+    schemes, requirement, auth_ambiguities = _authentication(root, transport)
+    ambiguities.extend(auth_ambiguities)
+    if requirement is not None:
+        # Applied to every operation. Neither source says anything per-operation: a policy is
+        # attached to a binding, and a declaration describes the way in to a service, so
+        # varying it per operation would suggest either said more than it did.
+        operations = [
+            item.model_copy(update={"authentication": requirement}) for item in operations
+        ]
+
+    # The schemes belong to the service rather than to the IR root, which is where every
+    # other adapter puts them.
+    service = _service(root, path, digest, target_namespace)
+    if schemes:
+        service = service.model_copy(update={"auth_schemes": schemes})
+
     return ApiSemanticIR(
-        service=_service(root, path, digest, target_namespace),
+        service=service,
         operations=operations,
         ambiguities=ambiguities,
     )
+
+
+def _authentication(
+    root: etree._Element, transport: Transport | None
+) -> tuple[list[AuthSchemeIR], AuthRequirementIR | None, list[Ambiguity]]:
+    """What authenticates this service, preferring what the document itself states.
+
+    The order is not a preference for richer data. The document is the thing under review, so
+    a policy it publishes outranks a claim made about it from outside, and a declaration that
+    disagrees is reported rather than silently losing. An operator who declares basic
+    authentication for a service whose WSDL requires an X.509 token has a misunderstanding
+    worth surfacing, and quietly picking either one hides it.
+    """
+    policies = collect_policies(root)
+    ambiguities: list[Ambiguity] = []
+    schemes: list[AuthSchemeIR] = []
+    requirement: AuthRequirementIR | None = None
+
+    for binding in root.findall(f"{{{WSDL_NS}}}binding"):
+        name = binding.get("name") or ""
+        pointer = wsdl_pointer(_ROOT_STEP, xpath_step("binding", name=name))
+        found, from_policy, policy_ambiguities = read_policy(binding, policies, pointer)
+        ambiguities.extend(policy_ambiguities)
+        if from_policy is not None and requirement is None:
+            schemes, requirement = found, from_policy
+
+    if requirement is not None:
+        if transport is not None:
+            ambiguities.append(
+                Ambiguity(
+                    code="declared_transport_ignored",
+                    field="authentication",
+                    source_pointer=wsdl_pointer(_ROOT_STEP),
+                    detail=(
+                        "A transport was declared alongside this specification and the document "
+                        "states its own security policy, which is used instead. The declaration "
+                        "is recorded here rather than applied, because a contract outranks a "
+                        "claim made about it from outside."
+                    ),
+                    blocking=False,
+                )
+            )
+        return schemes, requirement, ambiguities
+
+    if transport is not None:
+        return [declared_scheme(transport)], declared_requirement(), ambiguities
+    return [], None, ambiguities

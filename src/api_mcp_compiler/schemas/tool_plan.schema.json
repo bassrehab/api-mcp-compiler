@@ -71,7 +71,8 @@
               "source",
               "normalized",
               "inferred",
-              "default"
+              "default",
+              "declared"
             ]
           },
           "rule": {

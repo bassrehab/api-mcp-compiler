@@ -31,6 +31,7 @@ from api_mcp_compiler.ingest.graphql_sdl import is_graphql, parse_graphql
 from api_mcp_compiler.ingest.openapi import parse_openapi
 from api_mcp_compiler.ingest.protobuf import parse_proto
 from api_mcp_compiler.ingest.refs import RefPolicy
+from api_mcp_compiler.ingest.transport import load_transport
 from api_mcp_compiler.ingest.vendoring import (
     VendoringError,
     cached_documents,
@@ -88,6 +89,13 @@ ENFORCE_POLICY_HELP = (
     "Disabling this shows what would be emitted without governance; it is not a safe mode."
 )
 
+TRANSPORT_HELP = (
+    "Path to a transport declaration: how this service is authenticated, when its contract "
+    "does not say. Recorded with `declared` provenance rather than `source`, so a surface "
+    "always shows which operations were governed on the authority of a document and which on "
+    "the authority of whoever ran this. A policy published in the document wins over it."
+)
+
 ALLOW_DIR_HELP = (
     "Directory whose files may be loaded by $ref. Repeatable. Omitted by default, so a "
     "specification cannot pull in files it was not explicitly pointed at."
@@ -130,6 +138,7 @@ def _parse(
     kind: SourceKind,
     allow_dir: list[Path] | None = None,
     refs_lock: Path | None = None,
+    transport: Path | None = None,
 ) -> ApiSemanticIR:
     """Dispatch a source document to the matching ingestion adapter.
 
@@ -145,7 +154,14 @@ def _parse(
             else _detect(source)
         )
     if kind is SourceKind.WSDL:
-        return parse_wsdl(source)
+        return parse_wsdl(source, transport=load_transport(transport) if transport else None)
+    if transport is not None:
+        # Refused rather than ignored. A declaration that silently did nothing would let
+        # somebody believe a surface was governed by something that never reached it.
+        raise typer.BadParameter(
+            "--transport applies to WSDL, where a contract cannot state how a service is "
+            f"authenticated. {source.name} is {kind.value}, which declares its own security."
+        )
     if kind is SourceKind.CATALOGUE:
         return parse_catalogue(source)
     if kind is SourceKind.ASYNCAPI:
@@ -175,10 +191,11 @@ def inspect(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
     baseline: bool = typer.Option(True, help="Include the baseline tool plan in the output."),
 ) -> None:
     """Parse a source document and print the normalized IR as canonical JSON."""
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     payload: dict[str, object] = {"ir": ir.model_dump(mode="json")}
     if baseline:
         payload["baseline_plan"] = plan_baseline(ir).model_dump(mode="json")
@@ -191,6 +208,7 @@ def plan(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
@@ -199,7 +217,7 @@ def plan(
     Every artifact is `proposed` until a reviewer records approval in an overlay, and the
     emission gate refuses to make a write or destructive tool executable before then.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     typer.echo(dump_canonical(_plan(ir, planner, overlay)), nl=False)
 
 
@@ -209,6 +227,7 @@ def generate(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
     enforce_policy: bool = typer.Option(
@@ -222,7 +241,7 @@ def generate(
     write, destructive or privileged tool has been approved. Refused tools are still emitted,
     carrying the reason, so the surface stays auditable.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     plan = _plan(ir, planner, overlay)
     manifest = synthesize_policy(ir, plan) if enforce_policy else None
     typer.echo(dump_canonical(generate_surface(ir, plan, manifest)), nl=False)
@@ -235,6 +254,7 @@ def report(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
@@ -245,7 +265,7 @@ def report(
     one set of proposals is not evidence about a different set, so each run writes a file named
     for the source digest it describes.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     plan = _plan(ir, planner, overlay)
     manifest = synthesize_policy(ir, plan)
     written = write_report(out_dir, ir, plan, generate_surface(ir, plan, manifest), manifest)
@@ -270,13 +290,14 @@ def approve_surface(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
 ) -> None:
     """Record approval for a class of tools, writing the overlay so nobody hand-edits JSON.
 
     A selection must name what it covers. There is deliberately no flag that approves a whole
     surface without saying what class of thing it is.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     existing = load_overlay(overlay) if overlay.is_file() else None
     plan = plan_semantic(ir, existing)
     try:
@@ -301,6 +322,7 @@ def serve(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
@@ -319,7 +341,7 @@ def serve(
 
     The generated module needs `mcp` and `httpx`, which this compiler does not depend on.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     plan = _plan(ir, planner, overlay)
     manifest = synthesize_policy(ir, plan)
     surface = generate_surface(ir, plan, manifest)
@@ -369,6 +391,7 @@ def policy(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
@@ -377,7 +400,7 @@ def policy(
     Policy is derived separately from code generation. Anything that cannot be derived is
     named in `unresolved`, and generation then refuses the tool rather than defaulting it.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     typer.echo(dump_canonical(synthesize_policy(ir, _plan(ir, planner, overlay))), nl=False)
 
 
@@ -387,6 +410,7 @@ def review(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
 ) -> None:
     """Print the human review report for the semantic plan.
@@ -394,7 +418,7 @@ def review(
     This is the artifact the approval gate depends on: every proposed rename, omission,
     grouping, projection and composite, with its rationale and confidence.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     typer.echo(review_report(ir, plan_semantic(ir, load_overlay(overlay) if overlay else None)))
 
 
@@ -405,6 +429,7 @@ def overlay_restamp(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
 ) -> None:
     """Bind an overlay to the current specification revision.
 
@@ -412,7 +437,7 @@ def overlay_restamp(
     digest is what stops an approval granted for one revision from applying to another, so
     re-stamping without reviewing defeats the mechanism it exists to provide.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     current = load_overlay(overlay)
     if current.source_digest == ir.service.source_digest:
         typer.echo(f"{overlay}: already bound to {ir.service.source_digest}.")
@@ -431,6 +456,7 @@ def evaluate(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
     enforce_policy: bool = typer.Option(
@@ -444,7 +470,7 @@ def evaluate(
     checking that the harness agrees with itself and useless for comparing surfaces. No
     output of this command is evidence that one planner outperforms another.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     plan = _plan(ir, planner, overlay)
     manifest = synthesize_policy(ir, plan) if enforce_policy else None
     loaded = EvalCorpus.model_validate(json.loads(corpus.read_text(encoding="utf-8")))
@@ -513,13 +539,14 @@ def validate(
     kind: SourceKind = typer.Option(SourceKind.AUTO, "--kind", help="Override format detection."),
     allow_dir: list[Path] = typer.Option([], "--allow-dir", help=ALLOW_DIR_HELP),
     refs_lock: Path | None = typer.Option(None, "--refs-lock", help=REFS_LOCK_HELP),
+    transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
 ) -> None:
     """Validate the IR and baseline plan against their schemas and report ambiguities.
 
     Exits non-zero when a contract is violated. Blocking ambiguities are reported but do not
     fail the command: they are the work queue for later phases, not defects in this one.
     """
-    ir = _parse(source, kind, allow_dir, refs_lock)
+    ir = _parse(source, kind, allow_dir, refs_lock, transport)
     baseline = plan_baseline(ir)
     try:
         validate_ir(ir.model_dump(mode="json"), label=f"IR for {source}")

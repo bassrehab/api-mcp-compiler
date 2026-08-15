@@ -42,6 +42,19 @@ def escape_pointer_token(token: str) -> str:
     return token.replace("~", "~0").replace("/", "~1")
 
 
+#: Pointer scheme for a fact declared alongside a specification rather than found in it.
+#:
+#: A pointer is meant to lead a reader to the bytes a value came from, and for a declared fact
+#: there are none in the document. Reusing a document scheme would send an auditor looking for
+#: something that is not there, so this names the declaration instead.
+DECLARATION_SCHEME = "declaration"
+
+
+def declaration_pointer(key: str) -> str:
+    """A pointer into a declaration supplied alongside the specification. See ADR-037."""
+    return f"{DECLARATION_SCHEME}:/{key}"
+
+
 def json_pointer(*tokens: str) -> str:
     """Build an RFC 6901 JSON Pointer in URI-fragment form from unescaped tokens."""
     return "#/" + "/".join(escape_pointer_token(token) for token in tokens) if tokens else "#"

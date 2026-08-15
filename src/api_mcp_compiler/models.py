@@ -16,7 +16,7 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-IR_SCHEMA_VERSION = "0.11.0"
+IR_SCHEMA_VERSION = "0.12.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
 TOOL_SURFACE_SCHEMA_VERSION = "0.4.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
@@ -156,12 +156,21 @@ class Derivation(StrEnum):
     `source` and `normalized` are facts and always carry confidence 1.0. `inferred` is a
     proposal and must carry confidence below 1.0. `default` records that the source was
     inspected and held no evidence, so the contract default applies.
+
+    `declared` is also a fact at confidence 1.0, and is deliberately not `source`. It records
+    something asserted by whoever ran the compiler rather than by the document: how a service
+    is reached, which for SOAP is routinely invisible in the WSDL. Folding it into `source`
+    would make the IR claim a document says something it does not, and an auditor reading an
+    emitted surface would have no way to tell which operations were governed on the authority
+    of a contract and which on the authority of an operator. That difference matters in a
+    review and cannot be recovered once it has been flattened.
     """
 
     SOURCE = "source"
     NORMALIZED = "normalized"
     INFERRED = "inferred"
     DEFAULT = "default"
+    DECLARED = "declared"
 
 
 class ParameterLocation(StrEnum):
