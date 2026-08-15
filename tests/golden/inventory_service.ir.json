@@ -907,7 +907,7 @@
       "tags": []
     }
   ],
-  "schema_version": "0.9.0",
+  "schema_version": "0.10.0",
   "service": {
     "auth_schemes": [
       {

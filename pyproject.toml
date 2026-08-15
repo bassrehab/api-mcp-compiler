@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "api-mcp-compiler"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
-version = "0.8.0"
+version = "0.9.0"
 description = "Semantic and safe compilation of enterprise APIs into MCP tool surfaces"
 readme = "README.md"
 authors = [{name = "Subhadip Mitra", email = "contact@subhadipmitra.com"}]
@@ -20,7 +20,10 @@ classifiers = [
   "Typing :: Typed",
 ]
 requires-python = ">=3.11"
-dependencies = ["pydantic>=2.7", "typer>=0.12", "PyYAML>=6.0", "lxml>=5.2", "jsonschema>=4.22"]
+dependencies = [
+    # The reference GraphQL implementation, used to parse SDL. Pure Python, and parsing a
+    # schema language by hand is how an adapter quietly disagrees with the spec it claims.
+    "graphql-core>=3.2","pydantic>=2.7", "typer>=0.12", "PyYAML>=6.0", "lxml>=5.2", "jsonschema>=4.22"]
 
 [project.optional-dependencies]
 # The model-backed evaluation driver imports the Anthropic SDK, and nothing else does. It is

@@ -27,6 +27,7 @@ from api_mcp_compiler.evaluation.harness import run_corpus
 from api_mcp_compiler.ingest.asyncapi import is_asyncapi, parse_asyncapi
 from api_mcp_compiler.ingest.catalogue import is_catalogue, parse_catalogue
 from api_mcp_compiler.ingest.documents import load_document
+from api_mcp_compiler.ingest.graphql_sdl import is_graphql, parse_graphql
 from api_mcp_compiler.ingest.openapi import parse_openapi
 from api_mcp_compiler.ingest.refs import RefPolicy
 from api_mcp_compiler.ingest.vendoring import (
@@ -66,6 +67,7 @@ class SourceKind(StrEnum):
     WSDL = "wsdl"
     CATALOGUE = "catalogue"
     ASYNCAPI = "asyncapi"
+    GRAPHQL = "graphql"
 
 
 REFS_LOCK_HELP = (
@@ -100,9 +102,17 @@ def _detect(source: Path) -> SourceKind:
     adapter is not the place to explain that a document is malformed, and the adapter that
     receives it will say so better.
     """
+    if source.suffix.lower() in {".graphql", ".gql", ".graphqls"}:
+        return SourceKind.GRAPHQL
     try:
         payload, _ = load_document(source)
     except Exception:
+        # SDL is not YAML, so a document that fails to load and looks like a schema is one.
+        try:
+            if is_graphql(source.read_text(encoding="utf-8")):
+                return SourceKind.GRAPHQL
+        except Exception:
+            pass
         return SourceKind.OPENAPI
     if is_catalogue(payload):
         return SourceKind.CATALOGUE
@@ -136,6 +146,8 @@ def _parse(
         return parse_catalogue(source)
     if kind is SourceKind.ASYNCAPI:
         return parse_asyncapi(source)
+    if kind is SourceKind.GRAPHQL:
+        return parse_graphql(source)
     vendored = cached_documents(load_lock(refs_lock), refs_lock) if refs_lock else None
     return parse_openapi(
         source,

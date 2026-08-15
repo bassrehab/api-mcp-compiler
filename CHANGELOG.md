@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.9.0
+
+Released 2026-08-15. GraphQL schemas compile.
+
+Minor: `SourceFormat` gained `graphql`, `Protocol` gained `graphql`, `IR_SCHEMA_VERSION` is now
+`0.10.0`, and `graphql-core` is a dependency. Parsing a schema language by hand is how an
+adapter quietly disagrees with the specification it claims to read.
+
+### The decision this adapter had to make
+
+Root fields are operations and that part needs no inference. `Query` reads, `Mutation` changes
+state, `Subscription` delivers events.
+
+The hard part is that a GraphQL call is not "invoke this field", it is "invoke this field **and
+select these subfields**", and the selection is the caller's to write. Three options, one
+honest:
+
+- **Let the agent write the selection.** That is `execute_sql` with different syntax: the blast
+  radius is the whole graph and no reviewer can look at it in advance, because it does not
+  exist until the agent invents it.
+- **Select everything.** A selection set over a graph has no natural bottom, and any depth
+  limit is a number this compiler made up.
+- **Select the scalars one level deep, and say so in the description a reviewer reads.**
+
+The third is what ships. It gives up depth, which is real, and the alternative is a tool whose
+result shape nobody can review. Where a nested selection is genuinely needed the answer is the
+same as for a database: somebody writes the query down, and a named operation in a `.graphql`
+document is a specification the same way a catalogue is. That is not built here.
+
+### Other decisions
+
+- A `Mutation` whose name says `purge` is destructive rather than a write, through the shared
+  vocabulary in `api_mcp_compiler.language`. The root type separates reads from writes and does
+  not separate an update from a deletion.
+- A `Query` described in destructive language raises a blocking ambiguity, as it does for HTTP.
+- A `Subscription` is held for the same reason an AsyncAPI receive is: an agent subscribed to a
+  stream is not calling a tool.
+- No server is invented. SDL names no endpoint, and asserting one would be a fact the document
+  does not carry.
+
 ## 0.8.0
 
 Released 2026-08-15. AsyncAPI 3.x compiles.

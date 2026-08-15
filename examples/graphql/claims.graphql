@@ -1,0 +1,36 @@
+"""Synthetic claims graph, for testing and for showing what the adapter does with one."""
+
+type Query {
+  "One claim by its identifier."
+  claim(id: ID!): Claim
+  "Every claim for a customer."
+  claimsForCustomer(customerId: ID!, status: ClaimStatus): [Claim!]!
+}
+
+type Mutation {
+  "Files a new claim."
+  createClaim(customerId: ID!, amount: Float!): Claim
+  "Permanently deletes a claim and its history."
+  purgeClaim(id: ID!): Boolean
+}
+
+type Subscription {
+  "Emitted whenever a claim is settled."
+  claimSettled: Claim
+}
+
+enum ClaimStatus { OPEN CLOSED SETTLED }
+
+type Claim {
+  id: ID!
+  status: ClaimStatus!
+  amount: Float
+  openedAt: String
+  "Following this edge is not offered: see the adapter's selection rule."
+  customer: Customer
+}
+
+type Customer {
+  id: ID!
+  name: String
+}

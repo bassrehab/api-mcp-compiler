@@ -13,7 +13,7 @@
   "properties": {
     "schema_version": {
       "description": "Pinned contract version. A document written against a different version fails validation loudly rather than being silently misread.",
-      "const": "0.9.0"
+      "const": "0.10.0"
     },
     "service": {
       "$ref": "#/$defs/service"
@@ -531,7 +531,8 @@
             "http",
             "soap",
             "sql",
-            "async"
+            "async",
+            "graphql"
           ]
         },
         "source_pointer": {
@@ -691,7 +692,8 @@
             "swagger",
             "wsdl",
             "catalogue",
-            "asyncapi"
+            "asyncapi",
+            "graphql"
           ]
         },
         "source_uri": {

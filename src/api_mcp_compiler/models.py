@@ -16,7 +16,7 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-IR_SCHEMA_VERSION = "0.9.0"
+IR_SCHEMA_VERSION = "0.10.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
 TOOL_SURFACE_SCHEMA_VERSION = "0.4.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
@@ -37,6 +37,7 @@ class SourceFormat(StrEnum):
     #: See `docs/query-catalogue.md` for why a catalogue is compiled and a schema is not.
     CATALOGUE = "catalogue"
     ASYNCAPI = "asyncapi"
+    GRAPHQL = "graphql"
 
 
 class Protocol(StrEnum):
@@ -50,6 +51,9 @@ class Protocol(StrEnum):
     #: A message published to or delivered from a channel. The transport underneath varies and
     #: the document names it; what matters here is that the exchange is not request-response.
     ASYNC = "async"
+    #: A GraphQL root field. One endpoint serves them all, which is why an operation carries no
+    #: route: the schema never names the URL.
+    GRAPHQL = "graphql"
 
 
 class SideEffectClass(StrEnum):
