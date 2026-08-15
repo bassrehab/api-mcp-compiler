@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.8.0
+
+Released 2026-08-15. AsyncAPI 3.x compiles.
+
+Minor rather than patch: `SourceFormat` gained `asyncapi` and `Protocol` gained `async`, so
+`IR_SCHEMA_VERSION` is now `0.9.0`.
+
+### The case MCP has no shape for
+
+An operation with `action: send` maps cleanly: an agent publishes a message. An operation with
+`action: receive` does not, because an agent that *reacts* to an event is not calling a tool, it
+is being invoked by one. That is a different primitive rather than a tool with an awkward shape.
+
+A receive operation is therefore ingested and held, with a blocking ambiguity saying why.
+Skipping it would let somebody believe their event-driven estate was covered, and inventing a
+polling tool would be this compiler designing an integration rather than reading one.
+
+### Other decisions
+
+- **2.x is refused rather than guessed at.** There, `publish` describes what a *client* may do
+  rather than what the server does, and reading it the other way produces a surface that looks
+  right and does the opposite.
+- **Publishing is not reported as completion.** A send returns 202 with a description saying
+  acceptance is not the same as having been acted on, which is the same reasoning applied to
+  HTTP 202 in 0.5.0.
+- **The channel address reaches the description.** `orders.created` and `payments.settled` are
+  the same shape and not the same decision.
+- Only local channel references resolve. A remote one would make compiling depend on the
+  network and on the moment it ran.
+- A document declaring channels and no operations is refused: it says what exists and not what
+  anybody may do with it.
+
 ## 0.7.0
 
 Released 2026-08-15. A query catalogue compiles: named, parameterised statements an

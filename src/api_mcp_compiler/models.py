@@ -16,7 +16,7 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-IR_SCHEMA_VERSION = "0.8.0"
+IR_SCHEMA_VERSION = "0.9.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
 TOOL_SURFACE_SCHEMA_VERSION = "0.4.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
@@ -36,6 +36,7 @@ class SourceFormat(StrEnum):
     #: A query catalogue: named, parameterised statements an organisation has written down.
     #: See `docs/query-catalogue.md` for why a catalogue is compiled and a schema is not.
     CATALOGUE = "catalogue"
+    ASYNCAPI = "asyncapi"
 
 
 class Protocol(StrEnum):
@@ -46,6 +47,9 @@ class Protocol(StrEnum):
     #: A statement executed against a database. Not a wire protocol in the way the others are,
     #: and it belongs here for the same reason they do: it is what a caller has to speak.
     SQL = "sql"
+    #: A message published to or delivered from a channel. The transport underneath varies and
+    #: the document names it; what matters here is that the exchange is not request-response.
+    ASYNC = "async"
 
 
 class SideEffectClass(StrEnum):

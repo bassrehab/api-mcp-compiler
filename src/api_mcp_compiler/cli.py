@@ -24,6 +24,7 @@ from api_mcp_compiler.contracts import (
     validate_tool_surface,
 )
 from api_mcp_compiler.evaluation.harness import run_corpus
+from api_mcp_compiler.ingest.asyncapi import is_asyncapi, parse_asyncapi
 from api_mcp_compiler.ingest.catalogue import is_catalogue, parse_catalogue
 from api_mcp_compiler.ingest.documents import load_document
 from api_mcp_compiler.ingest.openapi import parse_openapi
@@ -64,6 +65,7 @@ class SourceKind(StrEnum):
     OPENAPI = "openapi"
     WSDL = "wsdl"
     CATALOGUE = "catalogue"
+    ASYNCAPI = "asyncapi"
 
 
 REFS_LOCK_HELP = (
@@ -88,18 +90,25 @@ ALLOW_DIR_HELP = (
 )
 
 
-def _looks_like_catalogue(source: Path) -> bool:
-    """Peek at a document to see whether it is a catalogue.
+def _detect(source: Path) -> SourceKind:
+    """Read a document's marker to choose an adapter.
 
-    Reads it rather than trusting the extension, and swallows a parse failure: deciding which
-    adapter to use is not the place to report that a document is malformed, and the adapter
-    that gets it will say so better.
+    Reads it rather than trusting the extension, because a catalogue, an AsyncAPI document and
+    an OpenAPI document are all YAML and a caller should not have to say which they have.
+
+    A parse failure falls through to OpenAPI rather than being reported here: choosing an
+    adapter is not the place to explain that a document is malformed, and the adapter that
+    receives it will say so better.
     """
     try:
         payload, _ = load_document(source)
     except Exception:
-        return False
-    return is_catalogue(payload)
+        return SourceKind.OPENAPI
+    if is_catalogue(payload):
+        return SourceKind.CATALOGUE
+    if is_asyncapi(payload):
+        return SourceKind.ASYNCAPI
+    return SourceKind.OPENAPI
 
 
 def _parse(
@@ -114,16 +123,19 @@ def _parse(
     an OpenAPI document and a caller should not have to say which they have.
     """
     if kind is SourceKind.AUTO:
-        if source.suffix.lower() in _WSDL_SUFFIXES:
-            kind = SourceKind.WSDL
-        elif _looks_like_catalogue(source):
-            kind = SourceKind.CATALOGUE
-        else:
-            kind = SourceKind.OPENAPI
+        # WSDL is decided by extension because it is XML and the others are not; everything
+        # else is decided by reading the document's own marker.
+        kind = (
+            SourceKind.WSDL
+            if source.suffix.lower() in _WSDL_SUFFIXES
+            else _detect(source)
+        )
     if kind is SourceKind.WSDL:
         return parse_wsdl(source)
     if kind is SourceKind.CATALOGUE:
         return parse_catalogue(source)
+    if kind is SourceKind.ASYNCAPI:
+        return parse_asyncapi(source)
     vendored = cached_documents(load_lock(refs_lock), refs_lock) if refs_lock else None
     return parse_openapi(
         source,

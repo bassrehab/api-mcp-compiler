@@ -1,0 +1,51 @@
+# A synthetic AsyncAPI 3 document.
+#
+# Carries both a send and a receive, because the receive is the interesting case: MCP is
+# request and response, and an operation nothing can call is the thing this adapter has to
+# report rather than skip.
+asyncapi: 3.0.0
+
+info:
+  title: Orders Events
+  version: "1.4"
+  description: Events the order service publishes and consumes.
+
+servers:
+  broker:
+    host: broker.example.invalid:9092
+    protocol: kafka
+    description: The order event broker.
+
+channels:
+  orderCancellations:
+    address: orders.cancellations
+    description: Cancellation requests, one per order.
+    parameters:
+      region:
+        description: The region the order belongs to.
+    messages:
+      cancelOrder:
+        payload:
+          type: object
+          properties:
+            orderId: {type: string}
+            reason: {type: string}
+
+  orderSettlements:
+    address: orders.settled
+    description: Settlement notifications from the payments system.
+
+operations:
+  requestOrderCancellation:
+    action: send
+    summary: Request that an order be cancelled
+    description: Publishes a cancellation request. The order service decides whether to honour it.
+    channel:
+      $ref: '#/channels/orderCancellations'
+
+  onOrderSettled:
+    action: receive
+    summary: React to an order being settled
+    description: Delivered by the payments system when an order settles.
+    channel:
+      $ref: '#/channels/orderSettlements'
