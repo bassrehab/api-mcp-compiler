@@ -1,5 +1,57 @@
 # Changelog
 
+## 0.11.0
+
+Released 2026-08-15. A SOAP write or destructive operation can be emitted.
+
+Minor: `Derivation` gained `declared` and `IR_SCHEMA_VERSION` is now `0.12.0`. WSDL ingestion
+takes an optional transport declaration, and `--transport` is available on every command that
+reads a specification.
+
+### The bug
+
+`parse_wsdl` never populated `OperationIR.authentication`, and policy synthesis treats an
+unresolved authorization concern as fatal for anything that is not a read. Every SOAP write and
+destructive operation was therefore held on `policy_unresolved` forever.
+
+That is worse than it sounds, because SOAP is the case the human classification gate exists
+for. WSDL carries no equivalent of an HTTP method, so the gate correctly refuses to guess what
+an operation does, a reviewer records the answer, and a second refusal then made that answer
+worthless for precisely the operations that needed governing. Reads passed, which is why the
+example suite never showed it.
+
+The fail-closed behaviour was right and is unchanged. What was missing is any way for a SOAP
+service to state how it is authenticated.
+
+### Two sources, and why they are not the same claim
+
+**WS-SecurityPolicy read from the document** is a fact about the contract and carries `source`.
+A subset of `sp:` token assertions is recognised: username, X.509, Kerberos, issued token, and
+HTTPS with a required client certificate.
+
+**A transport declared beside the specification** is a fact about a deployment. HTTP basic or
+mutual TLS in front of a SOAP endpoint is the common real arrangement and is invisible in the
+WSDL, so without this the faithful path helps only the minority of services that publish policy.
+
+Calling that second one `source` would make the IR assert a document says something it does not.
+So `Derivation` gained `declared`: a fact at confidence 1.0, distinguishable from `source`
+forever, whose pointers read `declaration:/...` rather than aiming into a document where an
+auditor would never find them. Anyone reading an emitted surface can tell which operations were
+governed on the authority of a contract and which on the authority of whoever ran the compiler.
+That difference matters in a review and cannot be recovered once flattened.
+
+The document wins where both exist. A declaration fills a silence rather than contradicting a
+statement, and one that disagrees with a published policy is recorded as an ambiguity rather
+than allowed to win: an operator who declares basic authentication for a service whose WSDL
+requires an X.509 token has a misunderstanding worth surfacing.
+
+### What is refused
+
+An assertion outside the recognised subset contributes no scheme and is reported. Guessing at a
+security policy is the least defensible approximation in this compiler: the assertion this
+version does not model might be the one that makes an operation safe, and treating it as
+understood would produce a surface claiming governance it cannot demonstrate.
+
 ## 0.10.0
 
 Released 2026-08-15. gRPC service definitions compile, from a `.proto` file.
