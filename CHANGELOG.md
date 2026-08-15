@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.7.0
+
+Released 2026-08-15. A query catalogue compiles: named, parameterised statements an
+organisation has written down, with the blast radius derived from the predicate.
+
+Minor rather than patch: `SourceFormat` gained `catalogue` and `Protocol` gained `sql`, so an
+IR written by 0.6.4 still validates and one written by this does not validate against the old
+schema. `IR_SCHEMA_VERSION` is now `0.8.0`. Nothing else changed.
+
+### Why a catalogue and not a schema adapter
+
+Database MCP servers are everywhere and are the most dangerous surface in the ecosystem, and a
+schema is not a specification: it says what the data looks like and nothing about which
+operations should exist, because every operation is possible. Compiling one would mean
+authoring, and provenance would degrade from "line 40 of your contract" to "somebody typed
+this".
+
+A catalogue is a document. It declares operations, so it compiles with full provenance, has a
+digest, drifts, and classifies by verb. See `docs/query-catalogue.md`.
+
+### The derivation with no equivalent elsewhere
+
+`DELETE FROM claims WHERE id = :id` and `DELETE FROM claims` differ by a clause and by a
+company. Nothing in HTTP separates them: both are `DELETE` and both are destructive. A mutating
+statement with no predicate is recorded as an unbounded mutation and raises a blocking
+ambiguity, because truncating a staging table nightly is a real thing somebody means to do and
+it must be somebody's decision rather than a default.
+
+- The verb classifies the statement, at 0.95 confidence. Somebody chose it to describe what the
+  statement does rather than to fit a protocol, which is a better signal than an HTTP method.
+- A declared `side_effect` may only raise a query's class, never lower it. Lowering one would
+  route a destructive statement past the gate by editing a document.
+- `GRANT` and `REVOKE` raise a blocking ambiguity of their own. An agent able to grant
+  permissions can grant itself more.
+- A placeholder with no declared parameter is an error rather than a guess, and a declared
+  parameter the statement never uses is too.
+- No servers are recorded. A catalogue names a connection the deployment resolves, because a
+  connection string in a specification is a credential in version control.
+
 ## 0.6.4
 
 Released 2026-08-14. A read whose summary says it deletes something is now raised for review.

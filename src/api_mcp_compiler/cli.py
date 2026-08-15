@@ -24,6 +24,7 @@ from api_mcp_compiler.contracts import (
     validate_tool_surface,
 )
 from api_mcp_compiler.evaluation.harness import run_corpus
+from api_mcp_compiler.ingest.catalogue import is_catalogue, parse_catalogue
 from api_mcp_compiler.ingest.documents import load_document
 from api_mcp_compiler.ingest.openapi import parse_openapi
 from api_mcp_compiler.ingest.refs import RefPolicy
@@ -62,6 +63,7 @@ class SourceKind(StrEnum):
     AUTO = "auto"
     OPENAPI = "openapi"
     WSDL = "wsdl"
+    CATALOGUE = "catalogue"
 
 
 REFS_LOCK_HELP = (
@@ -86,17 +88,42 @@ ALLOW_DIR_HELP = (
 )
 
 
+def _looks_like_catalogue(source: Path) -> bool:
+    """Peek at a document to see whether it is a catalogue.
+
+    Reads it rather than trusting the extension, and swallows a parse failure: deciding which
+    adapter to use is not the place to report that a document is malformed, and the adapter
+    that gets it will say so better.
+    """
+    try:
+        payload, _ = load_document(source)
+    except Exception:
+        return False
+    return is_catalogue(payload)
+
+
 def _parse(
     source: Path,
     kind: SourceKind,
     allow_dir: list[Path] | None = None,
     refs_lock: Path | None = None,
 ) -> ApiSemanticIR:
-    """Dispatch a source document to the matching ingestion adapter."""
+    """Dispatch a source document to the matching ingestion adapter.
+
+    A catalogue is detected by its marker rather than its extension, because it is YAML like
+    an OpenAPI document and a caller should not have to say which they have.
+    """
     if kind is SourceKind.AUTO:
-        kind = SourceKind.WSDL if source.suffix.lower() in _WSDL_SUFFIXES else SourceKind.OPENAPI
+        if source.suffix.lower() in _WSDL_SUFFIXES:
+            kind = SourceKind.WSDL
+        elif _looks_like_catalogue(source):
+            kind = SourceKind.CATALOGUE
+        else:
+            kind = SourceKind.OPENAPI
     if kind is SourceKind.WSDL:
         return parse_wsdl(source)
+    if kind is SourceKind.CATALOGUE:
+        return parse_catalogue(source)
     vendored = cached_documents(load_lock(refs_lock), refs_lock) if refs_lock else None
     return parse_openapi(
         source,

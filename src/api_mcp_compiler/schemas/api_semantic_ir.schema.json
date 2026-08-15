@@ -13,7 +13,7 @@
   "properties": {
     "schema_version": {
       "description": "Pinned contract version. A document written against a different version fails validation loudly rather than being silently misread.",
-      "const": "0.7.0"
+      "const": "0.8.0"
     },
     "service": {
       "$ref": "#/$defs/service"
@@ -529,7 +529,8 @@
         "protocol": {
           "enum": [
             "http",
-            "soap"
+            "soap",
+            "sql"
           ]
         },
         "source_pointer": {
@@ -687,7 +688,8 @@
           "enum": [
             "openapi",
             "swagger",
-            "wsdl"
+            "wsdl",
+            "catalogue"
           ]
         },
         "source_uri": {

@@ -16,7 +16,7 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-IR_SCHEMA_VERSION = "0.7.0"
+IR_SCHEMA_VERSION = "0.8.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
 TOOL_SURFACE_SCHEMA_VERSION = "0.4.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
@@ -33,6 +33,9 @@ class SourceFormat(StrEnum):
     OPENAPI = "openapi"
     SWAGGER = "swagger"
     WSDL = "wsdl"
+    #: A query catalogue: named, parameterised statements an organisation has written down.
+    #: See `docs/query-catalogue.md` for why a catalogue is compiled and a schema is not.
+    CATALOGUE = "catalogue"
 
 
 class Protocol(StrEnum):
@@ -40,6 +43,9 @@ class Protocol(StrEnum):
 
     HTTP = "http"
     SOAP = "soap"
+    #: A statement executed against a database. Not a wire protocol in the way the others are,
+    #: and it belongs here for the same reason they do: it is what a caller has to speak.
+    SQL = "sql"
 
 
 class SideEffectClass(StrEnum):

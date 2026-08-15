@@ -1,0 +1,61 @@
+# A synthetic query catalogue, for testing and for showing what one looks like.
+#
+# Deliberately includes a query with no predicate, because the blast-radius distinction is the
+# reason this format exists and an example without one would demonstrate nothing.
+catalogue: 1
+
+service:
+  name: Claims Warehouse
+  version: "2.1"
+  description: The queries the claims agent may run against the warehouse.
+  dialect: postgresql
+  connection: claims-warehouse
+
+queries:
+  - id: claim_by_id
+    summary: Get one claim
+    description: Returns a single claim row by its identifier.
+    owner: claims-data@example.invalid
+    statement: |
+      SELECT id, status, opened_at FROM claims WHERE id = :claim_id
+    parameters:
+      - name: claim_id
+        type: string
+        required: true
+        description: The claim's identifier.
+    returns:
+      - {name: id, type: string}
+      - {name: status, type: string}
+      - {name: opened_at, type: string}
+
+  - id: open_claims_for_customer
+    summary: List a customer's open claims
+    description: Returns every open claim belonging to one customer.
+    owner: claims-data@example.invalid
+    statement: |
+      SELECT id, opened_at FROM claims
+      WHERE customer_id = :customer_id AND status = 'open'
+    parameters:
+      - name: customer_id
+        type: string
+        required: true
+
+  - id: close_claim
+    summary: Close one claim
+    description: Marks a single claim closed.
+    owner: claims-ops@example.invalid
+    statement: |
+      UPDATE claims SET status = 'closed' WHERE id = :claim_id
+    parameters:
+      - name: claim_id
+        type: string
+        required: true
+
+  - id: purge_expired_claims
+    summary: Purge every expired claim
+    description: >
+      Deletes all claims past their retention window. Bounded by nothing but the retention
+      view it selects from, which is why it is here as an example.
+    owner: claims-ops@example.invalid
+    statement: |
+      DELETE FROM claims_expired
