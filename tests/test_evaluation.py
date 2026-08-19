@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from jsonschema import Draft202012Validator
 
 from api_mcp_compiler.codegen.tools import generate_surface
 from api_mcp_compiler.contracts import (
@@ -530,3 +531,65 @@ def test_a_refused_call_still_counts_as_a_selection() -> None:
     _, rate = selection(task, trace)
 
     assert rate == 0.0
+
+
+def test_a_wrong_argument_costs_something_and_withholding_it_is_worth_something() -> None:
+    """The chain argument projection is measured through, asserted end to end.
+
+    Issue #35 found the instrument blind to what projection is for: the store ignored `limit`,
+    so setting it badly cost an agent nothing and removing it saved an agent from nothing. No
+    corpus size could have revealed a difference that could not appear in an outcome.
+
+    Three things had to hold, and each is tested separately elsewhere. Nothing asserted them
+    together, which is how a property stays broken while every suite is green:
+
+      1. a declared bound survives into the generated schema as a *number*, since a real
+         specification writes `"maximum": "50"` and no validator enforces a string;
+      2. a value outside it is refused rather than ignored, so a wrong argument costs a call;
+      3. projection removes the argument from the designed surface, so the same mistake is
+         unavailable there.
+
+    Together those make the difference measurable. Separately they make three passing tests
+    and an instrument that cannot see.
+    """
+    ir = parse_openapi(Path("examples/benchmarks/restbench/spotify_oas.json"))
+
+    baseline = plan_baseline(ir)
+    baseline_surface = generate_surface(ir, baseline, synthesize_policy(ir, baseline))
+    carrying = [
+        tool
+        for tool in baseline_surface.tools
+        if "limit" in (tool.input_schema or {}).get("properties", {})
+    ]
+    assert carrying, "the baseline exposes the operations' own arguments"
+
+    tool = carrying[0]
+    bound = tool.input_schema["properties"]["limit"]["maximum"]
+    assert isinstance(bound, int), (
+        f"a declared bound must reach the schema as a number, not {bound!r}; the source "
+        "document writes it as a string and no validator enforces one"
+    )
+
+    # Required arguments supplied, so what is being tested is the bound and not a missing
+    # identifier: an assertion that passes for the wrong reason measures nothing.
+    valid = dict.fromkeys(tool.input_schema.get("required", []), "x")
+    validator = Draft202012Validator(tool.input_schema)
+    assert list(validator.iter_errors({**valid, "limit": bound + 1})), (
+        "a value past the declared maximum must be refused, or setting one costs nothing"
+    )
+    assert not list(validator.iter_errors({**valid, "limit": bound})), (
+        "the bound itself is allowed"
+    )
+
+    # And the designed surface does not offer the argument at all, so the mistake the baseline
+    # permits cannot be made here. That asymmetry is the effect being measured.
+    designed = plan_semantic(ir, None)
+    designed_surface = generate_surface(ir, designed, synthesize_policy(ir, designed))
+    same_operation = next(
+        item
+        for item in designed_surface.tools
+        if item.source_operations == tool.source_operations
+    )
+    assert "limit" not in (same_operation.input_schema or {}).get("properties", {}), (
+        "projection removes the argument the baseline lets an agent get wrong"
+    )
