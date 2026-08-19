@@ -1,5 +1,5 @@
 {
- "authoring_note": "Oracles and fixtures authored for this project against the RestBench Spotify task set. The specification and the goals are third-party; these oracles are not, which makes them the one place bias can still enter. Each was written from the goal text alone, without consulting the generated tool surface, so the corpus cannot encode the assumptions of the thing it judges. Selection rule, fixed before any behaviour was inspected: every read-only task, and every third write-bearing task by upstream index, giving 24 of 55. Revised after the first registered run returned no difference. Two classes of error were corrected, both wrong on inspection rather than merely inconvenient: oracles that pinned the operation a goal should be reached by, which marks an agent wrong for choosing a better route than the annotator; and oracles demanding an identifier be spelled exactly, which marks an agent wrong for sending the fuller form the service actually takes. The revision is disclosed here because revising an oracle after a null result is otherwise indistinguishable from fitting one. Revised again after registration 003: three oracles asserted the record identifier a service assigns when a playlist is created, which no agent can know and which only the reference arguments supplied, and one fixture seeded its answer under a single collection so an agent taking a better route found nothing. Both encode the annotator's path rather than the goal, which is the error these oracles were supposed to avoid. One limitation is left standing rather than papered over: `queue-to-new-playlist` asserts that a playlist with the requested name exists but not that the queued tracks reached it, because the tracks land in a different collection depending on which of two correct routes the agent takes and an assertion cannot yet say `either`. The task therefore under-asserts, which is recorded here so nobody reads a pass on it as more than it is. A third pass found counts used where the goal spoke of things: a count on a collection an agent writes into counts calls, so adding three tracks in one call and in three calls are both correct and only one satisfied it. Those became existence checks. The recently-played fixture was seeded for the annotator's route rather than the goal's wording, and removing a track now asserts the others survived, which it did not before.",
+ "authoring_note": "Oracles and fixtures authored for this project against the RestBench Spotify task set. The specification and the goals are third-party; these oracles are not, which makes them the one place bias can still enter. Each was written from the goal text alone, without consulting the generated tool surface, so the corpus cannot encode the assumptions of the thing it judges. Selection rule, fixed before any behaviour was inspected: every read-only task, and every third write-bearing task by upstream index, giving 24 of 55. Revised after the first registered run returned no difference. Two classes of error were corrected, both wrong on inspection rather than merely inconvenient: oracles that pinned the operation a goal should be reached by, which marks an agent wrong for choosing a better route than the annotator; and oracles demanding an identifier be spelled exactly, which marks an agent wrong for sending the fuller form the service actually takes. The revision is disclosed here because revising an oracle after a null result is otherwise indistinguishable from fitting one. Revised again after registration 003: three oracles asserted the record identifier a service assigns when a playlist is created, which no agent can know and which only the reference arguments supplied, and one fixture seeded its answer under a single collection so an agent taking a better route found nothing. Both encode the annotator's path rather than the goal, which is the error these oracles were supposed to avoid. One limitation is left standing rather than papered over: `queue-to-new-playlist` asserts that a playlist with the requested name exists but not that the queued tracks reached it, because the tracks land in a different collection depending on which of two correct routes the agent takes and an assertion cannot yet say `either`. The task therefore under-asserts, which is recorded here so nobody reads a pass on it as more than it is. A third pass found counts used where the goal spoke of things: a count on a collection an agent writes into counts calls, so adding three tracks in one call and in three calls are both correct and only one satisfied it. Those became existence checks. The recently-played fixture was seeded for the annotator's route rather than the goal's wording, and removing a track now asserts the others survived, which it did not before. A second way to assert a route was found after the first: not by pinning an operation, but by seeding only the collection the author's route reads. `song-of-favourite-artist` asserted a field that exists only on the artist record, and left `artists.top-tracks` empty, so an agent calling the top-tracks operation -- a better route to the same goal -- read nothing and failed. An oracle is route-shaped if any correct route has no data behind it, and the assertion alone does not show that.",
  "entries": [
   {
    "arguments": [
@@ -528,6 +528,13 @@
       "top_track": "Yellow"
      }
     },
+    "artists.top-tracks": {
+     "tr-yellow": {
+      "artist": "ar-coldplay",
+      "id": "tr-yellow",
+      "name": "Yellow"
+     }
+    },
     "me.top": {
      "artists": {
       "id": "ar-coldplay",
@@ -538,18 +545,15 @@
    "index": 24,
    "oracles": [
     {
-     "assertions": [],
-     "description": "A song by the top artist is returned.",
+     "description": "A song by the top artist is returned, whichever call found it.",
      "kind": "retrieval",
      "retrieval_assertions": [
       {
-       "equals": "Yellow",
-       "field": "top_track"
+       "equals": "Yellow"
       }
      ]
     },
     {
-     "assertions": [],
      "description": "A lookup must not change anything.",
      "kind": "no_mutation"
     }
