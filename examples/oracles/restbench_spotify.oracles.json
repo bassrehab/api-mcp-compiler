@@ -1,1040 +1,1062 @@
 {
-  "authoring_note": "Oracles and fixtures authored for this project against the RestBench Spotify task set. The specification and the goals are third-party; these oracles are not, which makes them the one place bias can still enter. Each was written from the goal text alone, without consulting the generated tool surface, so the corpus cannot encode the assumptions of the thing it judges. Selection rule, fixed before any behaviour was inspected: every read-only task, and every third write-bearing task by upstream index, giving 24 of 55. Revised after the first registered run returned no difference. Two classes of error were corrected, both wrong on inspection rather than merely inconvenient: oracles that pinned the operation a goal should be reached by, which marks an agent wrong for choosing a better route than the annotator; and oracles demanding an identifier be spelled exactly, which marks an agent wrong for sending the fuller form the service actually takes. The revision is disclosed here because revising an oracle after a null result is otherwise indistinguishable from fitting one. Revised again after registration 003: three oracles asserted the record identifier a service assigns when a playlist is created, which no agent can know and which only the reference arguments supplied, and one fixture seeded its answer under a single collection so an agent taking a better route found nothing. Both encode the annotator's path rather than the goal, which is the error these oracles were supposed to avoid. One limitation is left standing rather than papered over: `queue-to-new-playlist` asserts that a playlist with the requested name exists but not that the queued tracks reached it, because the tracks land in a different collection depending on which of two correct routes the agent takes and an assertion cannot yet say `either`. The task therefore under-asserts, which is recorded here so nobody reads a pass on it as more than it is. A third pass found counts used where the goal spoke of things: a count on a collection an agent writes into counts calls, so adding three tracks in one call and in three calls are both correct and only one satisfied it. Those became existence checks. The recently-played fixture was seeded for the annotator's route rather than the goal's wording, and removing a track now asserts the others survived, which it did not before.",
-  "entries": [
+ "authoring_note": "Oracles and fixtures authored for this project against the RestBench Spotify task set. The specification and the goals are third-party; these oracles are not, which makes them the one place bias can still enter. Each was written from the goal text alone, without consulting the generated tool surface, so the corpus cannot encode the assumptions of the thing it judges. Selection rule, fixed before any behaviour was inspected: every read-only task, and every third write-bearing task by upstream index, giving 24 of 55. Revised after the first registered run returned no difference. Two classes of error were corrected, both wrong on inspection rather than merely inconvenient: oracles that pinned the operation a goal should be reached by, which marks an agent wrong for choosing a better route than the annotator; and oracles demanding an identifier be spelled exactly, which marks an agent wrong for sending the fuller form the service actually takes. The revision is disclosed here because revising an oracle after a null result is otherwise indistinguishable from fitting one. Revised again after registration 003: three oracles asserted the record identifier a service assigns when a playlist is created, which no agent can know and which only the reference arguments supplied, and one fixture seeded its answer under a single collection so an agent taking a better route found nothing. Both encode the annotator's path rather than the goal, which is the error these oracles were supposed to avoid. One limitation is left standing rather than papered over: `queue-to-new-playlist` asserts that a playlist with the requested name exists but not that the queued tracks reached it, because the tracks land in a different collection depending on which of two correct routes the agent takes and an assertion cannot yet say `either`. The task therefore under-asserts, which is recorded here so nobody reads a pass on it as more than it is. A third pass found counts used where the goal spoke of things: a count on a collection an agent writes into counts calls, so adding three tracks in one call and in three calls are both correct and only one satisfied it. Those became existence checks. The recently-played fixture was seeded for the annotator's route rather than the goal's wording, and removing a track now asserts the others survived, which it did not before.",
+ "entries": [
+  {
+   "arguments": [
     {
-      "arguments": [
-        {
-          "q": "Mariah Carey",
-          "type": [
-            "track"
-          ]
-        },
-        {},
-        {
-          "body": {
-            "id": "pl-love-mariah",
-            "name": "Love Mariah"
-          },
-          "user_id": "u1"
-        },
-        {
-          "playlist_id": "pl-love-mariah",
-          "uris": "tr-1,tr-2,tr-3"
-        }
-      ],
-      "fixture": {},
-      "index": 0,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "users.playlists",
-              "equals": "Love Mariah",
-              "field": "name"
-            },
-            {
-              "collection": "playlists.tracks",
-              "exists": true
-            }
-          ],
-          "description": "A playlist named 'Love Mariah' exists and tracks were added to it.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:968f103dc8866f62",
-      "task_id": "create-named-playlist-with-tracks"
+     "q": "Mariah Carey",
+     "type": [
+      "track"
+     ]
+    },
+    {},
+    {
+     "body": {
+      "id": "pl-love-mariah",
+      "name": "Love Mariah"
+     },
+     "user_id": "u1"
     },
     {
-      "arguments": [
-        {},
-        {
-          "volume_percent": 60
-        }
-      ],
-      "fixture": {},
-      "index": 3,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.player.next",
-              "count": 1
-            },
-            {
-              "collection": "me.player.volume",
-              "equals": 60,
-              "field": "volume_percent",
-              "record_id": "me.player.volume"
-            }
-          ],
-          "description": "Playback advanced and the volume is 60.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:4bc8ed94abf28def",
-      "task_id": "skip-track-and-set-volume"
-    },
-    {
-      "arguments": [
-        {},
-        {
-          "id": "tr-clocks"
-        },
-        {
-          "ids": "ar-coldplay",
-          "type": "artist"
-        }
-      ],
-      "fixture": {
-        "me.player.currently-playing": {
-          "me.player.currently-playing": {
-            "artist_id": "ar-coldplay",
-            "id": "tr-clocks",
-            "name": "Clocks"
-          }
-        },
-        "tracks": {
-          "tr-clocks": {
-            "artist_id": "ar-coldplay",
-            "id": "tr-clocks",
-            "name": "Clocks"
-          }
-        }
-      },
-      "index": 6,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.following",
-              "contains": "ar-coldplay",
-              "equals": null,
-              "field": "ids",
-              "record_id": "me.following"
-            }
-          ],
-          "description": "The artist of the playing track is followed.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:dd90126da46de7f9",
-      "task_id": "follow-artist-of-current-song"
-    },
-    {
-      "arguments": [
-        {},
-        {
-          "id": "tr-yellow"
-        },
-        {
-          "ids": "ar-coldplay",
-          "type": "artist"
-        }
-      ],
-      "fixture": {
-        "me.player.currently-playing": {
-          "me.player.currently-playing": {
-            "artist_id": "ar-coldplay",
-            "id": "tr-yellow",
-            "name": "Yellow"
-          }
-        },
-        "me.player.recently-played": {
-          "me.player.recently-played": {
-            "artist_id": "ar-coldplay",
-            "id": "tr-yellow",
-            "name": "Yellow"
-          }
-        },
-        "tracks": {
-          "tr-yellow": {
-            "artist_id": "ar-coldplay",
-            "id": "tr-yellow"
-          }
-        }
-      },
-      "index": 9,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.following",
-              "contains": "ar-coldplay",
-              "equals": null,
-              "field": "ids",
-              "record_id": "me.following"
-            }
-          ],
-          "description": "The artist of the recently played track is followed.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:08b68f8e62b03eaa",
-      "task_id": "follow-artist-of-recent-song"
-    },
-    {
-      "arguments": [
-        {},
-        {
-          "body": {
-            "name": "My First"
-          },
-          "playlist_id": "pl-1"
-        }
-      ],
-      "fixture": {
-        "me.playlists": {
-          "pl-1": {
-            "id": "pl-1",
-            "name": "Old Name"
-          }
-        },
-        "playlists": {
-          "pl-1": {
-            "id": "pl-1",
-            "name": "Old Name"
-          }
-        }
-      },
-      "index": 12,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "playlists",
-              "equals": "My First",
-              "field": "name",
-              "record_id": "pl-1"
-            },
-            {
-              "collection": "playlists",
-              "count": 1
-            }
-          ],
-          "description": "The first playlist is renamed and no playlist is created.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:1f15226195c2d6e9",
-      "task_id": "rename-first-playlist"
-    },
-    {
-      "arguments": [
-        {},
-        {},
-        {
-          "body": {
-            "id": "pl-current",
-            "name": "Current"
-          },
-          "user_id": "u1"
-        },
-        {
-          "body": {
-            "tracks": "tr-1,tr-2"
-          },
-          "playlist_id": "pl-current"
-        }
-      ],
-      "fixture": {
-        "me.player.queue": {
-          "me.player.queue": {
-            "id": "me.player.queue",
-            "tracks": "tr-1,tr-2"
-          }
-        }
-      },
-      "index": 15,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "users.playlists",
-              "equals": "Current",
-              "field": "name"
-            }
-          ],
-          "description": "A playlist named 'Current' exists and carries the queued tracks.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:7f349f0d61abdc34",
-      "task_id": "queue-to-new-playlist"
-    },
-    {
-      "arguments": [
-        {}
-      ],
-      "fixture": {
-        "me.player.currently-playing": {
-          "me.player.currently-playing": {
-            "id": "tr-clocks",
-            "name": "Clocks"
-          }
-        }
-      },
-      "index": 16,
-      "oracles": [
-        {
-          "assertions": [],
-          "description": "The name of the playing track is returned.",
-          "kind": "retrieval",
-          "retrieval_assertions": [
-            {
-              "equals": "Clocks",
-              "field": "name"
-            }
-          ]
-        },
-        {
-          "assertions": [],
-          "description": "A lookup must not change anything.",
-          "kind": "no_mutation"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:0ab692dc138aa1f2",
-      "task_id": "name-of-currently-playing-song"
-    },
-    {
-      "arguments": [
-        {}
-      ],
-      "fixture": {
-        "me.albums": {
-          "al-parachutes": {
-            "id": "al-parachutes",
-            "name": "Parachutes"
-          }
-        }
-      },
-      "index": 18,
-      "oracles": [
-        {
-          "assertions": [],
-          "description": "The saved album is returned.",
-          "kind": "retrieval",
-          "retrieval_assertions": [
-            {
-              "equals": "Parachutes",
-              "field": "items.name"
-            }
-          ]
-        },
-        {
-          "assertions": [],
-          "description": "A listing must not change anything.",
-          "kind": "no_mutation"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:acc679367ca8a973",
-      "task_id": "list-saved-albums"
-    },
-    {
-      "arguments": [
-        {},
-        {
-          "q": "genre:alt-rock",
-          "type": [
-            "track"
-          ]
-        }
-      ],
-      "fixture": {
-        "me.player.currently-playing": {
-          "me.player.currently-playing": {
-            "genre": "alt-rock",
-            "id": "tr-clocks"
-          }
-        },
-        "recommendations": {
-          "recommendations": {
-            "genre": "alt-rock",
-            "id": "recommendations",
-            "name": "Yellow"
-          }
-        },
-        "search": {
-          "search": {
-            "genre": "alt-rock",
-            "id": "search",
-            "name": "Yellow"
-          }
-        }
-      },
-      "index": 20,
-      "oracles": [
-        {
-          "assertions": [],
-          "description": "A track matching the playing genre is returned.",
-          "kind": "retrieval",
-          "retrieval_assertions": [
-            {
-              "equals": "Yellow",
-              "field": "name"
-            }
-          ]
-        },
-        {
-          "assertions": [],
-          "description": "A recommendation must not change anything.",
-          "kind": "no_mutation"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:ba8e58146d526b82",
-      "task_id": "recommend-by-current-genre"
-    },
-    {
-      "arguments": [
-        {
-          "q": "The Beatles",
-          "type": [
-            "artist"
-          ]
-        },
-        {
-          "id": "ar-beatles"
-        },
-        {
-          "playlist_id": "pl-rock",
-          "uris": "tr-let-it-be"
-        },
-        {
-          "body": {},
-          "playlist_id": "pl-rock"
-        }
-      ],
-      "fixture": {
-        "artists.albums": {
-          "ar-beatles": {
-            "id": "ar-beatles",
-            "newest_track": "tr-let-it-be"
-          }
-        },
-        "playlists": {
-          "pl-rock": {
-            "id": "pl-rock",
-            "name": "My Rock"
-          }
-        },
-        "search": {
-          "search": {
-            "artist_id": "ar-beatles",
-            "id": "search"
-          }
-        }
-      },
-      "index": 21,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "playlists.tracks",
-              "exists": true
-            },
-            {
-              "collection": "playlists",
-              "count": 1
-            }
-          ],
-          "description": "A track was added to the existing 'My Rock' playlist rather than a new one.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:dc70762b2031c3dd",
-      "task_id": "append-newest-album-track-to-playlist"
-    },
-    {
-      "arguments": [
-        {
-          "type": "artists"
-        }
-      ],
-      "fixture": {
-        "me.top": {
-          "artists": {
-            "id": "ar-coldplay",
-            "name": "Coldplay"
-          }
-        }
-      },
-      "index": 23,
-      "oracles": [
-        {
-          "assertions": [],
-          "description": "The top artist is returned.",
-          "kind": "retrieval",
-          "retrieval_assertions": [
-            {
-              "equals": "Coldplay",
-              "field": "name"
-            }
-          ]
-        },
-        {
-          "assertions": [],
-          "description": "A lookup must not change anything.",
-          "kind": "no_mutation"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:9cbf7be56364bc47",
-      "task_id": "identify-favourite-artist"
-    },
-    {
-      "arguments": [
-        {
-          "type": "artists"
-        },
-        {
-          "id": "ar-coldplay"
-        }
-      ],
-      "fixture": {
-        "artists": {
-          "ar-coldplay": {
-            "id": "ar-coldplay",
-            "top_track": "Yellow"
-          }
-        },
-        "me.top": {
-          "artists": {
-            "id": "ar-coldplay",
-            "name": "Coldplay"
-          }
-        }
-      },
-      "index": 24,
-      "oracles": [
-        {
-          "assertions": [],
-          "description": "A song by the top artist is returned.",
-          "kind": "retrieval",
-          "retrieval_assertions": [
-            {
-              "equals": "Yellow",
-              "field": "top_track"
-            }
-          ]
-        },
-        {
-          "assertions": [],
-          "description": "A lookup must not change anything.",
-          "kind": "no_mutation"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:703fe20e2abfe74d",
-      "task_id": "song-of-favourite-artist"
-    },
-    {
-      "arguments": [
-        {},
-        {
-          "id": "tr-clocks"
-        }
-      ],
-      "fixture": {
-        "me.player.currently-playing": {
-          "me.player.currently-playing": {
-            "id": "tr-clocks"
-          }
-        },
-        "tracks": {
-          "tr-clocks": {
-            "album": "Parachutes",
-            "id": "tr-clocks"
-          }
-        }
-      },
-      "index": 26,
-      "oracles": [
-        {
-          "assertions": [],
-          "description": "The album of the playing track is returned.",
-          "kind": "retrieval",
-          "retrieval_assertions": [
-            {
-              "equals": "Parachutes",
-              "field": "album"
-            }
-          ]
-        },
-        {
-          "assertions": [],
-          "description": "A lookup must not change anything.",
-          "kind": "no_mutation"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:b7f1454d44352733",
-      "task_id": "album-of-currently-playing-song"
-    },
-    {
-      "arguments": [
-        {},
-        {}
-      ],
-      "fixture": {
-        "me.player": {
-          "me.player": {
-            "device": "My PC",
-            "id": "me.player",
-            "is_playing": true
-          }
-        }
-      },
-      "index": 27,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.player.pause",
-              "exists": true,
-              "record_id": "me.player.pause"
-            }
-          ],
-          "description": "Playback is paused.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:9487914dd73caf97",
-      "task_id": "pause-named-device"
-    },
-    {
-      "arguments": [
-        {
-          "q": "Maroon 5",
-          "type": [
-            "artist"
-          ]
-        },
-        {
-          "id": "ar-maroon5"
-        }
-      ],
-      "fixture": {
-        "artists.albums": {
-          "ar-maroon5": {
-            "id": "ar-maroon5",
-            "newest": "JORDI"
-          }
-        },
-        "search": {
-          "search": {
-            "artist_id": "ar-maroon5",
-            "id": "search"
-          }
-        }
-      },
-      "index": 29,
-      "oracles": [
-        {
-          "assertions": [],
-          "description": "The newest album name is returned.",
-          "kind": "retrieval",
-          "retrieval_assertions": [
-            {
-              "equals": "JORDI",
-              "field": "newest"
-            }
-          ]
-        },
-        {
-          "assertions": [],
-          "description": "A lookup must not change anything.",
-          "kind": "no_mutation"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:72f825737e0f008b",
-      "task_id": "newest-album-name"
-    },
-    {
-      "arguments": [
-        {
-          "type": "artist"
-        },
-        {
-          "id": "ar-coldplay"
-        }
-      ],
-      "fixture": {
-        "artists.related-artists": {
-          "ar-coldplay": {
-            "id": "ar-coldplay",
-            "related": "Muse"
-          }
-        },
-        "me.following": {
-          "me.following": {
-            "first_artist": "ar-coldplay",
-            "id": "me.following"
-          }
-        }
-      },
-      "index": 30,
-      "oracles": [
-        {
-          "assertions": [],
-          "description": "A related artist is returned.",
-          "kind": "retrieval",
-          "retrieval_assertions": [
-            {
-              "equals": "Muse",
-              "field": "related"
-            }
-          ]
-        },
-        {
-          "assertions": [],
-          "description": "A recommendation must not change anything.",
-          "kind": "no_mutation"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:9f003ae989c33d68",
-      "task_id": "related-artists-of-first-followed"
-    },
-    {
-      "arguments": [
-        {
-          "q": "Taylor Swift",
-          "type": [
-            "artist"
-          ]
-        },
-        {
-          "ids": "ar-taylor",
-          "type": "artist"
-        }
-      ],
-      "fixture": {
-        "search": {
-          "search": {
-            "artist_id": "ar-taylor",
-            "id": "search"
-          }
-        }
-      },
-      "index": 32,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.following",
-              "contains": "ar-taylor",
-              "equals": null,
-              "field": "ids",
-              "record_id": "me.following"
-            }
-          ],
-          "description": "The named artist is followed.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:af20eec411d78257",
-      "task_id": "follow-named-artist"
-    },
-    {
-      "arguments": [
-        {
-          "type": "artist"
-        },
-        {
-          "id": "ar-coldplay"
-        },
-        {
-          "ids": "tr-1,tr-2"
-        }
-      ],
-      "fixture": {
-        "artists.top-tracks": {
-          "ar-coldplay": {
-            "id": "ar-coldplay",
-            "tracks": "tr-1,tr-2"
-          }
-        },
-        "me.following": {
-          "me.following": {
-            "first_artist": "ar-coldplay",
-            "id": "me.following"
-          }
-        }
-      },
-      "index": 35,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.tracks",
-              "contains": "tr-1",
-              "equals": null,
-              "field": "ids",
-              "record_id": "me.tracks"
-            }
-          ],
-          "description": "The artist's top tracks are saved to the library.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:3c37e55211bc2d43",
-      "task_id": "save-top-tracks-of-followed-artist"
-    },
-    {
-      "arguments": [
-        {},
-        {
-          "ids": "tr-3"
-        }
-      ],
-      "fixture": {
-        "me.tracks": {
-          "tr-1": {
-            "id": "tr-1"
-          },
-          "tr-2": {
-            "id": "tr-2"
-          },
-          "tr-3": {
-            "id": "tr-3"
-          }
-        }
-      },
-      "index": 38,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.tracks",
-              "exists": false,
-              "record_id": "tr-3"
-            },
-            {
-              "collection": "me.tracks",
-              "exists": true,
-              "record_id": "tr-1"
-            }
-          ],
-          "description": "The named track is no longer saved.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:33957ced802374ef",
-      "task_id": "remove-a-saved-track"
-    },
-    {
-      "arguments": [
-        {},
-        {
-          "body": {
-            "context_uri": "pl-rock"
-          }
-        }
-      ],
-      "fixture": {
-        "me.playlists": {
-          "pl-rock": {
-            "id": "pl-rock",
-            "name": "My Rock"
-          }
-        }
-      },
-      "index": 41,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.player.play",
-              "contains": "pl-rock",
-              "equals": null,
-              "field": "context_uri",
-              "record_id": "me.player.play"
-            }
-          ],
-          "description": "Playback started on the named playlist.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:b81415de5438cc2d",
-      "task_id": "play-named-playlist"
-    },
-    {
-      "arguments": [
-        {
-          "volume_percent": 20
-        }
-      ],
-      "fixture": {},
-      "index": 44,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.player.volume",
-              "equals": 20,
-              "field": "volume_percent",
-              "record_id": "me.player.volume"
-            }
-          ],
-          "description": "The volume is 20.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:472476e253462b94",
-      "task_id": "set-volume"
-    },
-    {
-      "arguments": [
-        {
-          "q": "BIGBANG",
-          "type": [
-            "artist"
-          ]
-        },
-        {
-          "id": "ar-bigbang"
-        },
-        {
-          "body": {
-            "context_uri": "al-made"
-          }
-        }
-      ],
-      "fixture": {
-        "artists.albums": {
-          "ar-bigbang": {
-            "id": "ar-bigbang",
-            "newest": "al-made"
-          }
-        },
-        "search": {
-          "search": {
-            "artist_id": "ar-bigbang",
-            "id": "search"
-          }
-        }
-      },
-      "index": 47,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.player.play",
-              "contains": "al-made",
-              "equals": null,
-              "field": "context_uri",
-              "record_id": "me.player.play"
-            }
-          ],
-          "description": "Playback started on the artist's newest album.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:c7b4ec60cb370013",
-      "task_id": "play-newest-album-of-artist"
-    },
-    {
-      "arguments": [
-        {},
-        {
-          "body": {
-            "id": "pl-bigbang",
-            "name": "BIGBANG"
-          },
-          "user_id": "u1"
-        },
-        {
-          "q": "BIGBANG",
-          "type": [
-            "track"
-          ]
-        },
-        {
-          "playlist_id": "pl-bigbang",
-          "uris": "tr-bb"
-        }
-      ],
-      "fixture": {},
-      "index": 50,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "users.playlists",
-              "equals": "BIGBANG",
-              "field": "name"
-            },
-            {
-              "collection": "playlists.tracks",
-              "exists": true
-            }
-          ],
-          "description": "A playlist named 'BIGBANG' exists and a track was added to it.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:2c730750519e2e24",
-      "task_id": "create-playlist-and-add-song"
-    },
-    {
-      "arguments": [
-        {
-          "q": "Mojito",
-          "type": [
-            "album"
-          ]
-        },
-        {
-          "ids": "al-mojito"
-        }
-      ],
-      "fixture": {
-        "search": {
-          "search": {
-            "album_id": "al-mojito",
-            "id": "search"
-          }
-        }
-      },
-      "index": 53,
-      "oracles": [
-        {
-          "assertions": [
-            {
-              "collection": "me.albums",
-              "contains": "al-mojito",
-              "equals": null,
-              "field": "ids",
-              "record_id": "me.albums"
-            }
-          ],
-          "description": "The named album is saved to the library.",
-          "kind": "final_state"
-        }
-      ],
-      "prohibited_operations": [],
-      "query_digest": "sha256:f1e6a2e12d480694",
-      "task_id": "save-named-album"
+     "playlist_id": "pl-love-mariah",
+     "uris": "tr-1,tr-2,tr-3"
     }
-  ],
-  "schema_version": "0.1.0",
-  "source_id": "restbench-spotify-tasks"
+   ],
+   "fixture": {},
+   "index": 0,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "users.playlists",
+       "equals": "Love Mariah",
+       "field": "name"
+      },
+      {
+       "collection": "playlists.tracks",
+       "exists": true
+      }
+     ],
+     "description": "A playlist named 'Love Mariah' exists and tracks were added to it.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:968f103dc8866f62",
+   "task_id": "create-named-playlist-with-tracks"
+  },
+  {
+   "arguments": [
+    {},
+    {
+     "volume_percent": 60
+    }
+   ],
+   "fixture": {},
+   "index": 3,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.player.next",
+       "count": 1
+      },
+      {
+       "collection": "me.player.volume",
+       "equals": 60,
+       "field": "volume_percent",
+       "record_id": "me.player.volume"
+      }
+     ],
+     "description": "Playback advanced and the volume is 60.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:4bc8ed94abf28def",
+   "task_id": "skip-track-and-set-volume"
+  },
+  {
+   "arguments": [
+    {},
+    {
+     "id": "tr-clocks"
+    },
+    {
+     "ids": "ar-coldplay",
+     "type": "artist"
+    }
+   ],
+   "fixture": {
+    "me.player.currently-playing": {
+     "me.player.currently-playing": {
+      "artist_id": "ar-coldplay",
+      "id": "tr-clocks",
+      "name": "Clocks"
+     }
+    },
+    "tracks": {
+     "tr-clocks": {
+      "artist_id": "ar-coldplay",
+      "id": "tr-clocks",
+      "name": "Clocks"
+     }
+    }
+   },
+   "index": 6,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.following",
+       "contains": "ar-coldplay",
+       "equals": null,
+       "field": "ids",
+       "record_id": "me.following"
+      }
+     ],
+     "description": "The artist of the playing track is followed.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:dd90126da46de7f9",
+   "task_id": "follow-artist-of-current-song"
+  },
+  {
+   "arguments": [
+    {},
+    {
+     "id": "tr-yellow"
+    },
+    {
+     "ids": "ar-coldplay",
+     "type": "artist"
+    }
+   ],
+   "fixture": {
+    "me.player.currently-playing": {
+     "me.player.currently-playing": {
+      "artist_id": "ar-coldplay",
+      "id": "tr-yellow",
+      "name": "Yellow"
+     }
+    },
+    "me.player.recently-played": {
+     "me.player.recently-played": {
+      "artist_id": "ar-coldplay",
+      "id": "tr-yellow",
+      "name": "Yellow"
+     }
+    },
+    "tracks": {
+     "tr-yellow": {
+      "artist_id": "ar-coldplay",
+      "id": "tr-yellow"
+     }
+    }
+   },
+   "index": 9,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.following",
+       "contains": "ar-coldplay",
+       "equals": null,
+       "field": "ids",
+       "record_id": "me.following"
+      }
+     ],
+     "description": "The artist of the recently played track is followed.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:08b68f8e62b03eaa",
+   "task_id": "follow-artist-of-recent-song"
+  },
+  {
+   "arguments": [
+    {},
+    {
+     "body": {
+      "name": "My First"
+     },
+     "playlist_id": "pl-1"
+    }
+   ],
+   "fixture": {
+    "me.playlists": {
+     "pl-1": {
+      "id": "pl-1",
+      "name": "Old Name"
+     }
+    },
+    "playlists": {
+     "pl-1": {
+      "id": "pl-1",
+      "name": "Old Name"
+     }
+    }
+   },
+   "index": 12,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "playlists",
+       "equals": "My First",
+       "field": "name",
+       "record_id": "pl-1"
+      },
+      {
+       "collection": "playlists",
+       "count": 1
+      }
+     ],
+     "description": "The first playlist is renamed and no playlist is created.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:1f15226195c2d6e9",
+   "task_id": "rename-first-playlist"
+  },
+  {
+   "arguments": [
+    {},
+    {},
+    {
+     "body": {
+      "id": "pl-current",
+      "name": "Current"
+     },
+     "user_id": "u1"
+    },
+    {
+     "body": {
+      "tracks": "tr-1,tr-2"
+     },
+     "playlist_id": "pl-current"
+    }
+   ],
+   "fixture": {
+    "me.player.queue": {
+     "me.player.queue": {
+      "id": "me.player.queue",
+      "tracks": "tr-1,tr-2"
+     }
+    }
+   },
+   "index": 15,
+   "oracles": [
+    {
+     "any_of": [
+      {
+       "assertions": [
+        {
+         "collection": "playlists.tracks",
+         "contains": "tr-1",
+         "field": "tracks"
+        }
+       ],
+       "description": "the agent added them with the add-tracks operation"
+      },
+      {
+       "assertions": [
+        {
+         "collection": "playlists",
+         "contains": "tr-1",
+         "field": "tracks"
+        }
+       ],
+       "description": "the agent set them on the playlist itself"
+      }
+     ],
+     "assertions": [
+      {
+       "collection": "users.playlists",
+       "equals": "Current",
+       "field": "name"
+      }
+     ],
+     "description": "A playlist named 'Current' exists and carries the queued tracks, however the agent put them there.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:7f349f0d61abdc34",
+   "task_id": "queue-to-new-playlist"
+  },
+  {
+   "arguments": [
+    {}
+   ],
+   "fixture": {
+    "me.player.currently-playing": {
+     "me.player.currently-playing": {
+      "id": "tr-clocks",
+      "name": "Clocks"
+     }
+    }
+   },
+   "index": 16,
+   "oracles": [
+    {
+     "assertions": [],
+     "description": "The name of the playing track is returned.",
+     "kind": "retrieval",
+     "retrieval_assertions": [
+      {
+       "equals": "Clocks",
+       "field": "name"
+      }
+     ]
+    },
+    {
+     "assertions": [],
+     "description": "A lookup must not change anything.",
+     "kind": "no_mutation"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:0ab692dc138aa1f2",
+   "task_id": "name-of-currently-playing-song"
+  },
+  {
+   "arguments": [
+    {}
+   ],
+   "fixture": {
+    "me.albums": {
+     "al-parachutes": {
+      "id": "al-parachutes",
+      "name": "Parachutes"
+     }
+    }
+   },
+   "index": 18,
+   "oracles": [
+    {
+     "assertions": [],
+     "description": "The saved album is returned.",
+     "kind": "retrieval",
+     "retrieval_assertions": [
+      {
+       "equals": "Parachutes",
+       "field": "items.name"
+      }
+     ]
+    },
+    {
+     "assertions": [],
+     "description": "A listing must not change anything.",
+     "kind": "no_mutation"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:acc679367ca8a973",
+   "task_id": "list-saved-albums"
+  },
+  {
+   "arguments": [
+    {},
+    {
+     "q": "genre:alt-rock",
+     "type": [
+      "track"
+     ]
+    }
+   ],
+   "fixture": {
+    "me.player.currently-playing": {
+     "me.player.currently-playing": {
+      "genre": "alt-rock",
+      "id": "tr-clocks"
+     }
+    },
+    "recommendations": {
+     "recommendations": {
+      "genre": "alt-rock",
+      "id": "recommendations",
+      "name": "Yellow"
+     }
+    },
+    "search": {
+     "search": {
+      "genre": "alt-rock",
+      "id": "search",
+      "name": "Yellow"
+     }
+    }
+   },
+   "index": 20,
+   "oracles": [
+    {
+     "assertions": [],
+     "description": "A track matching the playing genre is returned.",
+     "kind": "retrieval",
+     "retrieval_assertions": [
+      {
+       "equals": "Yellow",
+       "field": "name"
+      }
+     ]
+    },
+    {
+     "assertions": [],
+     "description": "A recommendation must not change anything.",
+     "kind": "no_mutation"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:ba8e58146d526b82",
+   "task_id": "recommend-by-current-genre"
+  },
+  {
+   "arguments": [
+    {
+     "q": "The Beatles",
+     "type": [
+      "artist"
+     ]
+    },
+    {
+     "id": "ar-beatles"
+    },
+    {
+     "playlist_id": "pl-rock",
+     "uris": "tr-let-it-be"
+    },
+    {
+     "body": {},
+     "playlist_id": "pl-rock"
+    }
+   ],
+   "fixture": {
+    "artists.albums": {
+     "ar-beatles": {
+      "id": "ar-beatles",
+      "newest_track": "tr-let-it-be"
+     }
+    },
+    "playlists": {
+     "pl-rock": {
+      "id": "pl-rock",
+      "name": "My Rock"
+     }
+    },
+    "search": {
+     "search": {
+      "artist_id": "ar-beatles",
+      "id": "search"
+     }
+    }
+   },
+   "index": 21,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "playlists.tracks",
+       "exists": true
+      },
+      {
+       "collection": "playlists",
+       "count": 1
+      }
+     ],
+     "description": "A track was added to the existing 'My Rock' playlist rather than a new one.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:dc70762b2031c3dd",
+   "task_id": "append-newest-album-track-to-playlist"
+  },
+  {
+   "arguments": [
+    {
+     "type": "artists"
+    }
+   ],
+   "fixture": {
+    "me.top": {
+     "artists": {
+      "id": "ar-coldplay",
+      "name": "Coldplay"
+     }
+    }
+   },
+   "index": 23,
+   "oracles": [
+    {
+     "assertions": [],
+     "description": "The top artist is returned.",
+     "kind": "retrieval",
+     "retrieval_assertions": [
+      {
+       "equals": "Coldplay",
+       "field": "name"
+      }
+     ]
+    },
+    {
+     "assertions": [],
+     "description": "A lookup must not change anything.",
+     "kind": "no_mutation"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:9cbf7be56364bc47",
+   "task_id": "identify-favourite-artist"
+  },
+  {
+   "arguments": [
+    {
+     "type": "artists"
+    },
+    {
+     "id": "ar-coldplay"
+    }
+   ],
+   "fixture": {
+    "artists": {
+     "ar-coldplay": {
+      "id": "ar-coldplay",
+      "top_track": "Yellow"
+     }
+    },
+    "me.top": {
+     "artists": {
+      "id": "ar-coldplay",
+      "name": "Coldplay"
+     }
+    }
+   },
+   "index": 24,
+   "oracles": [
+    {
+     "assertions": [],
+     "description": "A song by the top artist is returned.",
+     "kind": "retrieval",
+     "retrieval_assertions": [
+      {
+       "equals": "Yellow",
+       "field": "top_track"
+      }
+     ]
+    },
+    {
+     "assertions": [],
+     "description": "A lookup must not change anything.",
+     "kind": "no_mutation"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:703fe20e2abfe74d",
+   "task_id": "song-of-favourite-artist"
+  },
+  {
+   "arguments": [
+    {},
+    {
+     "id": "tr-clocks"
+    }
+   ],
+   "fixture": {
+    "me.player.currently-playing": {
+     "me.player.currently-playing": {
+      "id": "tr-clocks"
+     }
+    },
+    "tracks": {
+     "tr-clocks": {
+      "album": "Parachutes",
+      "id": "tr-clocks"
+     }
+    }
+   },
+   "index": 26,
+   "oracles": [
+    {
+     "assertions": [],
+     "description": "The album of the playing track is returned.",
+     "kind": "retrieval",
+     "retrieval_assertions": [
+      {
+       "equals": "Parachutes",
+       "field": "album"
+      }
+     ]
+    },
+    {
+     "assertions": [],
+     "description": "A lookup must not change anything.",
+     "kind": "no_mutation"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:b7f1454d44352733",
+   "task_id": "album-of-currently-playing-song"
+  },
+  {
+   "arguments": [
+    {},
+    {}
+   ],
+   "fixture": {
+    "me.player": {
+     "me.player": {
+      "device": "My PC",
+      "id": "me.player",
+      "is_playing": true
+     }
+    }
+   },
+   "index": 27,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.player.pause",
+       "exists": true,
+       "record_id": "me.player.pause"
+      }
+     ],
+     "description": "Playback is paused.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:9487914dd73caf97",
+   "task_id": "pause-named-device"
+  },
+  {
+   "arguments": [
+    {
+     "q": "Maroon 5",
+     "type": [
+      "artist"
+     ]
+    },
+    {
+     "id": "ar-maroon5"
+    }
+   ],
+   "fixture": {
+    "artists.albums": {
+     "ar-maroon5": {
+      "id": "ar-maroon5",
+      "newest": "JORDI"
+     }
+    },
+    "search": {
+     "search": {
+      "artist_id": "ar-maroon5",
+      "id": "search"
+     }
+    }
+   },
+   "index": 29,
+   "oracles": [
+    {
+     "assertions": [],
+     "description": "The newest album name is returned.",
+     "kind": "retrieval",
+     "retrieval_assertions": [
+      {
+       "equals": "JORDI",
+       "field": "newest"
+      }
+     ]
+    },
+    {
+     "assertions": [],
+     "description": "A lookup must not change anything.",
+     "kind": "no_mutation"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:72f825737e0f008b",
+   "task_id": "newest-album-name"
+  },
+  {
+   "arguments": [
+    {
+     "type": "artist"
+    },
+    {
+     "id": "ar-coldplay"
+    }
+   ],
+   "fixture": {
+    "artists.related-artists": {
+     "ar-coldplay": {
+      "id": "ar-coldplay",
+      "related": "Muse"
+     }
+    },
+    "me.following": {
+     "me.following": {
+      "first_artist": "ar-coldplay",
+      "id": "me.following"
+     }
+    }
+   },
+   "index": 30,
+   "oracles": [
+    {
+     "assertions": [],
+     "description": "A related artist is returned.",
+     "kind": "retrieval",
+     "retrieval_assertions": [
+      {
+       "equals": "Muse",
+       "field": "related"
+      }
+     ]
+    },
+    {
+     "assertions": [],
+     "description": "A recommendation must not change anything.",
+     "kind": "no_mutation"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:9f003ae989c33d68",
+   "task_id": "related-artists-of-first-followed"
+  },
+  {
+   "arguments": [
+    {
+     "q": "Taylor Swift",
+     "type": [
+      "artist"
+     ]
+    },
+    {
+     "ids": "ar-taylor",
+     "type": "artist"
+    }
+   ],
+   "fixture": {
+    "search": {
+     "search": {
+      "artist_id": "ar-taylor",
+      "id": "search"
+     }
+    }
+   },
+   "index": 32,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.following",
+       "contains": "ar-taylor",
+       "equals": null,
+       "field": "ids",
+       "record_id": "me.following"
+      }
+     ],
+     "description": "The named artist is followed.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:af20eec411d78257",
+   "task_id": "follow-named-artist"
+  },
+  {
+   "arguments": [
+    {
+     "type": "artist"
+    },
+    {
+     "id": "ar-coldplay"
+    },
+    {
+     "ids": "tr-1,tr-2"
+    }
+   ],
+   "fixture": {
+    "artists.top-tracks": {
+     "ar-coldplay": {
+      "id": "ar-coldplay",
+      "tracks": "tr-1,tr-2"
+     }
+    },
+    "me.following": {
+     "me.following": {
+      "first_artist": "ar-coldplay",
+      "id": "me.following"
+     }
+    }
+   },
+   "index": 35,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.tracks",
+       "contains": "tr-1",
+       "equals": null,
+       "field": "ids",
+       "record_id": "me.tracks"
+      }
+     ],
+     "description": "The artist's top tracks are saved to the library.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:3c37e55211bc2d43",
+   "task_id": "save-top-tracks-of-followed-artist"
+  },
+  {
+   "arguments": [
+    {},
+    {
+     "ids": "tr-3"
+    }
+   ],
+   "fixture": {
+    "me.tracks": {
+     "tr-1": {
+      "id": "tr-1"
+     },
+     "tr-2": {
+      "id": "tr-2"
+     },
+     "tr-3": {
+      "id": "tr-3"
+     }
+    }
+   },
+   "index": 38,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.tracks",
+       "exists": false,
+       "record_id": "tr-3"
+      },
+      {
+       "collection": "me.tracks",
+       "exists": true,
+       "record_id": "tr-1"
+      }
+     ],
+     "description": "The named track is no longer saved.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:33957ced802374ef",
+   "task_id": "remove-a-saved-track"
+  },
+  {
+   "arguments": [
+    {},
+    {
+     "body": {
+      "context_uri": "pl-rock"
+     }
+    }
+   ],
+   "fixture": {
+    "me.playlists": {
+     "pl-rock": {
+      "id": "pl-rock",
+      "name": "My Rock"
+     }
+    }
+   },
+   "index": 41,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.player.play",
+       "contains": "pl-rock",
+       "equals": null,
+       "field": "context_uri",
+       "record_id": "me.player.play"
+      }
+     ],
+     "description": "Playback started on the named playlist.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:b81415de5438cc2d",
+   "task_id": "play-named-playlist"
+  },
+  {
+   "arguments": [
+    {
+     "volume_percent": 20
+    }
+   ],
+   "fixture": {},
+   "index": 44,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.player.volume",
+       "equals": 20,
+       "field": "volume_percent",
+       "record_id": "me.player.volume"
+      }
+     ],
+     "description": "The volume is 20.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:472476e253462b94",
+   "task_id": "set-volume"
+  },
+  {
+   "arguments": [
+    {
+     "q": "BIGBANG",
+     "type": [
+      "artist"
+     ]
+    },
+    {
+     "id": "ar-bigbang"
+    },
+    {
+     "body": {
+      "context_uri": "al-made"
+     }
+    }
+   ],
+   "fixture": {
+    "artists.albums": {
+     "ar-bigbang": {
+      "id": "ar-bigbang",
+      "newest": "al-made"
+     }
+    },
+    "search": {
+     "search": {
+      "artist_id": "ar-bigbang",
+      "id": "search"
+     }
+    }
+   },
+   "index": 47,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.player.play",
+       "contains": "al-made",
+       "equals": null,
+       "field": "context_uri",
+       "record_id": "me.player.play"
+      }
+     ],
+     "description": "Playback started on the artist's newest album.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:c7b4ec60cb370013",
+   "task_id": "play-newest-album-of-artist"
+  },
+  {
+   "arguments": [
+    {},
+    {
+     "body": {
+      "id": "pl-bigbang",
+      "name": "BIGBANG"
+     },
+     "user_id": "u1"
+    },
+    {
+     "q": "BIGBANG",
+     "type": [
+      "track"
+     ]
+    },
+    {
+     "playlist_id": "pl-bigbang",
+     "uris": "tr-bb"
+    }
+   ],
+   "fixture": {},
+   "index": 50,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "users.playlists",
+       "equals": "BIGBANG",
+       "field": "name"
+      },
+      {
+       "collection": "playlists.tracks",
+       "exists": true
+      }
+     ],
+     "description": "A playlist named 'BIGBANG' exists and a track was added to it.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:2c730750519e2e24",
+   "task_id": "create-playlist-and-add-song"
+  },
+  {
+   "arguments": [
+    {
+     "q": "Mojito",
+     "type": [
+      "album"
+     ]
+    },
+    {
+     "ids": "al-mojito"
+    }
+   ],
+   "fixture": {
+    "search": {
+     "search": {
+      "album_id": "al-mojito",
+      "id": "search"
+     }
+    }
+   },
+   "index": 53,
+   "oracles": [
+    {
+     "assertions": [
+      {
+       "collection": "me.albums",
+       "contains": "al-mojito",
+       "equals": null,
+       "field": "ids",
+       "record_id": "me.albums"
+      }
+     ],
+     "description": "The named album is saved to the library.",
+     "kind": "final_state"
+    }
+   ],
+   "prohibited_operations": [],
+   "query_digest": "sha256:f1e6a2e12d480694",
+   "task_id": "save-named-album"
+  }
+ ],
+ "schema_version": "0.1.0",
+ "source_id": "restbench-spotify-tasks"
 }

@@ -34,15 +34,19 @@ from api_mcp_compiler.evaluation.harness import (
     run_task,
     selection,
 )
+from api_mcp_compiler.evaluation.oracles import evaluate_oracle
 from api_mcp_compiler.evaluation.state import EffectKind, ServiceStore, derive_effect
 from api_mcp_compiler.ingest.openapi import parse_openapi
 from api_mcp_compiler.models import (
     ApiSemanticIR,
+    AssertionAlternative,
     EvalCorpus,
     EvalTask,
     OracleKind,
+    OracleResult,
     PlannerKind,
     ReviewStatus,
+    StateAssertion,
     StepOutcome,
     TaskOracle,
     ToolPlan,
@@ -592,4 +596,80 @@ def test_a_wrong_argument_costs_something_and_withholding_it_is_worth_something(
     )
     assert "limit" not in (same_operation.input_schema or {}).get("properties", {}), (
         "projection removes the argument the baseline lets an agent get wrong"
+    )
+
+
+def _alternatives_oracle() -> TaskOracle:
+    """The case #33 names: tracks that land in different places by correct route."""
+    return TaskOracle(
+        kind=OracleKind.FINAL_STATE,
+        description="A playlist exists and carries the tracks, however they got there.",
+        assertions=[StateAssertion(collection="users.playlists", field="name", equals="Current")],
+        any_of=[
+            AssertionAlternative(
+                description="added with the add-tracks operation",
+                assertions=[
+                    StateAssertion(collection="playlists.tracks", field="tracks", contains="tr-1")
+                ],
+            ),
+            AssertionAlternative(
+                description="set on the playlist itself",
+                assertions=[
+                    StateAssertion(collection="playlists", field="tracks", contains="tr-1")
+                ],
+            ),
+        ],
+    )
+
+
+def _judge(oracle: TaskOracle, state: dict) -> OracleResult:
+    return evaluate_oracle(oracle, {}, state, [], [], set())
+
+
+PLAYLIST = {"users.playlists": {"pl-current": {"id": "pl-current", "name": "Current"}}}
+
+
+def test_either_correct_route_satisfies_an_oracle_with_alternatives() -> None:
+    """Both routes pass, which is the whole point: neither is the route the author took.
+
+    An assertion naming one place penalises an agent for reaching the goal the other way, and
+    that is asserting the path rather than the outcome -- the error the authoring rule exists
+    to prevent and the one #30 found three times.
+    """
+    oracle = _alternatives_oracle()
+
+    added = {**PLAYLIST, "playlists.tracks": {"x": {"id": "x", "tracks": "tr-1,tr-2"}}}
+    on_record = {**PLAYLIST, "playlists": {"pl-current": {"id": "pl-current", "tracks": "tr-1"}}}
+
+    assert _judge(oracle, added).passed, "the add-tracks route is correct"
+    assert _judge(oracle, on_record).passed, "the update-details route is correct"
+
+
+def test_an_oracle_with_alternatives_still_fails_when_no_route_was_taken() -> None:
+    """The alternative must not become a way of asserting nothing.
+
+    A choice between outcomes is only worth having if failing all of them fails. The under-
+    asserting version of this oracle -- a playlist exists, and nothing about the tracks --
+    passed a run that created an empty playlist and stopped.
+    """
+    result = _judge(_alternatives_oracle(), PLAYLIST)
+
+    assert not result.passed
+    assert "no alternative outcome held" in result.detail
+    # And it says what each alternative wanted, so an author can see whether the oracle is
+    # wrong rather than the agent.
+    assert "add-tracks" in result.detail and "playlist itself" in result.detail
+
+
+def test_the_committed_oracle_for_that_task_no_longer_under_asserts() -> None:
+    """The corpus entry #33 names, checked against the corpus rather than a reconstruction."""
+    entries = json.loads(
+        Path("examples/oracles/restbench_spotify.oracles.json").read_text()
+    )["entries"]
+    entry = next(item for item in entries if item["task_id"] == "queue-to-new-playlist")
+    oracle = entry["oracles"][0]
+
+    assert len(oracle["any_of"]) == 2, "both correct routes are accepted"
+    assert _judge(TaskOracle.model_validate(oracle), PLAYLIST).passed is False, (
+        "a playlist created and left empty must not pass a task about queueing tracks into it"
     )

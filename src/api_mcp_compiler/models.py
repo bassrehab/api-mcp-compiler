@@ -1236,6 +1236,25 @@ class RetrievalAssertion(BaseModel):
     )
 
 
+class AssertionAlternative(BaseModel):
+    """One correct outcome among several, and what route leaves it.
+
+    A goal reachable by two correct routes can leave the outcome in different places. Adding
+    tracks to a new playlist lands them in `playlists.tracks` if the agent calls the add-tracks
+    operation, and on the playlist record if it updates the playlist's details. Both are
+    correct, and a single assertion covering one of them picks a route -- which is asserting
+    the path instead of the goal, the error the authoring rule exists to prevent.
+
+    `description` is required because an alternative nobody can name is one nobody can check
+    the correctness of, and this is the file where bias enters if it enters anywhere.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    description: str = Field(min_length=1)
+    assertions: list[StateAssertion] = Field(min_length=1)
+
+
 class TaskOracle(BaseModel):
     """One check applied to a completed task run."""
 
@@ -1243,6 +1262,10 @@ class TaskOracle(BaseModel):
 
     kind: OracleKind
     assertions: list[StateAssertion] = Field(default_factory=list)
+    #: Alternatives, of which at least one must hold in full. Everything in `assertions` must
+    #: hold as well: the two express "always this, and one of these", which is what a task with
+    #: a fixed outcome reached by different routes actually requires.
+    any_of: list[AssertionAlternative] = Field(default_factory=list)
     retrieval_assertions: list[RetrievalAssertion] = Field(default_factory=list)
     description: str
 
@@ -1251,6 +1274,21 @@ class TaskOracle(BaseModel):
         """A retrieval oracle with nothing to assert would pass on an empty run."""
         if self.kind is OracleKind.RETRIEVAL and not self.retrieval_assertions:
             raise ValueError("a retrieval oracle must carry at least one assertion")
+        return self
+
+    @model_validator(mode="after")
+    def _alternatives_are_a_choice(self) -> TaskOracle:
+        """Refuse a single alternative, which is an `and` written to look like an `or`.
+
+        One alternative asserts exactly as much as putting its assertions in `assertions`, and
+        reads as though a route were optional when it is the only one accepted. A reader
+        deciding whether an oracle over-asserts should not have to count the list to find out.
+        """
+        if len(self.any_of) == 1:
+            raise ValueError(
+                "any_of expresses a choice, so it needs at least two alternatives; one "
+                "alternative is an ordinary assertion list and should be written as one"
+            )
         return self
 
 

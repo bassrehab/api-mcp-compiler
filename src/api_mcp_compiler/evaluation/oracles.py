@@ -155,6 +155,29 @@ def evaluate_oracle(
             )
             if not passed
         ]
+
+        # Alternatives: at least one must hold in full. A goal reachable by two correct routes
+        # leaves its outcome in different places, and asserting one of them penalises an agent
+        # for choosing the route the author did not.
+        if oracle.any_of:
+            reasons: list[str] = []
+            satisfied: str | None = None
+            for alternative in oracle.any_of:
+                unmet = [
+                    detail
+                    for passed, detail in (
+                        _check_assertion(item, final_state)
+                        for item in alternative.assertions
+                    )
+                    if not passed
+                ]
+                if not unmet:
+                    satisfied = alternative.description
+                    break
+                reasons.append(f"{alternative.description}: {'; '.join(unmet)}")
+            if satisfied is None:
+                failures.append(f"no alternative outcome held ({' | '.join(reasons)})")
+
         return OracleResult(
             kind=oracle.kind,
             passed=not failures,

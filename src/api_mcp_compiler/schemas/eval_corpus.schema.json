@@ -118,6 +118,21 @@
           "items": {
             "$ref": "#/$defs/retrievalAssertion"
           }
+        },
+        "any_of": {
+          "type": "array",
+          "description": "Alternatives, of which at least one must hold in full. Everything in `assertions` must hold as well. A single alternative is refused: it asserts exactly as much as an ordinary assertion list while reading as though a route were optional.",
+          "items": {
+            "$ref": "#/$defs/assertion_alternative"
+          },
+          "anyOf": [
+            {
+              "maxItems": 0
+            },
+            {
+              "minItems": 2
+            }
+          ]
         }
       },
       "allOf": [
@@ -241,6 +256,29 @@
             "string",
             "null"
           ]
+        }
+      }
+    },
+    "assertion_alternative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "assertions"
+      ],
+      "description": "One correct outcome among several, and what route leaves it. A goal reachable by two correct routes leaves its outcome in different places; asserting one of them picks a route, which is asserting the path instead of the goal.",
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What route this alternative covers. Required: an alternative nobody can name is one nobody can check the correctness of."
+        },
+        "assertions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/stateAssertion"
+          }
         }
       }
     }
