@@ -537,6 +537,14 @@ def test_a_refused_call_still_counts_as_a_selection() -> None:
     assert rate == 0.0
 
 
+#: The RestBench Spotify document is fetched, never redistributed, so a checkout that has not run
+#: the fetch script does not have it. The tests in test_restbench.py skip on the same condition.
+RESTBENCH_SPOTIFY = Path("examples/benchmarks/restbench/spotify_oas.json")
+
+
+@pytest.mark.skipif(
+    not RESTBENCH_SPOTIFY.is_file(), reason="benchmark not fetched; run scripts/fetch_benchmark.py"
+)
 def test_a_wrong_argument_costs_something_and_withholding_it_is_worth_something() -> None:
     """The chain argument projection is measured through, asserted end to end.
 
@@ -556,7 +564,7 @@ def test_a_wrong_argument_costs_something_and_withholding_it_is_worth_something(
     Together those make the difference measurable. Separately they make three passing tests
     and an instrument that cannot see.
     """
-    ir = parse_openapi(Path("examples/benchmarks/restbench/spotify_oas.json"))
+    ir = parse_openapi(RESTBENCH_SPOTIFY)
 
     baseline = plan_baseline(ir)
     baseline_surface = generate_surface(ir, baseline, synthesize_policy(ir, baseline))

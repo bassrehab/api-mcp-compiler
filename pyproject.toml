@@ -48,6 +48,10 @@ dev = [
   # stub the SDK cannot show what `tools/list` actually advertises, and an opaque input schema
   # shipped because every test of the generated server either read its source or stubbed it.
   "mcp>=1.2,<2",
+  # Also its own extra, for the same reason `anthropic` is here. Without it the protobuf tests
+  # fail on a machine that lacks protoc and pass on one that has it, which is exactly how CI sat
+  # red on twelve of them while every local run was green.
+  "grpcio-tools>=1.60",
   # Required by `scripts/check_packaging.py`, which builds the distribution without
   # isolation so the gate needs no network. A 3.12 virtual environment has neither.
   "setuptools>=68",
