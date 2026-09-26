@@ -98,11 +98,13 @@ The command reports what it approved, what was already approved, and what it lef
 Emit a runnable MCP server for the approved part of a surface.
 
 ```bash
-api-mcp-compiler serve SPEC --out build/server.py [--overlay OVERLAY]
+api-mcp-compiler serve SPEC --out build/server.py [--overlay OVERLAY] [--sdk 2]
 ```
 
 Emits an HTTP server for OpenAPI and a SOAP server for WSDL, and prints the requirements the
-generated module needs. Tools the gate refused are not registered, and are listed on the
+generated module needs. `--sdk` picks the MCP Python SDK major it is written against: `2`, the
+default, serves the 2026-07-28 protocol and the earlier ones from one process; `1` serves protocol
+versions up to 2025-11-25 only, for deployments that cannot move yet. Tools the gate refused are not registered, and are listed on the
 `surface://withheld` resource instead.
 
 ## vendor-refs

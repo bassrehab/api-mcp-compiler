@@ -1,5 +1,31 @@
 # Changelog
 
+## Unreleased
+
+Generated servers serve the 2026-07-28 MCP protocol.
+
+### What changed
+
+`serve` writes for the 2.x Python SDK by default, and `--sdk 1` keeps the 1.x target. A 2.x server
+serves both protocol eras from one process: a 2026-07-28 client sends its version with every
+request and no handshake, an earlier client completes the initialization handshake as before. The
+server answers `server/discover`, results carry `resultType`, and an unknown tool is the protocol
+error `-32602` rather than a tool result.
+
+Generated servers for the default target require `mcp>=2,<3`; `serve --sdk 1` servers require
+`mcp>=1.2,<2`. The REST and SOAP emitters read both from one table, with the SDK imports and the
+surface class, so they cannot disagree.
+
+On the 2.x target, `x-rotaforge/sensitiveHint` and `x-rotaforge/reversibleHint` travel in each
+tool's `_meta` rather than `annotations`. SDK 2.x drops annotation keys it does not know, and
+`_meta` is where the protocol puts extensions.
+
+### Testing
+
+The `dev` extra now installs SDK 2.x. The served-surface tests emit for whichever major is
+installed, and CI runs the whole gate once on each. On 2.x they also send raw 2026-07-28 requests,
+since the SDK client would otherwise negotiate the earlier handshake and leave the new era untested.
+
 ## 0.12.1
 
 Released 2026-09-26. Documentation and build only; the compiler and the servers it emits are

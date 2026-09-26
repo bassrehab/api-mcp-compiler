@@ -88,7 +88,7 @@ it.
 What to do: if a destructive tool needs a person at runtime, the client host has to show the call
 to one before sending it; the MCP specification places that duty on the client. Replacing this
 mechanism with an elicitation a person answers, carried in sealed request state so it survives
-replicas, is planned and depends on emitting for the 2026-07-28 protocol.
+replicas, is the next planned change, and it needs the 2.x target, which now exists.
 
 ### Output caps and redaction are per response
 
@@ -101,14 +101,22 @@ it at the service or in front of it as well.
 
 ## Which MCP protocol a generated server speaks
 
-Generated servers are written against the 1.x Python SDK and require `mcp>=1.2,<2`. That SDK
-speaks the MCP protocol versions up to 2025-11-25, which use an initialization handshake. The
-2026-07-28 revision removed the handshake and sessions, and a client that speaks only that
-revision cannot talk to a server that speaks only the older ones. Clients that support both
-eras connect normally.
+By default a generated server is written against the 2.x Python SDK and requires `mcp>=2,<3`.
+It serves both protocol eras from one process: a client on the 2026-07-28 revision sends each
+request with its version in `_meta` and no handshake, and a client on an earlier version
+completes the initialization handshake as before. The server answers `server/discover`, and an
+unknown tool is the protocol error the new revision prescribes rather than a tool result.
 
-What to do: check that your client supports a pre-2026-07-28 protocol version. Emitting for the
-2.x SDK, which serves both eras from one server, is planned.
+`serve --sdk 1` writes against the 1.x SDK instead and requires `mcp>=1.2,<2`. That SDK speaks
+protocol versions up to 2025-11-25 only, so a client that speaks only 2026-07-28 cannot connect.
+
+What to do: use the default unless something pins you to 1.x, and if it does, check that your
+clients support a pre-2026-07-28 protocol version. The 1.x target exists for deployments that
+cannot move yet.
+
+On the 2.x target, the two namespaced hints, `x-rotaforge/sensitiveHint` and
+`x-rotaforge/reversibleHint`, travel in each tool's `_meta` rather than its `annotations`: SDK 2.x
+drops annotation keys it does not know, and `_meta` is where the protocol puts extensions.
 
 ## Credentials
 
