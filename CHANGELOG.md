@@ -1,8 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.13.0
 
-Generated servers serve the 2026-07-28 MCP protocol.
+Released 2026-09-26. Generated servers serve the 2026-07-28 MCP protocol.
+
+Minor, because the default emission target changes: `serve` writes for MCP SDK 2.x unless given
+`--sdk 1`, and a server for the default target requires `mcp>=2,<3`. Clients that connected before
+still connect; a 2.x server serves the earlier protocol versions too.
 
 ### What changed
 
