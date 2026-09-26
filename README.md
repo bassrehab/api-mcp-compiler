@@ -235,8 +235,12 @@ code: least-privilege scopes chosen from the security alternatives rather than t
 approval and confirmation classes, retry rules from inferred idempotency, call budgets, output
 ceilings, redaction and audit rules.
 
-The generated server acts on all of it. A confirmation token is bound to a digest of the exact
-arguments, expires, and is single use. Each credential is placed where the specification said
+The generated server acts on all of it. It advertises each tool's planned input schema in
+`tools/list`, so an agent calls a tool with its real parameters, and it requires `mcp>=1.2,<2`,
+the SDK major it is written against. A confirmation token for a destructive tool is bound to a
+digest of the exact arguments, expires, and is single use; it stops an accidental first call,
+and it is not a person in the loop, since an agent that repeats the call has confirmed it. The
+human approval is the gate above. Each credential is placed where the specification said
 it goes, read from the environment at call time and never written into a file. Retries are
 bounded by the derived policy and never repeat a call that may already have taken effect. Call
 budgets are counted and a call over them is refused with the limit and when it lifts, rather
