@@ -1,8 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.14.0
 
-On the SDK 2.x target, a person confirms a destructive call.
+Released 2026-09-27. On the SDK 2.x target, a person confirms a destructive call.
+
+Minor, because a 2.x server with a confirmation-gated tool now needs `<SERVICE>_REQUEST_STATE_KEY`
+set before it starts, and a destructive call now needs a client that can show a person an
+elicitation. The 1.x target is unchanged.
 
 ### What changed
 
