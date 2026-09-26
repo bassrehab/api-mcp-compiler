@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.12.1
+
+Released 2026-09-26. Documentation and build only; the compiler and the servers it emits are
+unchanged from 0.12.0.
+
+- The README says what a generated server advertises and what its runtime confirmation is: each
+  tool's planned schema is in `tools/list`, generated servers require `mcp>=1.2,<2`, and the
+  confirmation stops an accidental first call rather than putting a person in the loop. PyPI shows
+  the README a release shipped with, so 0.12.0's page still carried the old text.
+- `grpcio-tools` joined the `dev` extra, and a benchmark test skips when the benchmark has not been
+  fetched. CI on `main` had been red since 2026-08-19 from failures no local checkout reproduced.
+
 ## 0.12.0
 
 Released 2026-09-26. A generated server advertises the schema that was planned for each tool.
