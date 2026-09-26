@@ -13,7 +13,8 @@ from pathlib import Path
 
 import typer
 
-from api_mcp_compiler.codegen.mcp_server import GENERATED_REQUIREMENTS, emit_server
+from api_mcp_compiler.codegen.mcp_server import emit_server
+from api_mcp_compiler.codegen.registration import DEFAULT_SDK, SUPPORTED_SDKS
 from api_mcp_compiler.codegen.soap_server import emit_soap_server
 from api_mcp_compiler.codegen.tools import generate_surface
 from api_mcp_compiler.contracts import (
@@ -326,6 +327,14 @@ def serve(
     transport: Path | None = typer.Option(None, "--transport", help=TRANSPORT_HELP),
     planner: PlannerKind = typer.Option(PlannerKind.SEMANTIC, "--planner", help=PLANNER_HELP),
     overlay: Path | None = typer.Option(None, "--overlay", help=OVERLAY_HELP),
+    sdk: int = typer.Option(
+        DEFAULT_SDK,
+        "--sdk",
+        help=(
+            "MCP Python SDK major to write for. 2 serves the 2026-07-28 protocol and the "
+            "earlier ones; 1 serves protocol versions up to 2025-11-25 only."
+        ),
+    ),
 ) -> None:
     """Emit a runnable MCP server for the approved part of a surface.
 
@@ -350,8 +359,12 @@ def serve(
     # distinguishes them is the envelope, so it needs a different emitter rather than a
     # branch inside the same one.
     soap = ir.service.source_format is SourceFormat.WSDL
+    if sdk not in SUPPORTED_SDKS:
+        raise typer.BadParameter(
+            f"supported: {', '.join(str(item) for item in SUPPORTED_SDKS)}", param_hint="--sdk"
+        )
     if soap:
-        soap_emitted = emit_soap_server(ir, surface, manifest)
+        soap_emitted = emit_soap_server(ir, surface, manifest, sdk=sdk)
         generated, registered, withheld = (
             soap_emitted.source,
             soap_emitted.registered,
@@ -359,8 +372,9 @@ def serve(
         )
         upstream = soap_emitted.endpoint
         credentials = soap_emitted.credentials
+        needs = soap_emitted.requirements
     else:
-        http_emitted = emit_server(ir, surface, manifest)
+        http_emitted = emit_server(ir, surface, manifest, sdk=sdk)
         generated, registered, withheld = (
             http_emitted.source,
             http_emitted.registered,
@@ -368,6 +382,7 @@ def serve(
         )
         upstream = http_emitted.base_url
         credentials = http_emitted.credentials
+        needs = http_emitted.requirements
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(generated, encoding="utf-8")
     typer.echo(f"wrote {out} for {ir.service.service_id} ({'SOAP' if soap else 'HTTP'})")
@@ -385,7 +400,7 @@ def serve(
             typer.echo(f"    {variable}  (for the {scheme_id!r} security scheme)")
     # Quoted, because a requirement carries `>` and `<`, and a shell reads those as
     # redirections: pasted unquoted, the line wrote pip's output to a file named `=1.2`.
-    requirements = " ".join(shlex.quote(item) for item in GENERATED_REQUIREMENTS)
+    requirements = " ".join(shlex.quote(item) for item in needs)
     typer.echo(f"  run it with: pip install {requirements} && python {shlex.quote(str(out))}")
 
 

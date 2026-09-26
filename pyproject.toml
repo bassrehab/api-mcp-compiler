@@ -44,10 +44,12 @@ dev = [
   # the driver's import and skips checking that module, so the gate would mean one thing on a
   # machine that happens to have the SDK and another on a machine that does not.
   "anthropic>=0.40",
-  # The real MCP SDK, at the major version generated servers are written against. Tests that
+  # The real MCP SDK, at the major the default emission target is written against. Tests that
   # stub the SDK cannot show what `tools/list` actually advertises, and an opaque input schema
   # shipped because every test of the generated server either read its source or stubbed it.
-  "mcp>=1.2,<2",
+  # The served-surface tests emit for whichever major is installed, and CI runs them a second
+  # time with `mcp>=1.2,<2` so the 1.x target is exercised too.
+  "mcp>=2,<3",
   # Also its own extra, for the same reason `anthropic` is here. Without it the protobuf tests
   # fail on a machine that lacks protoc and pass on one that has it, which is exactly how CI sat
   # red on twelve of them while every local run was green.

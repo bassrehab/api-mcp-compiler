@@ -30,3 +30,22 @@ def test_the_printed_install_command_survives_a_shell(tmp_path: Path) -> None:
     assert install[:2] == ["pip", "install"]
     assert install[2:] == list(GENERATED_REQUIREMENTS)
     assert words[-2:] == ["python", str(out)]
+
+
+def test_serve_writes_for_the_sdk_it_is_asked_for(tmp_path: Path) -> None:
+    """`--sdk 1` keeps the 1.x target for deployments that cannot move yet."""
+    out = tmp_path / "server.py"
+    result = CliRunner().invoke(app, ["serve", INVENTORY_SERVICE, "--out", str(out), "--sdk", "1"])
+    assert result.exit_code == 0, result.output
+
+    line = next(item for item in result.output.splitlines() if "run it with:" in item)
+    assert "mcp>=1.2,<2" in shlex.split(line.split("run it with:", 1)[1])
+    assert "from mcp.server.fastmcp import FastMCP" in out.read_text()
+
+
+def test_serve_refuses_an_sdk_it_cannot_write_for(tmp_path: Path) -> None:
+    result = CliRunner().invoke(
+        app, ["serve", INVENTORY_SERVICE, "--out", str(tmp_path / "s.py"), "--sdk", "3"]
+    )
+    assert result.exit_code != 0
+    assert "supported: 1, 2" in result.output

@@ -18,7 +18,13 @@ from dataclasses import dataclass, field
 
 from api_mcp_compiler.codegen.credentials import placements, tool_schemes, variables
 from api_mcp_compiler.codegen.mcp_server import _annotations, _budgets, _instructions
-from api_mcp_compiler.codegen.registration import SURFACE_CLASS
+from api_mcp_compiler.codegen.registration import (
+    DEFAULT_SDK,
+    REQUIREMENTS,
+    SDK_IMPORTS,
+    SURFACE_CLASSES,
+    check_sdk,
+)
 from api_mcp_compiler.models import (
     ApiSemanticIR,
     EmissionStatus,
@@ -31,11 +37,9 @@ from api_mcp_compiler.models import (
     ToolSurface,
 )
 
-#: The upper bound is deliberate. SDK 2.0 renamed the module this code imports, so an
-#: open-ended requirement installed a version every generated server failed to import on a
-#: fresh machine. Generated code has no maintainer watching for a major release, so moving to
-#: a new major is a recompile, not something pip decides.
-GENERATED_REQUIREMENTS = ("mcp>=1.2,<2", "httpx>=0.27")
+#: What a server generated for the default SDK needs installed. `EmittedServer.requirements`
+#: carries the list for the SDK a given server was actually written against.
+GENERATED_REQUIREMENTS = REQUIREMENTS[DEFAULT_SDK]
 
 #: SOAP 1.1, which is what WSDL 1.1 describes.
 ENVELOPE_NAMESPACE = "http://schemas.xmlsoap.org/soap/envelope/"
@@ -56,6 +60,9 @@ class EmittedSoapServer:
     #: Environment variable to scheme identifier, for everything the server reads a
     #: credential from.
     credentials: dict[str, str] = field(default_factory=dict)
+    #: The SDK major the module is written against, and what it needs installed.
+    sdk: int = DEFAULT_SDK
+    requirements: tuple[str, ...] = REQUIREMENTS[DEFAULT_SDK]
 
 
 def _operation_for(ir: ApiSemanticIR, tool: ToolDescriptor) -> OperationIR:
@@ -136,8 +143,7 @@ from typing import Any
 from xml.sax.saxutils import escape
 
 import httpx
-from mcp.server.fastmcp import FastMCP
-from mcp.types import Tool
+{sdk_imports}
 
 ENDPOINT = os.environ.get({env_var!r}, {endpoint!r})
 #: Credentials are read from the environment. Nothing generated here stores one.
@@ -519,6 +525,7 @@ def emit_soap_server(
     ir: ApiSemanticIR,
     surface: ToolSurface,
     manifest: PolicyManifest | None = None,
+    sdk: int = DEFAULT_SDK,
 ) -> EmittedSoapServer:
     """Write a runnable MCP server for the approved part of a SOAP surface."""
     registered = [item for item in surface.tools if item.emission is EmissionStatus.EXECUTABLE]
@@ -555,7 +562,8 @@ def emit_soap_server(
     )
     header = _PREAMBLE.format(
         banner=banner,
-        registration=SURFACE_CLASS,
+        registration=SURFACE_CLASSES[check_sdk(sdk)],
+        sdk_imports=SDK_IMPORTS[sdk],
         service_id=ir.service.service_id,
         instructions=_instructions(ir),
         endpoint=endpoint,
@@ -574,4 +582,6 @@ def emit_soap_server(
         withheld=withheld,
         endpoint=endpoint,
         credentials=variables(ir, slug, tool_schemes(registered, manifest)),
+        sdk=sdk,
+        requirements=REQUIREMENTS[sdk],
     )

@@ -65,15 +65,26 @@ def stub_mcp_sdk(monkeypatch: pytest.MonkeyPatch, httpx_client: Any) -> None:
     Tests that use this are about governance decisions taken before either is reached. What a
     real SDK advertises is tested separately, against the real SDK, in test_served_surface.py:
     a stub cannot show what `tools/list` returns, which is how an opaque schema shipped.
+
+    Both SDK majors are stubbed, so a module emitted for either target loads.
     """
     fastmcp = types.ModuleType("mcp.server.fastmcp")
     fastmcp.FastMCP = _StubServer  # type: ignore[attr-defined]
+    mcpserver = types.ModuleType("mcp.server.mcpserver")
+    mcpserver.MCPServer = _StubServer  # type: ignore[attr-defined]
+    exceptions = types.ModuleType("mcp.shared.exceptions")
+    exceptions.MCPError = type("MCPError", (Exception,), {})  # type: ignore[attr-defined]
+    shared = types.ModuleType("mcp.shared")
+    shared.exceptions = exceptions  # type: ignore[attr-defined]
     mcp_types = types.ModuleType("mcp.types")
-    mcp_types.Tool = lambda **fields: fields  # type: ignore[attr-defined]
+    for name in ("Tool", "CallToolResult", "TextContent"):
+        setattr(mcp_types, name, lambda **fields: fields)
     server = types.ModuleType("mcp.server")
     server.fastmcp = fastmcp  # type: ignore[attr-defined]
+    server.mcpserver = mcpserver  # type: ignore[attr-defined]
     package = types.ModuleType("mcp")
     package.server = server  # type: ignore[attr-defined]
+    package.shared = shared  # type: ignore[attr-defined]
     package.types = mcp_types  # type: ignore[attr-defined]
     httpx = types.ModuleType("httpx")
     httpx.AsyncClient = httpx_client  # type: ignore[attr-defined]
@@ -81,6 +92,9 @@ def stub_mcp_sdk(monkeypatch: pytest.MonkeyPatch, httpx_client: Any) -> None:
         "mcp": package,
         "mcp.server": server,
         "mcp.server.fastmcp": fastmcp,
+        "mcp.server.mcpserver": mcpserver,
+        "mcp.shared": shared,
+        "mcp.shared.exceptions": exceptions,
         "mcp.types": mcp_types,
         "httpx": httpx,
     }.items():

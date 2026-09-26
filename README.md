@@ -236,8 +236,9 @@ approval and confirmation classes, retry rules from inferred idempotency, call b
 ceilings, redaction and audit rules.
 
 The generated server acts on all of it. It advertises each tool's planned input schema in
-`tools/list`, so an agent calls a tool with its real parameters, and it requires `mcp>=1.2,<2`,
-the SDK major it is written against. A confirmation token for a destructive tool is bound to a
+`tools/list`, so an agent calls a tool with its real parameters. By default it is written against
+MCP SDK 2.x and serves the 2026-07-28 protocol alongside the earlier ones; `serve --sdk 1` writes
+for 1.x. A confirmation token for a destructive tool is bound to a
 digest of the exact arguments, expires, and is single use; it stops an accidental first call,
 and it is not a person in the loop, since an agent that repeats the call has confirmed it. The
 human approval is the gate above. Each credential is placed where the specification said
