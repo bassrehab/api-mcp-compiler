@@ -8,8 +8,6 @@ than a decision.
 
 from __future__ import annotations
 
-import sys
-import types
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +20,7 @@ from api_mcp_compiler.ingest.wsdl import parse_wsdl
 from api_mcp_compiler.models import ArtifactKind
 from api_mcp_compiler.planning.semantic import plan_semantic
 from api_mcp_compiler.policy.synthesis import synthesize_policy
+from tests.conftest import stub_mcp_sdk
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "examples" / "openapi" / "inventory_service.yaml"
@@ -95,36 +94,19 @@ def test_a_resource_whose_inputs_exceed_its_address_stays_a_tool() -> None:
 def test_the_generated_server_registers_it_as_a_resource(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Registered with `@mcp.tool`, the reclassification would be lost at the last step."""
+    """Registered as a tool, the reclassification would be lost at the last step."""
     ir = parse_openapi(INVENTORY)
     plan = plan_semantic(ir)
     manifest = synthesize_policy(ir, plan)
     source = emit_server(ir, generate_surface(ir, plan, manifest), manifest).source
 
-    registered: list[tuple[str, str | None]] = []
-    fastmcp = types.ModuleType("mcp.server.fastmcp")
-    fastmcp.FastMCP = lambda *_, **__: types.SimpleNamespace(  # type: ignore[attr-defined]
-        tool=lambda **kw: (lambda function: registered.append(("tool", kw.get("name")))
-                           or function),
-        resource=lambda uri, **kw: (lambda function: registered.append((uri, kw.get("name")))
-                                    or function),
-    )
-    server = types.ModuleType("mcp.server")
-    server.fastmcp = fastmcp  # type: ignore[attr-defined]
-    package = types.ModuleType("mcp")
-    package.server = server  # type: ignore[attr-defined]
-    httpx = types.ModuleType("httpx")
-    httpx.AsyncClient = lambda **_: None  # type: ignore[attr-defined]
-    for name, module in {
-        "mcp": package, "mcp.server": server, "mcp.server.fastmcp": fastmcp, "httpx": httpx
-    }.items():
-        monkeypatch.setitem(sys.modules, name, module)
+    stub_mcp_sdk(monkeypatch, lambda **_: None)
+    namespace: dict[str, Any] = {"__name__": "generated_server"}
+    exec(compile(source, "<generated server>", "exec"), namespace)
 
-    exec(compile(source, "<generated server>", "exec"), {"__name__": "generated_server"})
-
-    addressed = dict(registered)
+    addressed = dict(namespace["mcp"].resources)
     assert (
         addressed["synthetic-inventory-service://warehouses/{warehouse_id}/items-v1"]
         == "list_items_using_retired_v1"
     )
-    assert ("tool", "list_items_using_retired_v1") not in registered
+    assert "list_items_using_retired_v1" not in namespace["_TOOLS"]

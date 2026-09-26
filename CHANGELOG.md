@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased
+
+A generated server now advertises the schema that was planned for each tool.
+
+### The bug
+
+Every generated tool took one parameter, `arguments: dict`, and validated it against the
+planned schema inside the function. The SDK derives the advertised schema from the function
+signature, so `tools/list` returned an object with a single free-form `arguments` property, and
+the planned schema never left the process. The evaluation harness handed the model the planned
+schema directly, so it measured a surface no deployed server presented.
+
+### The fix
+
+Generated modules subclass the SDK server and override `list_tools` and `call_tool`, so the
+planned JSON Schema 2020-12 is advertised as written and the arguments arrive as sent. Clients
+now call tools with the planned parameters, for example `{"warehouse_id": "wh-7"}`. The old
+wrapper shape, `{"arguments": {...}}`, is refused with `invalid_arguments`.
+
+Generated servers now require `mcp>=1.2,<2`. The previous open-ended requirement installed SDK
+2.x on a fresh machine, where the module every generated server imports no longer exists.
+
+A new test starts emitted REST and SOAP servers and asks them over MCP, with the real SDK, what
+they advertise. The SDK is in the `dev` extra for that reason.
+
 ## 0.11.0
 
 Released 2026-08-15. A SOAP write or destructive operation can be emitted.

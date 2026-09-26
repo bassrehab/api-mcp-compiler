@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 
 from api_mcp_compiler.codegen.composite import composite_threading
 from api_mcp_compiler.codegen.credentials import placements, tool_schemes, variables
+from api_mcp_compiler.codegen.registration import SURFACE_CLASS
 from api_mcp_compiler.models import (
     ApiSemanticIR,
     ArgumentBinding,
@@ -40,7 +41,11 @@ from api_mcp_compiler.models import (
 )
 
 #: The generated module targets these, and this package depends on neither.
-GENERATED_REQUIREMENTS = ("mcp>=1.2", "httpx>=0.27")
+#: The upper bound is deliberate. SDK 2.0 renamed the module this code imports, so an
+#: open-ended requirement installed a version every generated server failed to import on a
+#: fresh machine. Generated code has no maintainer watching for a major release, so moving to
+#: a new major is a recompile, not something pip decides.
+GENERATED_REQUIREMENTS = ("mcp>=1.2,<2", "httpx>=0.27")
 
 
 class ServerEmissionError(ValueError):
@@ -236,7 +241,7 @@ async def {tool.name}({parameters}) -> dict[str, Any]:
 '''
 
     return f'''
-@mcp.tool(name={tool.name!r}, description={tool.description!r}, annotations={annotations!r})
+@_tool({tool.name!r}, {tool.description!r}, {annotations!r})
 async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
     """{tool.description}"""
     return await _invoke(
@@ -281,6 +286,7 @@ from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from mcp.types import Tool
 
 BASE_URL = os.environ.get({env_var!r}, {base_url!r})
 #: Credentials are read from the environment. Nothing generated here stores one.
@@ -289,7 +295,9 @@ _AUTH: dict[str, dict[str, str]] = json.loads({auth!r})
 #: Which schemes each tool needs, as least-privilege selection chose them.
 _TOOL_SCHEMES: dict[str, list[str]] = json.loads({tool_schemes!r})
 
-mcp = FastMCP({service_id!r}, instructions={instructions!r})
+{registration}
+
+mcp = _Surface({service_id!r}, instructions={instructions!r})
 
 _SCHEMAS: dict[str, dict[str, Any]] = json.loads({schemas!r})
 _WITHHELD: dict[str, str] = json.loads({withheld!r})
@@ -706,6 +714,7 @@ def emit_server(
     )
     header = _PREAMBLE.format(
         banner=banner,
+        registration=SURFACE_CLASS,
         service_id=ir.service.service_id,
         instructions=_instructions(ir),
         base_url=base_url,

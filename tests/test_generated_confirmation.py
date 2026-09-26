@@ -13,9 +13,7 @@ confirmation that expires must not be honoured, and the upstream call must never
 from __future__ import annotations
 
 import asyncio
-import sys
 import time
-import types
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +26,7 @@ from api_mcp_compiler.models import RiskClass
 from api_mcp_compiler.planning.approval import approve
 from api_mcp_compiler.planning.semantic import plan_semantic
 from api_mcp_compiler.policy.synthesis import synthesize_policy
+from tests.conftest import stub_mcp_sdk
 
 SPEC = Path(__file__).resolve().parents[1] / "examples" / "openapi" / "inventory_service.yaml"
 
@@ -77,23 +76,7 @@ def generated(monkeypatch: pytest.MonkeyPatch) -> tuple[dict[str, Any], list[tup
 
     calls: list[tuple[str, str]] = []
 
-    fastmcp = types.ModuleType("mcp.server.fastmcp")
-    fastmcp.FastMCP = lambda *_, **__: types.SimpleNamespace(  # type: ignore[attr-defined]
-        tool=lambda **_kw: (lambda function: function),
-        resource=lambda *_a, **_kw: (lambda function: function),
-    )
-    server = types.ModuleType("mcp.server")
-    server.fastmcp = fastmcp  # type: ignore[attr-defined]
-    package = types.ModuleType("mcp")
-    package.server = server  # type: ignore[attr-defined]
-
-    httpx = types.ModuleType("httpx")
-    httpx.AsyncClient = lambda **kwargs: _Client(calls, **kwargs)  # type: ignore[attr-defined]
-
-    for name, module in {
-        "mcp": package, "mcp.server": server, "mcp.server.fastmcp": fastmcp, "httpx": httpx
-    }.items():
-        monkeypatch.setitem(sys.modules, name, module)
+    stub_mcp_sdk(monkeypatch, lambda **kwargs: _Client(calls, **kwargs))
 
     namespace: dict[str, Any] = {"__name__": "generated_server"}
     exec(compile(source, "<generated server>", "exec"), namespace)

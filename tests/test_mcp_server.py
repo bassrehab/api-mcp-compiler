@@ -225,5 +225,5 @@ def test_the_generated_server_registers_the_annotations() -> None:
     """Deriving them and not emitting them would be the same defect as every other one here."""
     _, source = _destructive_surface()
 
-    assert "annotations={" in source
+    assert "@_tool('permanently_remove_item_record_warehouse'," in source
     assert "'destructiveHint': True" in source
