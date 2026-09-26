@@ -238,10 +238,11 @@ ceilings, redaction and audit rules.
 The generated server acts on all of it. It advertises each tool's planned input schema in
 `tools/list`, so an agent calls a tool with its real parameters. By default it is written against
 MCP SDK 2.x and serves the 2026-07-28 protocol alongside the earlier ones; `serve --sdk 1` writes
-for 1.x. A confirmation token for a destructive tool is bound to a
-digest of the exact arguments, expires, and is single use; it stops an accidental first call,
-and it is not a person in the loop, since an agent that repeats the call has confirmed it. The
-human approval is the gate above. Each credential is placed where the specification said
+for 1.x. On the 2.x target a destructive call is confirmed by a person: the server asks through
+an MCP elicitation, the person retypes the identifying argument, and the pending call travels in
+sealed request state bound to the tool, the arguments, the caller and an expiry. On the 1.x
+target confirmation is a second identical call, which stops an accidental first call and is not
+a person in the loop. Each credential is placed where the specification said
 it goes, read from the environment at call time and never written into a file. Retries are
 bounded by the derived policy and never repeat a call that may already have taken effect. Call
 budgets are counted and a call over them is refused with the limit and when it lifts, rather

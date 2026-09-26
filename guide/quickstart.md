@@ -73,9 +73,11 @@ hand-edits JSON.
 
 The emitted server advertises each tool's planned input schema in `tools/list`, so a client calls
 a tool with its real parameters, for example `{"warehouse_id": "wh-7"}`. It validates arguments
-against that schema before calling anything, demands a confirmation token bound to a digest of
-the arguments for destructive tools, caps output size, applies redaction, and exposes
-`surface://withheld` listing what it refused to register and why.
+against that schema before calling anything, asks a person to confirm each destructive call
+before it runs, caps output size, applies redaction, and exposes
+`surface://withheld` listing what it refused to register and why. Because this surface has an
+approved destructive tool, the server will not start until the request-state key `serve` names is
+set; for a single local process, set it to `ephemeral`.
 
 ## 8. Score a surface against tasks
 

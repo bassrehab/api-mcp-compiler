@@ -54,8 +54,12 @@ written into a generated file.
 
 ## Confirmation is bound to the arguments
 
-A destructive tool requires a confirmation token derived from a digest of the exact arguments
-it was issued for, with a time to live. Confirming one call cannot authorise a different one.
+A destructive tool must be confirmed before it runs, and the confirmation is bound to the exact
+arguments it was given for, with a time to live, so confirming one call cannot authorise a
+different one. On the SDK 2.x target a person confirms through an MCP elicitation, and the
+pending call is carried in sealed request state; on the 1.x target the confirmation is a second
+identical call, which an agent can make itself. [Deploying](../deploying.md) says what each
+guarantees.
 
 The manifest also records an effect summary written for the person being asked to confirm, and
 rollback guidance that says plainly when no automated compensation exists.

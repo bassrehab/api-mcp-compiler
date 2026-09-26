@@ -66,29 +66,48 @@ What to do: run a single instance per surface where the budget matters, or put a
 counter in front of the tools. If you do the latter, the numbers to enforce are in the policy
 manifest and do not need re-deriving.
 
-### Runtime confirmation is friction, not a person
+### Runtime confirmation: a person on 2.x, friction on 1.x
 
-The human approval in this project happens at compile time: a reviewer enables a destructive
-tool by name, group or risk class, and until then it is not emitted at all. The runtime
-confirmation on a destructive tool is a second, weaker control, and it is worth being precise
-about what it is.
+The first human approval happens at compile time: a reviewer enables a destructive tool by name,
+group or risk class, and until then it is not emitted at all. What happens when an enabled
+destructive tool is called depends on the target.
 
-A first call returns `confirmation_required` with a token bound to a digest of the arguments. An
-identical call to the same process inside the time to live runs the operation. Nothing in that
-exchange involves a person: an agent that repeats the call has confirmed it, and the refusal
-message tells it how. So the confirmation stops an agent from performing a destructive operation
-by accident on its first attempt. It does not put a human in the loop at runtime.
+**On the 2.x target, a person confirms.** The server asks through an MCP elicitation, showing
+the policy's effect summary and the arguments, and the person retypes the identifying argument,
+such as the warehouse id, to proceed. A client on the 2026-07-28 protocol receives this as an
+`input_required` result and answers on a retry; a client on an earlier protocol is asked
+mid-call. Arguments are validated first, so nobody is asked to confirm a call the schema would
+refuse. An agent that retries without an answer is asked again. A client that cannot show a
+person an elicitation is refused with `confirmation_unavailable`, rather than falling back to
+anything the agent could satisfy alone.
 
-The store holding the tokens is a dictionary in the process, which has two further consequences.
-A restart forgets outstanding confirmations, so an agent mid-flow is asked again. And with several
-replicas behind round-robin routing, a confirmation issued by one is unknown to the next, so the
-agent is asked again by whichever answers, indefinitely. That fails safe. Sticky routing removes
-it.
+The pending call travels to the client and back as sealed request state, bound by the SDK to
+the tool, a digest of the arguments, the caller and an expiry, so a confirmation cannot be moved
+to other arguments or altered. The server also records each confirmation it honours, so one
+answer cannot be replayed within a process.
 
-What to do: if a destructive tool needs a person at runtime, the client host has to show the call
-to one before sending it; the MCP specification places that duty on the client. Replacing this
-mechanism with an elicitation a person answers, carried in sealed request state so it survives
-replicas, is the next planned change, and it needs the 2.x target, which now exists.
+**The key.** Sealed state is only checkable by a replica that holds the key that sealed it, and
+the SDK's default is a new random key per process. So a server with a confirmation-gated tool
+will not start until `<SERVICE>_REQUEST_STATE_KEY` is set: to the same secret of at least 32
+bytes on every replica, or to `ephemeral` when exactly one process serves the surface. `serve`
+prints the variable's name.
+
+**Replay across replicas.** A sealed confirmation is valid on any replica holding the key until
+it expires, and the record of honoured confirmations is per process. For an idempotent operation
+that is tolerable. For one that is not, only a shared record of spent confirmations makes it at
+most once, and this server does not have one yet, so with a shared key it refuses to start and
+names the tools. Run one process with `ephemeral` for those.
+
+**On the 1.x target, confirmation is friction.** A first call returns `confirmation_required`
+with a token bound to a digest of the arguments, and an identical call to the same process inside
+the time to live runs the operation. An agent that repeats the call has confirmed it. That stops
+an accidental first call; it does not put a person in the loop. The tokens live in the process,
+so a restart forgets them, and behind round-robin routing a confirmation issued by one replica is
+unknown to the next, which fails safe.
+
+What to do: use the 2.x target for any surface with an enabled destructive tool, and use a client
+that can show elicitations to a person. The MCP specification also asks clients to show tool
+calls to a person before sending them; the 2.x gate does not depend on that.
 
 ### Output caps and redaction are per response
 

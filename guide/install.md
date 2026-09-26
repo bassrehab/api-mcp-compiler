@@ -60,11 +60,11 @@ A server this compiler emits imports the MCP Python SDK and an HTTP client, whic
 dependencies of the emitted artifact rather than of the compiler:
 
 ```bash
-python -m pip install "mcp>=2,<3" "httpx>=0.27"
+python -m pip install "mcp>=2,<3" "httpx>=0.27" "jsonschema>=4.20" "pydantic>=2.11"
 ```
 
 That is for the default target, SDK 2.x. A server emitted with `serve --sdk 1` needs
-`"mcp>=1.2,<2"` instead. The upper bound matters in both: SDK 2.0 renamed the module a 1.x server
+`"mcp>=1.2,<2" "httpx>=0.27" "jsonschema>=4.20"` instead. The upper bound matters in both: SDK 2.0 renamed the module a 1.x server
 imports, so an unbounded `mcp` installs a version the server cannot start on, and a future major
 may do the same to 2.x. `serve` prints the exact requirement list for what it generated.
 

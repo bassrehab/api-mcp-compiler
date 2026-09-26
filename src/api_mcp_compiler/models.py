@@ -1091,12 +1091,16 @@ class OutputPolicy(ProvenanceBearing):
 
 
 class ConfirmationPolicy(ProvenanceBearing):
-    """A two-call confirmation requirement.
+    """A requirement that a destructive call is confirmed before it runs.
 
-    A boolean flag on a single call would be satisfied by the same model turn that decided
-    to act, which is not confirmation. A prepare call therefore issues a token naming the
-    effect, and the execute call refuses without it. The token is bound to the arguments it
-    was issued for, so confirming one action cannot authorise a different one.
+    On the SDK 2.x target a person confirms: the server asks through an MCP elicitation and the
+    person retypes an identifying argument, with the pending call carried in sealed request state
+    bound to the tool, the arguments, the caller and `token_ttl_seconds`.
+
+    On the 1.x target the confirmation is a second identical call inside `token_ttl_seconds`,
+    bound to a digest of the arguments. An agent can make that call itself, so there it stops an
+    accidental first call and is not a person in the loop. Either way, confirming one action
+    cannot authorise a different one.
     """
 
     required: bool = True

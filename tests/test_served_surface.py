@@ -46,7 +46,12 @@ DESTRUCTIVE = "permanently_remove_item_record_warehouse"
 SDK = int(importlib.metadata.version("mcp").split(".")[0])
 
 #: The credential the inventory example reads; a placeholder is enough to start the server.
-ENV = {**os.environ, "SYNTHETIC_INVENTORY_SERVICE_INVENTORYOAUTH_CREDENTIAL": "unused"}
+ENV = {
+    **os.environ,
+    "SYNTHETIC_INVENTORY_SERVICE_INVENTORYOAUTH_CREDENTIAL": "unused",
+    # One process serves each test, so the single-process choice is the honest one.
+    "SYNTHETIC_INVENTORY_SERVICE_REQUEST_STATE_KEY": "ephemeral",
+}
 
 
 def _field(item: Any, snake: str, camel: str) -> Any:
@@ -116,7 +121,10 @@ def test_the_advertised_arguments_are_the_ones_the_tool_accepts(tmp_path: Path) 
 
     planned, wrapped = asyncio.run(_session(source, tmp_path, script))
 
-    assert planned["status"] == "confirmation_required"
+    # The planned shape passes validation and reaches the confirmation gate, whichever target;
+    # what the gate then does is tested in test_generated_confirmation.py and
+    # test_confirmation_gate.py.
+    assert planned.get("error") != "invalid_arguments"
     assert wrapped["error"] == "invalid_arguments"
 
 
@@ -180,7 +188,7 @@ def test_a_soap_server_advertises_its_planned_schema_too(tmp_path: Path) -> None
 _MODERN = {
     "io.modelcontextprotocol/protocolVersion": "2026-07-28",
     "io.modelcontextprotocol/clientInfo": {"name": "test", "version": "0"},
-    "io.modelcontextprotocol/clientCapabilities": {},
+    "io.modelcontextprotocol/clientCapabilities": {"elicitation": {"form": {}}},
 }
 
 
@@ -219,8 +227,9 @@ def test_the_2026_07_28_protocol_is_served_without_a_handshake(tmp_path: Path) -
     assert "2026-07-28" in discovered["supportedVersions"]
     assert listed["resultType"] == "complete"
     assert {tool["name"]: tool["inputSchema"] for tool in listed["tools"]} == planned
-    assert called["result"]["resultType"] == "complete"
-    assert called["result"]["structuredContent"]["status"] == "confirmation_required"
+    # A destructive tool asks a person, as a multi round-trip request.
+    assert called["result"]["resultType"] == "input_required"
+    assert "confirm" in called["result"]["inputRequests"]
     assert unknown["error"]["code"] == -32602
 
 

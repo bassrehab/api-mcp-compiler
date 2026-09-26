@@ -17,7 +17,12 @@ import json
 from dataclasses import dataclass, field
 
 from api_mcp_compiler.codegen.credentials import placements, tool_schemes, variables
-from api_mcp_compiler.codegen.mcp_server import _annotations, _budgets, _instructions
+from api_mcp_compiler.codegen.mcp_server import (
+    _annotations,
+    _budgets,
+    _instructions,
+    confirmation_gates,
+)
 from api_mcp_compiler.codegen.registration import (
     DEFAULT_SDK,
     REQUIREMENTS,
@@ -63,6 +68,9 @@ class EmittedSoapServer:
     #: The SDK major the module is written against, and what it needs installed.
     sdk: int = DEFAULT_SDK
     requirements: tuple[str, ...] = REQUIREMENTS[DEFAULT_SDK]
+    #: The variable holding the key that seals confirmation state, when the server has a gated
+    #: tool on the 2.x target and will not start without it.
+    state_key_env: str | None = None
 
 
 def _operation_for(ir: ApiSemanticIR, tool: ToolDescriptor) -> OperationIR:
@@ -71,7 +79,12 @@ def _operation_for(ir: ApiSemanticIR, tool: ToolDescriptor) -> OperationIR:
     )
 
 
-def _tool_function(ir: ApiSemanticIR, tool: ToolDescriptor, manifest: PolicyManifest | None) -> str:
+def _tool_function(
+    ir: ApiSemanticIR,
+    tool: ToolDescriptor,
+    manifest: PolicyManifest | None,
+    sdk: int = DEFAULT_SDK,
+) -> str:
     """Write one registered SOAP tool."""
     operation = _operation_for(ir, tool)
     soap = operation.soap
@@ -86,6 +99,16 @@ def _tool_function(ir: ApiSemanticIR, tool: ToolDescriptor, manifest: PolicyMani
         if policy is not None and policy.confirmation is not None
         else 0
     )
+    gated_by_person = sdk >= 2 and confirm
+    person_note = (
+        "    # A person confirms this call in `_Surface.call_tool` before it runs (see\n"
+        "    # `_CONFIRM`), so the second-call check in `_invoke` is off for this tool.\n"
+        if gated_by_person
+        else ""
+    )
+    if sdk >= 2:
+        # On the 2.x target a person confirms in `call_tool`, before this function runs.
+        confirm, confirmation_ttl = False, 0
     # In a document body the element the part *references* is what appears, not the part's own
     # name: a part called `parameters` pointing at `tns:NumberToWords` puts `NumberToWords` in
     # the envelope. Using the part name produced a fault from every real service.
@@ -101,7 +124,7 @@ def _tool_function(ir: ApiSemanticIR, tool: ToolDescriptor, manifest: PolicyMani
 @_tool({tool.name!r}, {tool.description!r}, {annotations!r})
 async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
     """{tool.description}"""
-    return await _invoke(
+{person_note}    return await _invoke(
         tool_name={tool.name!r},
         operation={operation.operation_id!r},
         soap_action={(soap.soap_action or "")!r},
@@ -153,6 +176,10 @@ _AUTH: dict[str, dict[str, str]] = json.loads({auth!r})
 _TOOL_SCHEMES: dict[str, list[str]] = json.loads({tool_schemes!r})
 ENVELOPE_NS = "http://schemas.xmlsoap.org/soap/envelope/"
 
+#: Tools a person must confirm, and how. Read by the 2.x surface; empty on the 1.x target.
+_CONFIRM: dict[str, dict[str, Any]] = json.loads({confirm!r})
+#: The environment variable holding the key that seals confirmation state.
+_STATE_KEY_ENV = {state_key_env!r}
 {registration}
 
 mcp = _Surface({service_id!r}, instructions={instructions!r})
@@ -563,6 +590,8 @@ def emit_soap_server(
     header = _PREAMBLE.format(
         banner=banner,
         registration=SURFACE_CLASSES[check_sdk(sdk)],
+        confirm=json.dumps(confirmation_gates(registered, manifest) if sdk >= 2 else {}),
+        state_key_env=f"{slug}_REQUEST_STATE_KEY",
         sdk_imports=SDK_IMPORTS[sdk],
         service_id=ir.service.service_id,
         instructions=_instructions(ir),
@@ -574,7 +603,7 @@ def emit_soap_server(
         schemas=json.dumps({item.name: item.input_schema for item in registered}),
         withheld=json.dumps(withheld),
     )
-    body = "".join(_tool_function(ir, item, manifest) for item in registered)
+    body = "".join(_tool_function(ir, item, manifest, sdk) for item in registered)
     footer = '\n\nif __name__ == "__main__":\n    mcp.run()\n'
     return EmittedSoapServer(
         source=header + body + footer,
@@ -584,4 +613,9 @@ def emit_soap_server(
         credentials=variables(ir, slug, tool_schemes(registered, manifest)),
         sdk=sdk,
         requirements=REQUIREMENTS[sdk],
+        state_key_env=(
+            f"{slug}_REQUEST_STATE_KEY"
+            if sdk >= 2 and confirmation_gates(registered, manifest)
+            else None
+        ),
     )

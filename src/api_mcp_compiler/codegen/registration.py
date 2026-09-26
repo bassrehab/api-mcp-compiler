@@ -75,6 +75,21 @@ SURFACE_CLASS_V2 = '''
 #: caching the list, and a model's prompt cache, both depend on that.
 _TOOLS: dict[str, tuple[str, dict[str, bool], Any]] = {}
 
+#: Confirmation nonces already spent in this process. A sealed confirmation is valid until it
+#: expires, on any replica holding the key, so without this one answer could be replayed. It is
+#: per process: with a shared key and a tool that is not idempotent, the server refuses to start
+#: (see `_state_security`), because only a shared record could make that at most once.
+_SPENT: set[str] = set()
+
+#: The protocol revision from which confirmation travels as a multi round-trip request.
+_MRTR_SINCE = "2026-07-28"
+
+
+class _Confirmation(BaseModel):
+    """The one field a person fills in to confirm, for clients on the earlier protocol."""
+
+    confirm: str
+
 
 def _tool(name: str, description: str, annotations: dict[str, bool]) -> Any:
     """Record a tool for `_Surface` to serve. Registration only; nothing is wrapped."""
@@ -86,8 +101,131 @@ def _tool(name: str, description: str, annotations: dict[str, bool]) -> Any:
     return register
 
 
+def _state_security() -> Any:
+    """The key that seals confirmation state, or a refusal to start without one.
+
+    A confirmation is carried to the client and back, sealed, so any replica can check it. That
+    only works if every replica holds the same key, and the SDK's default is a random key per
+    process. So a surface with a confirmation-gated tool will not start until someone chooses:
+    a shared key, or `ephemeral` for a single process.
+    """
+    if not _CONFIRM:
+        return None
+    key = os.environ.get(_STATE_KEY_ENV, "")
+    if not key:
+        raise SystemExit(
+            f"{_STATE_KEY_ENV} is not set. This surface has tools a person must confirm, and the "
+            "confirmation is sealed with this key so any replica can check it. Set it to the same "
+            "secret on every replica, or to 'ephemeral' when exactly one process serves it."
+        )
+    if key == "ephemeral":
+        return None
+    unsafe = sorted(name for name, gate in _CONFIRM.items() if not gate["idempotent"])
+    if unsafe:
+        raise SystemExit(
+            f"{', '.join(unsafe)} cannot be confirmed safely across replicas yet. A sealed "
+            "confirmation can be replayed on any replica until it expires, and for an operation "
+            "that is not idempotent only a shared record of spent confirmations prevents that. "
+            f"This server has none, so set {_STATE_KEY_ENV}=ephemeral and run one process."
+        )
+    return RequestStateSecurity(keys=[key], ttl=float(max(g["ttl"] for g in _CONFIRM.values())))
+
+
+def _refused(code: str, detail: str) -> Any:
+    payload = {"error": code, "detail": detail}
+    return CallToolResult(
+        content=[TextContent(type="text", text=json.dumps(payload))],
+        structured_content=payload,
+        is_error=True,
+    )
+
+
+def _expected(name: str, gate: dict[str, Any], arguments: dict[str, Any]) -> str:
+    """What the person types: the identifying argument if there is one, else the tool name."""
+    value = arguments.get(gate["phrase_arg"]) if gate.get("phrase_arg") else None
+    return str(value) if value not in (None, "") else name
+
+
+def _answer(response: Any) -> tuple[Any, Any]:
+    """An elicitation answer's action and content, whether it arrived as a model or a dict."""
+    if isinstance(response, dict):
+        return response.get("action"), response.get("content")
+    return getattr(response, "action", None), getattr(response, "content", None)
+
+
+async def _confirmed(
+    name: str, gate: dict[str, Any], arguments: dict[str, Any], context: Any
+) -> Any:
+    """None when a person confirmed this exact call; otherwise what to return instead."""
+    expected = _expected(name, gate, arguments)
+    message = (
+        f"{gate['effect']} Arguments: {json.dumps(arguments, sort_keys=True)}. "
+        f"Type {expected} to confirm."
+    )
+    capabilities = getattr(context, "client_capabilities", None)
+    if capabilities is None or capabilities.elicitation is None:
+        # No fallback to asking the agent twice: that is what this gate replaced.
+        return _refused(
+            "confirmation_unavailable",
+            "This client cannot show a person a confirmation, and this tool does not run "
+            "without one.",
+        )
+
+    if (context.protocol_version or "") < _MRTR_SINCE:
+        # The earlier protocol asks mid-call, with a request from the server to the client.
+        answer = await context.elicit(message, _Confirmation)
+        action = answer.action
+        typed = answer.data.confirm if action == "accept" else None
+    else:
+        response = (context.input_responses or {}).get("confirm")
+        state = context.request_state
+        if response is None or state is None:
+            # The SDK seals this state and binds it to the tool, a digest of these arguments,
+            # the caller and an expiry, so a retry with other arguments fails before this runs.
+            return InputRequiredResult(
+                input_requests={
+                    "confirm": ElicitRequest(
+                        params=ElicitRequestFormParams(
+                            message=message,
+                            requested_schema={
+                                "type": "object",
+                                "properties": {
+                                    "confirm": {
+                                        "type": "string",
+                                        "title": f"Type {expected} to confirm",
+                                    }
+                                },
+                                "required": ["confirm"],
+                            },
+                        )
+                    )
+                },
+                request_state=json.dumps({"nonce": secrets.token_hex(16), "issued": time.time()}),
+            )
+        claims = json.loads(state)
+        if time.time() - float(claims["issued"]) > gate["ttl"]:
+            return _refused(
+                "confirmation_expired", "The confirmation expired; call again to be asked afresh."
+            )
+        if claims["nonce"] in _SPENT:
+            return _refused("confirmation_spent", "This confirmation was already used.")
+        action, content = _answer(response)
+        typed = (content or {}).get("confirm") if action == "accept" else None
+        if action == "accept":
+            _SPENT.add(claims["nonce"])
+
+    if action != "accept":
+        return _refused("not_confirmed", f"The person chose to {action}.")
+    if typed != expected:
+        return _refused("not_confirmed", f"What was typed did not match {expected!r}.")
+    return None
+
+
 class _Surface(MCPServer):
     """The SDK's server, with tools advertised from the plan rather than from signatures."""
+
+    def __init__(self, name: str, **options: Any) -> None:
+        super().__init__(name, request_state_security=_state_security(), **options)
 
     async def list_tools(self) -> list[Tool]:
         listed = []
@@ -113,9 +251,29 @@ class _Surface(MCPServer):
         if registered is None:
             # An unknown tool is a protocol error in 2026-07-28, not a tool result.
             raise MCPError(-32602, f"Unknown tool: {name}")
-        # The planned schema is enforced inside `_invoke`, where a failure comes back as a
-        # structured `invalid_arguments` result an agent can correct from.
-        result = await registered[2](arguments or {})
+        arguments = arguments or {}
+        gate = _CONFIRM.get(name)
+        if gate is not None:
+            # Validated first, so a person is never asked to confirm a call the schema would
+            # refuse anyway. `_invoke` validates again; that is cheap and keeps it self-contained.
+            errors = sorted(
+                Draft202012Validator(_SCHEMAS[name]).iter_errors(arguments),
+                key=lambda error: list(error.absolute_path),
+            )
+            if errors:
+                return _refused(
+                    "invalid_arguments",
+                    "; ".join(
+                        f"/{'/'.join(str(part) for part in error.absolute_path)}: {error.message}"
+                        for error in errors
+                    ),
+                )
+            # A person confirms here, before the tool runs, rather than the agent confirming by
+            # calling twice.
+            outcome = await _confirmed(name, gate, arguments, context)
+            if outcome is not None:
+                return outcome
+        result = await registered[2](arguments)
         return CallToolResult(
             content=[TextContent(type="text", text=json.dumps(result))],
             structured_content=result,
@@ -132,9 +290,20 @@ SUPPORTED_SDKS = (1, 2)
 SDK_IMPORTS = {
     1: "from mcp.server.fastmcp import FastMCP\nfrom mcp.types import Tool",
     2: (
-        "from mcp.server.mcpserver import MCPServer\n"
+        "import secrets\n"
+        "\n"
+        "from mcp.server.mcpserver import MCPServer, RequestStateSecurity\n"
         "from mcp.shared.exceptions import MCPError\n"
-        "from mcp.types import CallToolResult, TextContent, Tool"
+        "from mcp.types import (\n"
+        "    CallToolResult,\n"
+        "    ElicitRequest,\n"
+        "    ElicitRequestFormParams,\n"
+        "    InputRequiredResult,\n"
+        "    TextContent,\n"
+        "    Tool,\n"
+        ")\n"
+        "from jsonschema import Draft202012Validator\n"
+        "from pydantic import BaseModel"
     ),
 }
 
@@ -143,9 +312,13 @@ SURFACE_CLASSES = {1: SURFACE_CLASS, 2: SURFACE_CLASS_V2}
 #: What a generated server needs installed, per major. Each is bounded above because a new SDK
 #: major renamed the module the previous one imported, and an unbounded requirement installed
 #: a version every generated server failed to start on. Moving major is a recompile.
+#: Everything a generated module imports is named, not only the SDK: jsonschema validates
+#: arguments on both targets, and the 2.x confirmation gate declares its form with pydantic. Both
+#: arrive with the SDK today, and relying on that is how httpx went missing when SDK 2.x stopped
+#: installing it.
 REQUIREMENTS = {
-    1: ("mcp>=1.2,<2", "httpx>=0.27"),
-    2: ("mcp>=2,<3", "httpx>=0.27"),
+    1: ("mcp>=1.2,<2", "httpx>=0.27", "jsonschema>=4.20"),
+    2: ("mcp>=2,<3", "httpx>=0.27", "jsonschema>=4.20", "pydantic>=2.11"),
 }
 
 
