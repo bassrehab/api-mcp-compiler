@@ -13,7 +13,6 @@ these tests exhaust real budgets against the emitted module rather than reading 
 from __future__ import annotations
 
 import asyncio
-import sys
 import time
 import types
 from pathlib import Path
@@ -28,6 +27,7 @@ from api_mcp_compiler.models import RiskClass
 from api_mcp_compiler.planning.approval import approve
 from api_mcp_compiler.planning.semantic import plan_semantic
 from api_mcp_compiler.policy.synthesis import synthesize_policy
+from tests.conftest import stub_mcp_sdk
 
 #: A destructive operation, because that is where the budget is tightest: policy allows two
 #: calls a minute and one at a time.
@@ -83,21 +83,7 @@ def _load(
     source = emit_server(ir, generate_surface(ir, approved, manifest), manifest).source
 
     seen: list[str] = []
-    fastmcp = types.ModuleType("mcp.server.fastmcp")
-    fastmcp.FastMCP = lambda *_, **__: types.SimpleNamespace(  # type: ignore[attr-defined]
-        tool=lambda **_kw: (lambda function: function),
-        resource=lambda *_a, **_kw: (lambda function: function),
-    )
-    server = types.ModuleType("mcp.server")
-    server.fastmcp = fastmcp  # type: ignore[attr-defined]
-    package = types.ModuleType("mcp")
-    package.server = server  # type: ignore[attr-defined]
-    httpx = types.ModuleType("httpx")
-    httpx.AsyncClient = lambda **_: _Client(seen, gate)  # type: ignore[attr-defined]
-    for name, module in {
-        "mcp": package, "mcp.server": server, "mcp.server.fastmcp": fastmcp, "httpx": httpx
-    }.items():
-        monkeypatch.setitem(sys.modules, name, module)
+    stub_mcp_sdk(monkeypatch, lambda **_: _Client(seen, gate))
 
     namespace: dict[str, Any] = {"__name__": "generated_server"}
     exec(compile(source, "<generated server>", "exec"), namespace)

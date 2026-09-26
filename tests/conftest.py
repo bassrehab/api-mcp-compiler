@@ -9,8 +9,11 @@ cannot pass or fail depending on where pytest happened to be invoked from.
 from __future__ import annotations
 
 import os
+import sys
+import types
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -35,3 +38,50 @@ def _run_from_repo_root() -> Iterator[None]:
         yield
     finally:
         os.chdir(previous)
+
+
+class _StubServer:
+    """Stands in for the SDK's server class when a generated module is executed in a test.
+
+    A class rather than a namespace, because the generated module subclasses it: `_Surface`
+    overrides `list_tools` and `call_tool` so the planned schema is what a client sees.
+    """
+
+    def __init__(self, *_: Any, **__: Any) -> None:
+        #: (uri, name) for every resource the generated module registers, in order.
+        self.resources: list[tuple[str, str | None]] = []
+
+    def resource(self, uri: str, **options: Any) -> Any:
+        def register(function: Any) -> Any:
+            self.resources.append((uri, options.get("name")))
+            return function
+
+        return register
+
+
+def stub_mcp_sdk(monkeypatch: pytest.MonkeyPatch, httpx_client: Any) -> None:
+    """Load a generated server with the MCP SDK and the HTTP client replaced.
+
+    Tests that use this are about governance decisions taken before either is reached. What a
+    real SDK advertises is tested separately, against the real SDK, in test_served_surface.py:
+    a stub cannot show what `tools/list` returns, which is how an opaque schema shipped.
+    """
+    fastmcp = types.ModuleType("mcp.server.fastmcp")
+    fastmcp.FastMCP = _StubServer  # type: ignore[attr-defined]
+    mcp_types = types.ModuleType("mcp.types")
+    mcp_types.Tool = lambda **fields: fields  # type: ignore[attr-defined]
+    server = types.ModuleType("mcp.server")
+    server.fastmcp = fastmcp  # type: ignore[attr-defined]
+    package = types.ModuleType("mcp")
+    package.server = server  # type: ignore[attr-defined]
+    package.types = mcp_types  # type: ignore[attr-defined]
+    httpx = types.ModuleType("httpx")
+    httpx.AsyncClient = httpx_client  # type: ignore[attr-defined]
+    for name, module in {
+        "mcp": package,
+        "mcp.server": server,
+        "mcp.server.fastmcp": fastmcp,
+        "mcp.types": mcp_types,
+        "httpx": httpx,
+    }.items():
+        monkeypatch.setitem(sys.modules, name, module)

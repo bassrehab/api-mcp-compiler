@@ -12,7 +12,6 @@ file, not that anything reads it.
 from __future__ import annotations
 
 import asyncio
-import sys
 import types
 from pathlib import Path
 from typing import Any
@@ -24,6 +23,7 @@ from api_mcp_compiler.codegen.tools import generate_surface
 from api_mcp_compiler.ingest.openapi import parse_openapi
 from api_mcp_compiler.planning.semantic import plan_semantic
 from api_mcp_compiler.policy.synthesis import synthesize_policy
+from tests.conftest import stub_mcp_sdk
 
 SERVICE = """openapi: 3.0.3
 info: {{title: Guarded Service, version: 1.0.0}}
@@ -77,21 +77,7 @@ def _load(scheme: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, scopes: 
     emitted = emit_server(ir, generate_surface(ir, plan, manifest), manifest)
 
     seen: list[dict[str, Any]] = []
-    fastmcp = types.ModuleType("mcp.server.fastmcp")
-    fastmcp.FastMCP = lambda *_, **__: types.SimpleNamespace(  # type: ignore[attr-defined]
-        tool=lambda **_kw: (lambda function: function),
-        resource=lambda *_a, **_kw: (lambda function: function),
-    )
-    server = types.ModuleType("mcp.server")
-    server.fastmcp = fastmcp  # type: ignore[attr-defined]
-    package = types.ModuleType("mcp")
-    package.server = server  # type: ignore[attr-defined]
-    httpx = types.ModuleType("httpx")
-    httpx.AsyncClient = lambda **_: _Recorder(seen)  # type: ignore[attr-defined]
-    for name, module in {
-        "mcp": package, "mcp.server": server, "mcp.server.fastmcp": fastmcp, "httpx": httpx
-    }.items():
-        monkeypatch.setitem(sys.modules, name, module)
+    stub_mcp_sdk(monkeypatch, lambda **_: _Recorder(seen))
 
     namespace: dict[str, Any] = {"__name__": "generated_server"}
     exec(compile(emitted.source, "<generated server>", "exec"), namespace)
