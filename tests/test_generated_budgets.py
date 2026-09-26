@@ -80,7 +80,10 @@ def _load(
     overlay = approve(plan, overlay=None, risk=RiskClass.DESTRUCTIVE, group=None, names=[]).overlay
     approved = plan_semantic(ir, overlay)
     manifest = synthesize_policy(ir, approved)
-    source = emit_server(ir, generate_surface(ir, approved, manifest), manifest).source
+    # The 1.x target: these tests confirm by calling twice, which is that target's gate, and the
+    # budget logic in `_invoke` is the same on both. The 2.x gate is tested in
+    # test_confirmation_gate.py.
+    source = emit_server(ir, generate_surface(ir, approved, manifest), manifest, sdk=1).source
 
     seen: list[str] = []
     stub_mcp_sdk(monkeypatch, lambda **_: _Client(seen, gate))

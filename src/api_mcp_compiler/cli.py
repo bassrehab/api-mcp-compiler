@@ -373,6 +373,7 @@ def serve(
         upstream = soap_emitted.endpoint
         credentials = soap_emitted.credentials
         needs = soap_emitted.requirements
+        state_key_env = soap_emitted.state_key_env
     else:
         http_emitted = emit_server(ir, surface, manifest, sdk=sdk)
         generated, registered, withheld = (
@@ -383,6 +384,7 @@ def serve(
         upstream = http_emitted.base_url
         credentials = http_emitted.credentials
         needs = http_emitted.requirements
+        state_key_env = http_emitted.state_key_env
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(generated, encoding="utf-8")
     typer.echo(f"wrote {out} for {ir.service.service_id} ({'SOAP' if soap else 'HTTP'})")
@@ -400,6 +402,12 @@ def serve(
             typer.echo(f"    {variable}  (for the {scheme_id!r} security scheme)")
     # Quoted, because a requirement carries `>` and `<`, and a shell reads those as
     # redirections: pasted unquoted, the line wrote pip's output to a file named `=1.2`.
+    if state_key_env:
+        typer.echo(
+            f"  set {state_key_env} before running: the same secret of at least 32 bytes on "
+            "every replica, or 'ephemeral' for exactly one process. Destructive tools ask a "
+            "person to confirm, and that key seals the confirmation."
+        )
     requirements = " ".join(shlex.quote(item) for item in needs)
     typer.echo(f"  run it with: pip install {requirements} && python {shlex.quote(str(out))}")
 

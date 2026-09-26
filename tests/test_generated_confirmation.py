@@ -72,7 +72,9 @@ def generated(monkeypatch: pytest.MonkeyPatch) -> tuple[dict[str, Any], list[tup
     overlay = approve(plan, overlay=None, risk=RiskClass.DESTRUCTIVE, group=None, names=[]).overlay
     approved = plan_semantic(ir, overlay)
     manifest = synthesize_policy(ir, approved)
-    source = emit_server(ir, generate_surface(ir, approved, manifest), manifest).source
+    # The 1.x target, where confirmation is still a second identical call. The 2.x target asks a
+    # person instead; that gate is tested against the real SDK in test_confirmation_gate.py.
+    source = emit_server(ir, generate_surface(ir, approved, manifest), manifest, sdk=1).source
 
     calls: list[tuple[str, str]] = []
 

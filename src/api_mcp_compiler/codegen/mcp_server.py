@@ -70,6 +70,9 @@ class EmittedServer:
     #: The SDK major the module is written against, and what it needs installed.
     sdk: int = DEFAULT_SDK
     requirements: tuple[str, ...] = REQUIREMENTS[DEFAULT_SDK]
+    #: The variable holding the key that seals confirmation state, when the server has a gated
+    #: tool on the 2.x target and will not start without it.
+    state_key_env: str | None = None
 
 
 def _base_url(ir: ApiSemanticIR) -> str:
@@ -188,10 +191,41 @@ def _annotations(tool: ToolDescriptor) -> dict[str, bool]:
     return described
 
 
+def confirmation_gates(
+    tools: list[ToolDescriptor], manifest: PolicyManifest | None
+) -> dict[str, dict[str, object]]:
+    """What the 2.x surface needs to ask a person to confirm each gated tool.
+
+    `phrase_arg` names the argument a person retypes: the first path parameter, which is what
+    identifies the thing acted on, else the first required argument, else none, in which case
+    the person types the tool's name. `idempotent` decides whether a shared key is safe without
+    a shared record of spent confirmations.
+    """
+    gates: dict[str, dict[str, object]] = {}
+    for tool in tools:
+        policy = manifest.policy_for(tool.tool_id) if manifest else None
+        if tool.uri_template is not None or policy is None or policy.confirmation is None:
+            continue
+        path = [
+            item.argument
+            for item in tool.argument_bindings
+            if item.location is ParameterLocation.PATH
+        ]
+        required = list(tool.input_schema.get("required", []))
+        gates[tool.name] = {
+            "effect": policy.confirmation.effect_summary,
+            "ttl": policy.confirmation.token_ttl_seconds,
+            "idempotent": bool(tool.annotations and tool.annotations.idempotent),
+            "phrase_arg": (path or required or [None])[0],
+        }
+    return gates
+
+
 def _tool_function(
     ir: ApiSemanticIR,
     tool: ToolDescriptor,
     manifest: PolicyManifest | None,
+    sdk: int = DEFAULT_SDK,
 ) -> str:
     """Write one registered tool."""
     steps = [
@@ -215,6 +249,17 @@ def _tool_function(
         if policy is not None and policy.confirmation is not None
         else 0
     )
+    gated_by_person = sdk >= 2 and confirm
+    person_note = (
+        "    # A person confirms this call in `_Surface.call_tool` before it runs (see\n"
+        "    # `_CONFIRM`), so the second-call check in `_invoke` is off for this tool.\n"
+        if gated_by_person
+        else ""
+    )
+    if sdk >= 2:
+        # On the 2.x target a person confirms in `call_tool`, before this function runs, so
+        # the call-twice check inside `_invoke` is not emitted.
+        confirm, confirmation_ttl = False, 0
     max_bytes = policy.output.max_bytes if policy else None
     redact = sorted(policy.output.redact_fields) if policy else []
     destructive = tool.risk is RiskClass.DESTRUCTIVE
@@ -251,7 +296,7 @@ async def {tool.name}({parameters}) -> dict[str, Any]:
 @_tool({tool.name!r}, {tool.description!r}, {annotations!r})
 async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
     """{tool.description}"""
-    return await _invoke(
+{person_note}    return await _invoke(
         tool_name={tool.name!r},
         steps={[(method, route, operation) for method, route, operation in steps]!r},
         threading={threading!r},
@@ -301,6 +346,11 @@ _AUTH: dict[str, dict[str, str]] = json.loads({auth!r})
 #: Which schemes each tool needs, as least-privilege selection chose them.
 _TOOL_SCHEMES: dict[str, list[str]] = json.loads({tool_schemes!r})
 
+#: Tools a person must confirm, and how. Read by the 2.x surface; empty on the 1.x target, which
+#: still confirms by a second identical call.
+_CONFIRM: dict[str, dict[str, Any]] = json.loads({confirm!r})
+#: The environment variable holding the key that seals confirmation state.
+_STATE_KEY_ENV = {state_key_env!r}
 {registration}
 
 mcp = _Surface({service_id!r}, instructions={instructions!r})
@@ -722,6 +772,8 @@ def emit_server(
     header = _PREAMBLE.format(
         banner=banner,
         registration=SURFACE_CLASSES[check_sdk(sdk)],
+        confirm=json.dumps(confirmation_gates(registered, manifest) if sdk >= 2 else {}),
+        state_key_env=f"{slug}_REQUEST_STATE_KEY",
         sdk_imports=SDK_IMPORTS[sdk],
         service_id=ir.service.service_id,
         instructions=_instructions(ir),
@@ -733,7 +785,7 @@ def emit_server(
         schemas=json.dumps({item.name: item.input_schema for item in registered}),
         withheld=json.dumps(withheld),
     )
-    body = "".join(_tool_function(ir, item, manifest) for item in registered)
+    body = "".join(_tool_function(ir, item, manifest, sdk) for item in registered)
     footer = '\n\nif __name__ == "__main__":\n    mcp.run()\n'
     return EmittedServer(
         source=header + body + footer,
@@ -743,6 +795,11 @@ def emit_server(
         credentials=variables(ir, slug, tool_schemes(registered, manifest)),
         sdk=sdk,
         requirements=REQUIREMENTS[sdk],
+        state_key_env=(
+            f"{slug}_REQUEST_STATE_KEY"
+            if sdk >= 2 and confirmation_gates(registered, manifest)
+            else None
+        ),
     )
 
 

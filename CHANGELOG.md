@@ -1,5 +1,36 @@
 # Changelog
 
+## Unreleased
+
+On the SDK 2.x target, a person confirms a destructive call.
+
+### What changed
+
+The 1.x target confirms a destructive call with a second identical call, which an agent can
+make on its own. The 2.x target now asks a person instead. The server sends an MCP elicitation
+showing the policy's effect summary and the arguments, and the person retypes the identifying
+argument, such as the warehouse id. A client on the 2026-07-28 protocol gets this as an
+`input_required` result and answers on a retry; a client on an earlier protocol is asked mid-call.
+A client that cannot show a person an elicitation is refused with `confirmation_unavailable`.
+
+The pending call travels as sealed request state, bound by the SDK to the tool, a digest of the
+arguments, the caller and an expiry. Each honoured confirmation is recorded, so one answer cannot
+be replayed within a process. Arguments are validated before anyone is asked.
+
+### Starting a server
+
+A 2.x server with a confirmation-gated tool will not start until `<SERVICE>_REQUEST_STATE_KEY` is
+set: to the same secret of at least 32 bytes on every replica, or to `ephemeral` for one process.
+With a shared key it also refuses to start if a gated tool is not idempotent, since only a shared
+record of spent confirmations, which this release does not have, would stop a replay on another
+replica. `serve` prints the variable's name.
+
+### Requirements
+
+Generated servers now name everything they import: `jsonschema>=4.20` on both targets, and
+`pydantic>=2.11` on 2.x. Both arrived with the SDK already; relying on that is how `httpx` went
+missing when SDK 2.x stopped installing it.
+
 ## 0.13.0
 
 Released 2026-09-26. Generated servers serve the 2026-07-28 MCP protocol.
