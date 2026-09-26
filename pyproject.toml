@@ -50,6 +50,10 @@ dev = [
   # The served-surface tests emit for whichever major is installed, and CI runs them a second
   # time with `mcp>=1.2,<2` so the 1.x target is exercised too.
   "mcp>=2,<3",
+  # Every generated server imports httpx, on either SDK target. SDK 1.x happened to install it,
+  # SDK 2.x does not, so without naming it here the served-surface tests passed on a machine
+  # with httpx from elsewhere and failed in a clean CI environment.
+  "httpx>=0.27",
   # Also its own extra, for the same reason `anthropic` is here. Without it the protobuf tests
   # fail on a machine that lacks protoc and pass on one that has it, which is exactly how CI sat
   # red on twelve of them while every local run was green.
