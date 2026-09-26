@@ -71,10 +71,11 @@ hand-edits JSON.
   --overlay build/inventory.overlay.json --out build/inventory_server.py
 ```
 
-The emitted server validates arguments against each tool's own schema before calling anything,
-demands a confirmation token bound to a digest of the arguments for destructive tools, caps
-output size, applies redaction, and exposes `surface://withheld` listing what it refused to
-register and why.
+The emitted server advertises each tool's planned input schema in `tools/list`, so a client calls
+a tool with its real parameters, for example `{"warehouse_id": "wh-7"}`. It validates arguments
+against that schema before calling anything, demands a confirmation token bound to a digest of
+the arguments for destructive tools, caps output size, applies redaction, and exposes
+`surface://withheld` listing what it refused to register and why.
 
 ## 8. Score a surface against tasks
 

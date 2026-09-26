@@ -60,10 +60,12 @@ A server this compiler emits imports the MCP Python SDK and an HTTP client, whic
 dependencies of the emitted artifact rather than of the compiler:
 
 ```bash
-python -m pip install mcp httpx
+python -m pip install "mcp>=1.2,<2" "httpx>=0.27"
 ```
 
-`serve` prints the exact requirement list for what it generated.
+The upper bound matters. Generated servers are written against the 1.x SDK, and SDK 2.0 renamed
+the module they import, so an unbounded `mcp` installs a version they cannot start on. `serve`
+prints the exact requirement list for what it generated.
 
 ## Building the documentation
 

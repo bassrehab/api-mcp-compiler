@@ -66,17 +66,29 @@ What to do: run a single instance per surface where the budget matters, or put a
 counter in front of the tools. If you do the latter, the numbers to enforce are in the policy
 manifest and do not need re-deriving.
 
-### Confirmation tokens live in memory
+### Runtime confirmation is friction, not a person
 
-A confirmation is bound to a digest of the arguments, expires, and is single use. The store
-holding them is a dictionary in the process.
+The human approval in this project happens at compile time: a reviewer enables a destructive
+tool by name, group or risk class, and until then it is not emitted at all. The runtime
+confirmation on a destructive tool is a second, weaker control, and it is worth being precise
+about what it is.
 
-Two consequences. A restart forgets outstanding confirmations, so an agent mid-flow is asked
-again, which is safe and merely annoying. And with several replicas, a confirmation issued by
-one is unknown to another, so the agent is asked again by whichever answers next.
+A first call returns `confirmation_required` with a token bound to a digest of the arguments. An
+identical call to the same process inside the time to live runs the operation. Nothing in that
+exchange involves a person: an agent that repeats the call has confirmed it, and the refusal
+message tells it how. So the confirmation stops an agent from performing a destructive operation
+by accident on its first attempt. It does not put a human in the loop at runtime.
 
-Neither weakens the guarantee: a call still cannot proceed without a confirmation that
-process issued for those exact arguments. Sticky routing removes the friction if it matters.
+The store holding the tokens is a dictionary in the process, which has two further consequences.
+A restart forgets outstanding confirmations, so an agent mid-flow is asked again. And with several
+replicas behind round-robin routing, a confirmation issued by one is unknown to the next, so the
+agent is asked again by whichever answers, indefinitely. That fails safe. Sticky routing removes
+it.
+
+What to do: if a destructive tool needs a person at runtime, the client host has to show the call
+to one before sending it; the MCP specification places that duty on the client. Replacing this
+mechanism with an elicitation a person answers, carried in sealed request state so it survives
+replicas, is planned and depends on emitting for the 2026-07-28 protocol.
 
 ### Output caps and redaction are per response
 
@@ -86,6 +98,17 @@ returns in a field the specification never declared.
 
 What to do: treat them as a floor. If a service can return unbounded or unexpected data, cap
 it at the service or in front of it as well.
+
+## Which MCP protocol a generated server speaks
+
+Generated servers are written against the 1.x Python SDK and require `mcp>=1.2,<2`. That SDK
+speaks the MCP protocol versions up to 2025-11-25, which use an initialization handshake. The
+2026-07-28 revision removed the handshake and sessions, and a client that speaks only that
+revision cannot talk to a server that speaks only the older ones. Clients that support both
+eras connect normally.
+
+What to do: check that your client supports a pre-2026-07-28 protocol version. Emitting for the
+2.x SDK, which serves both eras from one server, is planned.
 
 ## Credentials
 

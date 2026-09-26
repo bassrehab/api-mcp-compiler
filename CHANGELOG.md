@@ -1,8 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.12.0
 
-A generated server now advertises the schema that was planned for each tool.
+Released 2026-09-26. A generated server advertises the schema that was planned for each tool.
+
+Minor, because it changes how clients call generated tools: with the planned parameters
+directly, not wrapped in `arguments`. Generated servers now require `mcp>=1.2,<2`.
 
 ### The bug
 
@@ -24,6 +27,12 @@ Generated servers now require `mcp>=1.2,<2`. The previous open-ended requirement
 
 A new test starts emitted REST and SOAP servers and asks them over MCP, with the real SDK, what
 they advertise. The SDK is in the `dev` extra for that reason.
+
+### Also fixed
+
+`serve` printed its install line unquoted, so pasting it into a shell treated `>` as a
+redirection: it installed unbounded versions and wrote pip's output to a file named `=1.2`. The
+requirements and the output path are now shell-quoted.
 
 ## 0.11.0
 

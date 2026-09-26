@@ -7,6 +7,7 @@ No command runs an MCP server, binds to an SDK, or performs network access.
 from __future__ import annotations
 
 import json
+import shlex
 from enum import StrEnum
 from pathlib import Path
 
@@ -382,7 +383,10 @@ def serve(
         typer.echo("  set before running:")
         for variable, scheme_id in sorted(credentials.items()):
             typer.echo(f"    {variable}  (for the {scheme_id!r} security scheme)")
-    typer.echo(f"  run it with: pip install {' '.join(GENERATED_REQUIREMENTS)} && python {out}")
+    # Quoted, because a requirement carries `>` and `<`, and a shell reads those as
+    # redirections: pasted unquoted, the line wrote pip's output to a file named `=1.2`.
+    requirements = " ".join(shlex.quote(item) for item in GENERATED_REQUIREMENTS)
+    typer.echo(f"  run it with: pip install {requirements} && python {shlex.quote(str(out))}")
 
 
 @app.command()
