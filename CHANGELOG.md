@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased
+
+List caching and routing headers are derived by policy and rendered by 2.x servers.
+
+### Policy
+
+The manifest gains two MCP 2026-07-28 decisions, each with provenance. `list_cache` sets how long
+a client may keep the surface's lists: one minute if any tool can change state, five if every tool
+is a read, since a cached list is how a revoked tool lingers after a redeploy; and it is `private`
+whenever a tool needs a credential. Each tool's `routing_headers` names the path identifiers a
+client mirrors into `Mcp-Param-*` headers, hyphenated, and only string or integer identifiers the
+redaction rule does not flag.
+
+`POLICY_MANIFEST_SCHEMA_VERSION` is now `0.4.0`.
+
+### Servers
+
+A 2.x server passes `list_cache` to the SDK as cache hints on `tools/list`, `resources/list` and
+`resources/templates/list`, and writes `x-mcp-header` into the schemas it advertises. Verified with
+an SDK 2.x client over Streamable HTTP, which sends `Mcp-Param-Warehouse-Id: wh-7`. The 1.x target
+advertises neither. The tool surface artifact is unchanged; the manifest holds the decision.
+
 ## 0.14.0
 
 Released 2026-09-27. On the SDK 2.x target, a person confirms a destructive call.

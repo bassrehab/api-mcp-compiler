@@ -16,19 +16,23 @@ from api_mcp_compiler.models import (
     ApprovalClass,
     ArtifactKind,
     AuthRequirementIR,
+    CacheScope,
     ConfirmationPolicy,
     DataSensitivity,
     Derivation,
     Environment,
     Idempotency,
+    ListCachePolicy,
     LogClass,
     OperationIR,
     OutputPolicy,
+    ParameterLocation,
     PolicyManifest,
     Provenance,
     RateBudget,
     RetryPolicy,
     RiskClass,
+    RoutingHeader,
     SecurityRequirementIR,
     ToolArtifact,
     ToolPlan,
@@ -327,6 +331,127 @@ def _records(operation: OperationIR, fields: tuple[str, ...], rule: str) -> list
     ]
 
 
+#: JSON Schema types MCP 2026-07-28 allows `x-mcp-header` on. `number` is excluded by the spec,
+#: and `boolean` never identifies the thing an operation acts on.
+_MIRRORABLE_TYPES = frozenset({"string", "integer"})
+
+#: How long a client may keep a surface's lists. A surface that can change state gets the short
+#: one, because a cached list is how a revoked write or destructive tool stays in front of an
+#: agent after the server has stopped offering it.
+_LIST_TTL_MS_CHANGING = 60_000
+_LIST_TTL_MS_READ_ONLY = 300_000
+
+
+def _header_name(argument: str) -> str | None:
+    """`warehouse_id` becomes `Warehouse-Id`.
+
+    Hyphens, not the argument's own underscores: several common proxies drop request headers
+    whose names contain an underscore, and a header a gateway never sees routes nothing.
+    """
+    words = [
+        piece
+        for item in _CAMEL_BOUNDARY.sub(" ", argument).split()
+        for piece in _NON_WORD.split(item)
+        if piece
+    ]
+    if not words:
+        return None
+    return "-".join(word[:1].upper() + word[1:].lower() for word in words)
+
+
+def _routing_headers(artifact: ToolArtifact, sources: list[OperationIR]) -> list[RoutingHeader]:
+    """The arguments a gateway may route or enforce on, for one tool.
+
+    Only path identifiers of a single-operation tool: they name the thing acted on, which is
+    what a gateway scopes by. Free text is never mirrored, and neither is anything the redaction
+    rule flags, because a header is visible to every intermediary on the path. A composite is
+    skipped, since its argument names are qualified by step and a gateway should not depend on
+    a planner's composition.
+    """
+    if len(sources) != 1:
+        return []
+    operation = sources[0]
+    headers: list[RoutingHeader] = []
+    taken: set[str] = set()
+    for field in operation.inputs:
+        if field.location is not ParameterLocation.PATH or field.name in artifact.omitted_arguments:
+            continue
+        kind = (field.type_schema or {}).get("type")
+        if kind not in _MIRRORABLE_TYPES or _names_a_secret(field.name):
+            continue
+        header = _header_name(field.name)
+        if header is None or header.lower() in taken:
+            continue
+        taken.add(header.lower())
+        headers.append(
+            RoutingHeader(
+                argument=field.name,
+                header=header,
+                provenance=[
+                    Provenance(
+                        field="argument",
+                        source_pointer=operation.source_pointer,
+                        derivation=Derivation.NORMALIZED,
+                        rule=f"policy.routing_header.argument: a path identifier of type {kind}",
+                    ),
+                    Provenance(
+                        field="header",
+                        source_pointer=operation.source_pointer,
+                        derivation=Derivation.NORMALIZED,
+                        rule="policy.routing_header.header: the argument name, hyphenated",
+                    ),
+                ],
+            )
+        )
+    return headers
+
+
+def _list_cache(
+    ir: ApiSemanticIR, plan: ToolPlan, policies: list[ToolPolicy]
+) -> ListCachePolicy:
+    """How long a client may keep the surface's lists, and whether it may share them.
+
+    The list does not vary by caller, but a surface whose tools need credentials is still one
+    whose shape should not be served from a shared cache to someone who holds none, so it is
+    private. A surface that can change state gets the short TTL.
+    """
+    changes_state = any(item.risk is not RiskClass.READ for item in plan.artifacts)
+    authenticated = any(item.required_schemes for item in policies)
+    ttl = _LIST_TTL_MS_CHANGING if changes_state else _LIST_TTL_MS_READ_ONLY
+    scope = CacheScope.PRIVATE if authenticated else CacheScope.PUBLIC
+    # The decision is about the whole surface, so it points at the document rather than at any
+    # one operation, in the document's own scheme.
+    scheme = ir.operations[0].source_pointer.split(":", 1)[0] if ir.operations else "openapi"
+    root = f"{scheme}:#"
+    return ListCachePolicy(
+        ttl_ms=ttl,
+        scope=scope,
+        provenance=[
+            Provenance(
+                field="ttl_ms",
+                source_pointer=root,
+                derivation=Derivation.NORMALIZED,
+                rule=(
+                    "policy.list_cache.ttl_ms: a tool here changes state, so a revocation must "
+                    "reach clients quickly"
+                    if changes_state
+                    else "policy.list_cache.ttl_ms: every tool here is a read"
+                ),
+            ),
+            Provenance(
+                field="scope",
+                source_pointer=root,
+                derivation=Derivation.NORMALIZED,
+                rule=(
+                    "policy.list_cache.scope: tools here need credentials"
+                    if authenticated
+                    else "policy.list_cache.scope: no tool here needs a credential"
+                ),
+            ),
+        ],
+    )
+
+
 def synthesize_policy(ir: ApiSemanticIR, plan: ToolPlan) -> PolicyManifest:
     """Derive one governance manifest for a planned tool surface."""
     if plan.source_digest != ir.service.source_digest:
@@ -430,6 +555,7 @@ def synthesize_policy(ir: ApiSemanticIR, plan: ToolPlan) -> PolicyManifest:
                 ),
                 rollback_guidance=rollback,
                 unresolved=unresolved,
+                routing_headers=_routing_headers(artifact, sources),
                 provenance=[
                     *_records(primary, tuple(fields), "tool"),
                     Provenance(
@@ -476,4 +602,5 @@ def synthesize_policy(ir: ApiSemanticIR, plan: ToolPlan) -> PolicyManifest:
         service_id=plan.service_id,
         source_digest=plan.source_digest,
         policies=policies,
+        list_cache=_list_cache(ir, plan, policies),
     )

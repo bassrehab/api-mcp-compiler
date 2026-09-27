@@ -131,6 +131,18 @@ def _state_security() -> Any:
     return RequestStateSecurity(keys=[key], ttl=float(max(g["ttl"] for g in _CONFIRM.values())))
 
 
+def _cache_hints() -> Any:
+    """The list freshness the policy derived, for the lists that describe this surface.
+
+    `resources/read` is left to the SDK default: it returns data, not the surface, and how long
+    a client may keep data is not what this policy decides.
+    """
+    if not _LIST_CACHE:
+        return None
+    hint = CacheHint(ttl_ms=_LIST_CACHE["ttl_ms"], scope=_LIST_CACHE["scope"])
+    return {"tools/list": hint, "resources/list": hint, "resources/templates/list": hint}
+
+
 def _refused(code: str, detail: str) -> Any:
     payload = {"error": code, "detail": detail}
     return CallToolResult(
@@ -225,7 +237,12 @@ class _Surface(MCPServer):
     """The SDK's server, with tools advertised from the plan rather than from signatures."""
 
     def __init__(self, name: str, **options: Any) -> None:
-        super().__init__(name, request_state_security=_state_security(), **options)
+        super().__init__(
+            name,
+            request_state_security=_state_security(),
+            cache_hints=_cache_hints(),
+            **options,
+        )
 
     async def list_tools(self) -> list[Tool]:
         listed = []
@@ -292,6 +309,7 @@ SDK_IMPORTS = {
     2: (
         "import secrets\n"
         "\n"
+        "from mcp.server.caching import CacheHint\n"
         "from mcp.server.mcpserver import MCPServer, RequestStateSecurity\n"
         "from mcp.shared.exceptions import MCPError\n"
         "from mcp.types import (\n"

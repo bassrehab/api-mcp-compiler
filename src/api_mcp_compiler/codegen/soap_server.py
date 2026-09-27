@@ -21,6 +21,7 @@ from api_mcp_compiler.codegen.mcp_server import (
     _annotations,
     _budgets,
     _instructions,
+    advertised_schemas,
     confirmation_gates,
 )
 from api_mcp_compiler.codegen.registration import (
@@ -180,6 +181,8 @@ ENVELOPE_NS = "http://schemas.xmlsoap.org/soap/envelope/"
 _CONFIRM: dict[str, dict[str, Any]] = json.loads({confirm!r})
 #: The environment variable holding the key that seals confirmation state.
 _STATE_KEY_ENV = {state_key_env!r}
+#: List freshness the policy derived: `ttl_ms` and `scope`. Read by the 2.x surface.
+_LIST_CACHE: dict[str, Any] = json.loads({list_cache!r})
 {registration}
 
 mcp = _Surface({service_id!r}, instructions={instructions!r})
@@ -600,7 +603,12 @@ def emit_soap_server(
         auth=json.dumps(placements(ir, slug)),
         tool_schemes=json.dumps(tool_schemes(registered, manifest)),
         budgets=json.dumps(_budgets(registered, manifest)),
-        schemas=json.dumps({item.name: item.input_schema for item in registered}),
+        schemas=json.dumps(advertised_schemas(registered, manifest, sdk)),
+        list_cache=json.dumps(
+            manifest.list_cache.model_dump(mode="json", exclude={"provenance"})
+            if sdk >= 2 and manifest is not None and manifest.list_cache is not None
+            else {}
+        ),
         withheld=json.dumps(withheld),
     )
     body = "".join(_tool_function(ir, item, manifest, sdk) for item in registered)

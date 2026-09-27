@@ -82,6 +82,8 @@ def stub_mcp_sdk(monkeypatch: pytest.MonkeyPatch, httpx_client: Any) -> None:
     mcpserver = types.ModuleType("mcp.server.mcpserver")
     mcpserver.MCPServer = _StubServer  # type: ignore[attr-defined]
     mcpserver.RequestStateSecurity = lambda **options: options  # type: ignore[attr-defined]
+    caching = types.ModuleType("mcp.server.caching")
+    caching.CacheHint = lambda **options: options  # type: ignore[attr-defined]
     exceptions = types.ModuleType("mcp.shared.exceptions")
     exceptions.MCPError = type("MCPError", (Exception,), {})  # type: ignore[attr-defined]
     shared = types.ModuleType("mcp.shared")
@@ -99,6 +101,7 @@ def stub_mcp_sdk(monkeypatch: pytest.MonkeyPatch, httpx_client: Any) -> None:
     server = types.ModuleType("mcp.server")
     server.fastmcp = fastmcp  # type: ignore[attr-defined]
     server.mcpserver = mcpserver  # type: ignore[attr-defined]
+    server.caching = caching  # type: ignore[attr-defined]
     package = types.ModuleType("mcp")
     package.server = server  # type: ignore[attr-defined]
     package.shared = shared  # type: ignore[attr-defined]
@@ -114,6 +117,7 @@ def stub_mcp_sdk(monkeypatch: pytest.MonkeyPatch, httpx_client: Any) -> None:
         "mcp.server": server,
         "mcp.server.fastmcp": fastmcp,
         "mcp.server.mcpserver": mcpserver,
+        "mcp.server.caching": caching,
         "mcp.shared": shared,
         "mcp.shared.exceptions": exceptions,
         "mcp.types": mcp_types,

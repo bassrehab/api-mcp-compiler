@@ -76,6 +76,16 @@ rollback guidance that says plainly when no automated compensation exists.
 | `allowed_environments` | Risk class. |
 | `unresolved` | Everything the compiler cannot demonstrate. |
 
+## Caching and routing, for 2026-07-28
+
+The manifest carries two decisions a 2.x server renders and would otherwise default.
+`list_cache` is how long a client may keep the surface's lists, one minute if any tool changes
+state and five if all are reads, and whether a shared cache may hold them: private whenever a
+tool needs a credential. Each tool's `routing_headers` names the path identifiers a client
+mirrors into `Mcp-Param-*` headers for a gateway, hyphenated, and only for string or integer
+identifiers the redaction rule does not flag. Both carry provenance like every other field, so a
+reviewer can see why a surface is cacheable or which values it exposes to intermediaries.
+
 ## Redaction decides on the noun
 
 Sensitivity is decided on the last token of a field name, the noun the name ends on, rather

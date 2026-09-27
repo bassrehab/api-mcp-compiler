@@ -137,6 +137,30 @@ On the 2.x target, the two namespaced hints, `x-rotaforge/sensitiveHint` and
 `x-rotaforge/reversibleHint`, travel in each tool's `_meta` rather than its `annotations`: SDK 2.x
 drops annotation keys it does not know, and `_meta` is where the protocol puts extensions.
 
+## List caching and routing headers
+
+Both come from the policy manifest, and a 2.x server renders them; the 1.x target has neither,
+since both are 2026-07-28 features.
+
+**List caching.** `tools/list`, `resources/list` and `resources/templates/list` carry the
+manifest's `list_cache`: a `ttlMs` of one minute when any tool can change state and five minutes
+when every tool is a read, and a `cacheScope` of `private` when any tool needs a credential.
+A client may keep the list for that long, which is how long a revoked tool can linger in front
+of an agent after you redeploy without it. The value is derived by a rule, not configured per
+surface; if the rule is wrong for a surface you run, that is a finding against the rule, and
+editing the generated code would only hide it until the next compile.
+
+**Routing headers.** A tool's path identifiers, such as `warehouse_id`, carry `x-mcp-header` in
+its schema, so a client on Streamable HTTP sends them as `Mcp-Param-Warehouse-Id`. A gateway can
+route or enforce on that without parsing the body, for instance allowing a caller only its own
+warehouses. Only identifiers of type string or integer are mirrored, never free text and never a
+name the redaction rules flag, because every intermediary on the path can read a header. Names
+are hyphenated because some proxies drop headers with underscores.
+
+What to do: if a gateway enforces on a routing header, treat it as a hint the client supplied,
+and check it against the body or the upstream authorization as well. A header is only as honest
+as the client that set it.
+
 ## Credentials
 
 The generated server reads each credential from an environment variable named after its

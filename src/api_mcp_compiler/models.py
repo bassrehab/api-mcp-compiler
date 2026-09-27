@@ -20,7 +20,7 @@ IR_SCHEMA_VERSION = "0.12.0"
 TOOL_PLAN_SCHEMA_VERSION = "0.4.0"
 TOOL_SURFACE_SCHEMA_VERSION = "0.4.0"
 TOOL_OVERLAY_SCHEMA_VERSION = "0.3.0"
-POLICY_MANIFEST_SCHEMA_VERSION = "0.3.0"
+POLICY_MANIFEST_SCHEMA_VERSION = "0.4.0"
 EVAL_CORPUS_SCHEMA_VERSION = "0.3.0"
 EVALUATION_RUN_SCHEMA_VERSION = "0.2.0"
 BENCHMARK_MANIFEST_SCHEMA_VERSION = "0.1.0"
@@ -1108,6 +1108,38 @@ class ConfirmationPolicy(ProvenanceBearing):
     token_ttl_seconds: int = Field(default=300, ge=1)
 
 
+class CacheScope(StrEnum):
+    """Whether a cached list result may be shared across callers, in MCP 2026-07-28 terms."""
+
+    PUBLIC = "public"
+    PRIVATE = "private"
+
+
+class RoutingHeader(ProvenanceBearing):
+    """A tool argument a client mirrors into an `Mcp-Param-{header}` HTTP header.
+
+    MCP 2026-07-28 lets a tool mark primitive, top-level arguments with `x-mcp-header` so a
+    gateway can route or enforce on them without parsing the body. Which arguments get one is a
+    governance decision, because a header is visible to every intermediary: only identifiers of
+    the thing acted on qualify, never free text and never anything the redaction rules flag.
+    """
+
+    argument: str
+    header: str = Field(pattern=r"^[A-Za-z0-9!#$%&'*+.^_`|~-]+$")
+
+
+class ListCachePolicy(ProvenanceBearing):
+    """How long a client may cache the surface's lists, and whether it may share them.
+
+    A governed surface changes when a reviewer approves or revokes a tool and the server is
+    redeployed. A cached `tools/list` outlives that by up to `ttl_ms`, so the TTL is the most a
+    revocation may lag at a client, and it is derived from what the surface can do.
+    """
+
+    ttl_ms: int = Field(ge=0)
+    scope: CacheScope
+
+
 class ToolPolicy(ProvenanceBearing):
     """The governance envelope for one generated tool.
 
@@ -1134,6 +1166,7 @@ class ToolPolicy(ProvenanceBearing):
     output: OutputPolicy
     rollback_guidance: str | None = None
     unresolved: list[str] = Field(default_factory=list)
+    routing_headers: list[RoutingHeader] = Field(default_factory=list)
 
 
 class PolicyManifest(BaseModel):
@@ -1149,6 +1182,7 @@ class PolicyManifest(BaseModel):
     service_id: str
     source_digest: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
     policies: list[ToolPolicy] = Field(default_factory=list)
+    list_cache: ListCachePolicy | None = None
 
     @field_validator("schema_version")
     @classmethod

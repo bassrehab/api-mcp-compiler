@@ -91,6 +91,19 @@ async def _session(source: str, tmp_path: Path, script: Any) -> Any:
         return await script(session)
 
 
+def _without_routing(schema: dict[str, Any]) -> dict[str, Any]:
+    """The advertised schema minus `x-mcp-header`, which 2.x adds from the policy manifest.
+
+    What is routed is tested in test_policy_hints.py; here the question is whether the planned
+    schema reaches the client, so the marker the manifest adds on top is set aside.
+    """
+    copied = json.loads(json.dumps(schema))
+    for value in (copied.get("properties") or {}).values():
+        if isinstance(value, dict):
+            value.pop("x-mcp-header", None)
+    return dict(copied)
+
+
 def _payload(result: Any) -> dict[str, Any]:
     structured = _field(result, "structured_content", "structuredContent")
     if structured is not None:
@@ -103,7 +116,10 @@ def test_tools_list_advertises_the_planned_schema(tmp_path: Path) -> None:
 
     async def script(session: ClientSession) -> dict[str, Any]:
         tools = (await session.list_tools()).tools
-        return {tool.name: _field(tool, "input_schema", "inputSchema") for tool in tools}
+        return {
+            tool.name: _without_routing(_field(tool, "input_schema", "inputSchema"))
+            for tool in tools
+        }
 
     advertised = asyncio.run(_session(source, tmp_path, script))
 
@@ -226,7 +242,8 @@ def test_the_2026_07_28_protocol_is_served_without_a_handshake(tmp_path: Path) -
 
     assert "2026-07-28" in discovered["supportedVersions"]
     assert listed["resultType"] == "complete"
-    assert {tool["name"]: tool["inputSchema"] for tool in listed["tools"]} == planned
+    advertised = {tool["name"]: _without_routing(tool["inputSchema"]) for tool in listed["tools"]}
+    assert advertised == planned
     # A destructive tool asks a person, as a multi round-trip request.
     assert called["result"]["resultType"] == "input_required"
     assert "confirm" in called["result"]["inputRequests"]

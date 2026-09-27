@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:api-mcp-compiler:schema:policy-manifest:0.2.0",
+  "$id": "urn:api-mcp-compiler:schema:policy-manifest:0.4.0",
   "title": "MCP Policy Manifest",
   "description": "The governance envelope for a generated tool surface. Policy generation is separate from code generation, because a generator that also decided policy could be reviewed as neither. Anything that cannot be derived is named in `unresolved`, and generation fails closed rather than defaulting it.",
   "type": "object",
@@ -13,7 +13,7 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": "0.3.0"
+      "const": "0.4.0"
     },
     "service_id": {
       "type": "string"
@@ -28,6 +28,17 @@
       "items": {
         "$ref": "#/$defs/toolPolicy"
       }
+    },
+    "list_cache": {
+      "description": "How long a client may cache the surface's lists and whether it may share them. A cached tools/list outlives a revocation by up to ttl_ms, so the TTL is derived from what the surface can do.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/listCachePolicy"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "$defs": {
@@ -131,7 +142,7 @@
       }
     },
     "confirmationPolicy": {
-      "description": "A two-call confirmation requirement. A boolean flag on a single call would be satisfied by the same model turn that decided to act, which is not confirmation. A prepare call issues a token naming the effect, bound to the arguments it was issued for, and the execute call refuses without it.",
+      "description": "A requirement that a destructive call is confirmed before it runs, bound to the arguments it was given for. On the SDK 2.x target a person confirms through an MCP elicitation and the pending call travels in sealed request state; on the 1.x target the confirmation is a second identical call, which an agent can make itself.",
       "type": "object",
       "required": [
         "effect_summary"
@@ -263,6 +274,57 @@
             "type": "string"
           },
           "description": "Identifiers of the security schemes whose credentials a caller must present, taken from the alternative least-privilege selection chose. Empty when the specification declares no authentication for the operation."
+        },
+        "routing_headers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/routingHeader"
+          }
+        }
+      }
+    },
+    "listCachePolicy": {
+      "description": "List-result freshness hints in MCP 2026-07-28 terms (ttlMs, cacheScope).",
+      "type": "object",
+      "required": [
+        "ttl_ms",
+        "scope"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ttl_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scope": {
+          "enum": [
+            "public",
+            "private"
+          ]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "routingHeader": {
+      "description": "A tool argument a client mirrors into an Mcp-Param-{header} HTTP header, so a gateway can route or enforce on it. Only identifiers of the thing acted on qualify; never free text, never anything redaction flags.",
+      "type": "object",
+      "required": [
+        "argument",
+        "header"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "argument": {
+          "type": "string"
+        },
+        "header": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9!#$%&'*+.^_`|~-]+$"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
         }
       }
     }
