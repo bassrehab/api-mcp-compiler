@@ -76,10 +76,13 @@ SURFACE_CLASS_V2 = '''
 _TOOLS: dict[str, tuple[str, dict[str, bool], Any]] = {}
 
 #: Confirmation nonces already spent in this process. A sealed confirmation is valid until it
-#: expires, on any replica holding the key, so without this one answer could be replayed. It is
-#: per process: with a shared key and a tool that is not idempotent, the server refuses to start
-#: (see `_state_security`), because only a shared record could make that at most once.
+#: expires, on any replica holding the key, so without a record one answer could be replayed.
+#: This set covers one process; `_RECORD` covers every replica that shares it.
 _SPENT: set[str] = set()
+
+#: The shared record of spent confirmations, when `_RECORD_ENV` names one: a Redis client, so a
+#: nonce is spent once across every replica. None means this process's `_SPENT` is the record.
+_RECORD: Any = None
 
 #: The protocol revision from which confirmation travels as a multi round-trip request.
 _MRTR_SINCE = "2026-07-28"
@@ -118,17 +121,67 @@ def _state_security() -> Any:
             "confirmation is sealed with this key so any replica can check it. Set it to the same "
             "secret on every replica, or to 'ephemeral' when exactly one process serves it."
         )
+    record = os.environ.get(_RECORD_ENV, "")
+    if record:
+        _open_record(record)
     if key == "ephemeral":
         return None
     unsafe = sorted(name for name, gate in _CONFIRM.items() if not gate["idempotent"])
-    if unsafe:
+    if unsafe and not record:
         raise SystemExit(
-            f"{', '.join(unsafe)} cannot be confirmed safely across replicas yet. A sealed "
-            "confirmation can be replayed on any replica until it expires, and for an operation "
-            "that is not idempotent only a shared record of spent confirmations prevents that. "
-            f"This server has none, so set {_STATE_KEY_ENV}=ephemeral and run one process."
+            f"{', '.join(unsafe)} cannot be confirmed safely across replicas without a shared "
+            "record. A sealed confirmation can be replayed on any replica until it expires, and "
+            "for an operation that is not idempotent only a record of spent confirmations every "
+            f"replica checks prevents that. Set {_RECORD_ENV} to a Redis URL shared by every "
+            f"replica, or set {_STATE_KEY_ENV}=ephemeral and run one process."
         )
     return RequestStateSecurity(keys=[key], ttl=float(max(g["ttl"] for g in _CONFIRM.values())))
+
+
+def _open_record(url: str) -> None:
+    """Connect the shared record, or refuse to start without it.
+
+    Checked at startup, because a confirmation that cannot be recorded as spent can be replayed,
+    and finding that out on the first destructive call is finding it out too late.
+    """
+    global _RECORD
+    try:
+        import redis
+        import redis.asyncio
+    except ImportError as error:
+        raise SystemExit(
+            f"{_RECORD_ENV} is set, so this server needs the Redis client: pip install 'redis>=5'."
+        ) from error
+    try:
+        redis.Redis.from_url(url, socket_timeout=5).ping()
+    except Exception as error:
+        raise SystemExit(
+            f"{_RECORD_ENV} names a record this server cannot reach ({type(error).__name__}). "
+            "A confirmation that cannot be recorded as spent could be replayed, so the server "
+            "does not start."
+        ) from error
+    _RECORD = redis.asyncio.Redis.from_url(url, socket_timeout=5)
+
+
+async def _spend(nonce: str, ttl_seconds: float) -> str:
+    """Spend a confirmation once: `ok`, `spent` if it was already used, or `unrecorded`.
+
+    With a shared record this is Redis's atomic set-if-absent, so two replicas racing on the same
+    answer cannot both win. The key outlives the sealed state, so it is still there for as long as
+    the state could be presented.
+    """
+    if _RECORD is not None:
+        try:
+            won = await _RECORD.set(
+                f"{_RECORD_PREFIX}{nonce}", "1", nx=True, px=int(ttl_seconds * 1000) + 60_000
+            )
+        except Exception:
+            return "unrecorded"
+        return "ok" if won else "spent"
+    if nonce in _SPENT:
+        return "spent"
+    _SPENT.add(nonce)
+    return "ok"
 
 
 def _cache_hints() -> Any:
@@ -219,12 +272,20 @@ async def _confirmed(
             return _refused(
                 "confirmation_expired", "The confirmation expired; call again to be asked afresh."
             )
-        if claims["nonce"] in _SPENT:
-            return _refused("confirmation_spent", "This confirmation was already used.")
         action, content = _answer(response)
         typed = (content or {}).get("confirm") if action == "accept" else None
         if action == "accept":
-            _SPENT.add(claims["nonce"])
+            # Spent on any acceptance, typed right or wrong, so one sealed state cannot be used to
+            # guess the identifier more than once.
+            spent = await _spend(claims["nonce"], gate["ttl"])
+            if spent == "spent":
+                return _refused("confirmation_spent", "This confirmation was already used.")
+            if spent == "unrecorded":
+                return _refused(
+                    "confirmation_unrecorded",
+                    "The record of spent confirmations could not be reached, and a confirmation "
+                    "that cannot be recorded is not honoured.",
+                )
 
     if action != "accept":
         return _refused("not_confirmed", f"The person chose to {action}.")

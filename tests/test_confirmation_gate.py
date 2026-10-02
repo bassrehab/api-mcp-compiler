@@ -15,6 +15,7 @@ import asyncio
 import importlib.metadata
 import json
 import os
+import socket
 import subprocess
 import sys
 import threading
@@ -39,6 +40,7 @@ pytestmark = pytest.mark.skipif(SDK < 2, reason="the confirmation gate is on the
 
 TOOL = "permanently_remove_item_record_warehouse"
 KEY = "SYNTHETIC_INVENTORY_SERVICE_REQUEST_STATE_KEY"
+RECORD = "SYNTHETIC_INVENTORY_SERVICE_CONFIRMATION_RECORD"
 ARGS = {"warehouse_id": "wh-7"}
 #: The SDK refuses a key shorter than 32 bytes, so the shared key in these tests is a real one.
 SHARED = "5f1c0a9e7b3d4c2a8e6f1b0d9c7a5e3f2b4d6a8c0e1f3a5b7d9c2e4f6a8b0c1d"
@@ -100,15 +102,18 @@ def _source(*, idempotent: bool = True) -> str:
     return source
 
 
-def _env(base_url: str, key: str | None) -> dict[str, str]:
+def _env(base_url: str, key: str | None, record: str | None = None) -> dict[str, str]:
     env = {
         **os.environ,
         "SYNTHETIC_INVENTORY_SERVICE_INVENTORYOAUTH_CREDENTIAL": "unused",
         "SYNTHETIC_INVENTORY_SERVICE_BASE_URL": base_url,
     }
     env.pop(KEY, None)
+    env.pop(RECORD, None)
     if key is not None:
         env[KEY] = key
+    if record is not None:
+        env[RECORD] = record
     return env
 
 
@@ -140,10 +145,17 @@ class _Server:
         self.process.wait()
 
 
-def _server(tmp_path: Path, base_url: str, key: str | None = "ephemeral") -> _Server:
+def _server(
+    tmp_path: Path,
+    base_url: str,
+    key: str | None = "ephemeral",
+    *,
+    idempotent: bool = True,
+    record: str | None = None,
+) -> _Server:
     module = tmp_path / "gated_server.py"
-    module.write_text(_source())
-    return _Server(module, _env(base_url, key))
+    module.write_text(_source(idempotent=idempotent))
+    return _Server(module, _env(base_url, key, record))
 
 
 def _error(response: dict[str, Any]) -> str | None:
@@ -157,7 +169,9 @@ def _deletes(seen: list[tuple[str, str]]) -> int:
 # Starting
 
 
-def _start(tmp_path: Path, key: str | None, *, idempotent: bool = True) -> tuple[int, str]:
+def _start(
+    tmp_path: Path, key: str | None, *, idempotent: bool = True, record: str | None = None
+) -> tuple[int, str]:
     module = tmp_path / "gated_server.py"
     module.write_text(_source(idempotent=idempotent))
     result = subprocess.run(
@@ -166,7 +180,7 @@ def _start(tmp_path: Path, key: str | None, *, idempotent: bool = True) -> tuple
         capture_output=True,
         text=True,
         timeout=30,
-        env=_env("http://127.0.0.1:9", key),
+        env=_env("http://127.0.0.1:9", key, record),
     )
     return result.returncode, result.stderr
 
@@ -181,7 +195,7 @@ def test_a_shared_key_is_refused_for_an_operation_that_is_not_idempotent(tmp_pat
     code, stderr = _start(tmp_path, SHARED, idempotent=False)
     assert code != 0
     assert TOOL in stderr
-    assert "ephemeral" in stderr
+    assert RECORD in stderr and "ephemeral" in stderr
 
 
 @pytest.mark.parametrize("key", ["ephemeral", SHARED])
@@ -364,3 +378,77 @@ def test_a_client_that_cannot_ask_a_person_is_refused(
 
     assert _structured(result)["error"] == "confirmation_unavailable"
     assert _deletes(seen) == 0
+
+
+# The shared record of spent confirmations
+
+
+@pytest.fixture
+def record() -> Iterator[str]:
+    """A Redis URL every replica in a test shares.
+
+    CI provides a real Redis and names it in REDIS_URL. Elsewhere, fakeredis serves the Redis
+    protocol over TCP, so separate server processes still share one record.
+    """
+    if os.environ.get("REDIS_URL"):
+        import redis
+
+        redis.Redis.from_url(os.environ["REDIS_URL"]).flushdb()
+        yield os.environ["REDIS_URL"]
+        return
+    from fakeredis import TcpFakeServer
+
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = int(probe.getsockname()[1])
+    server = TcpFakeServer(("127.0.0.1", port), server_type="redis")
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"redis://127.0.0.1:{port}/0"
+    finally:
+        server.shutdown()
+
+
+def test_a_shared_record_lets_a_non_idempotent_tool_start_on_a_shared_key(
+    tmp_path: Path, record: str
+) -> None:
+    code, stderr = _start(tmp_path, SHARED, idempotent=False, record=record)
+    assert code == 0, stderr
+
+
+def test_a_record_that_cannot_be_reached_stops_the_server_starting(tmp_path: Path) -> None:
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        unused = int(probe.getsockname()[1])
+    code, stderr = _start(tmp_path, SHARED, record=f"redis://127.0.0.1:{unused}/0")
+    assert code != 0
+    assert RECORD in stderr
+
+
+@pytest.mark.parametrize("idempotent", [False, True], ids=["not idempotent", "idempotent"])
+def test_a_confirmation_is_spent_once_across_replicas(
+    tmp_path: Path,
+    upstream: tuple[str, list[tuple[str, str]]],
+    record: str,
+    idempotent: bool,
+) -> None:
+    """The case the record exists for: one answer, replayed on another replica, runs nothing."""
+    base_url, seen = upstream
+    second_dir = tmp_path / "second"
+    second_dir.mkdir()
+    first = _server(tmp_path, base_url, key=SHARED, idempotent=idempotent, record=record)
+    second = _server(second_dir, base_url, key=SHARED, idempotent=idempotent, record=record)
+    try:
+        state = first.call(ARGS)["result"]["requestState"]
+        confirmed = second.call(ARGS, inputResponses=ACCEPT, requestState=state)
+        replayed = first.call(ARGS, inputResponses=ACCEPT, requestState=state)
+        replayed_again = second.call(ARGS, inputResponses=ACCEPT, requestState=state)
+    finally:
+        first.close()
+        second.close()
+
+    assert _error(confirmed) is None
+    assert _error(replayed) == "confirmation_spent"
+    assert _error(replayed_again) == "confirmation_spent"
+    assert _deletes(seen) == 1

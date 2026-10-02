@@ -374,6 +374,7 @@ def serve(
         credentials = soap_emitted.credentials
         needs = soap_emitted.requirements
         state_key_env = soap_emitted.state_key_env
+        record_env = soap_emitted.record_env
     else:
         http_emitted = emit_server(ir, surface, manifest, sdk=sdk)
         generated, registered, withheld = (
@@ -385,6 +386,7 @@ def serve(
         credentials = http_emitted.credentials
         needs = http_emitted.requirements
         state_key_env = http_emitted.state_key_env
+        record_env = http_emitted.record_env
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(generated, encoding="utf-8")
     typer.echo(f"wrote {out} for {ir.service.service_id} ({'SOAP' if soap else 'HTTP'})")
@@ -407,6 +409,11 @@ def serve(
             f"  set {state_key_env} before running: the same secret of at least 32 bytes on "
             "every replica, or 'ephemeral' for exactly one process. Destructive tools ask a "
             "person to confirm, and that key seals the confirmation."
+        )
+    if record_env:
+        typer.echo(
+            f"  for several replicas, also set {record_env} to a Redis URL they share and install "
+            "'redis>=5', so a confirmation is spent once across all of them."
         )
     requirements = " ".join(shlex.quote(item) for item in needs)
     typer.echo(f"  run it with: pip install {requirements} && python {shlex.quote(str(out))}")
