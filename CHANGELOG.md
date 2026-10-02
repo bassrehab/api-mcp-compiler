@@ -1,8 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.16.0
 
-A shared record of spent confirmations, so a destructive call is confirmed once across replicas.
+Released 2026-10-02. A shared record of spent confirmations, so a destructive call is confirmed
+once across replicas; comparisons that measure the served server; and generated resources with
+numeric identifiers are readable.
 
 ### What changed
 
