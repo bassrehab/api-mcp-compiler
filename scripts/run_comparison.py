@@ -27,6 +27,7 @@ from api_mcp_compiler.evaluation.harness import run_task  # noqa: E402
 from api_mcp_compiler.evaluation.model_driver import ModelDriver  # noqa: E402
 from api_mcp_compiler.evaluation.preregistration import compare, digest_of, load  # noqa: E402
 from api_mcp_compiler.evaluation.restbench import OracleSidecar, import_corpus  # noqa: E402
+from api_mcp_compiler.evaluation.served import ServedSurface, run_task_served  # noqa: E402
 from api_mcp_compiler.ingest.openapi import parse_openapi  # noqa: E402
 from api_mcp_compiler.models import (  # noqa: E402
     EvaluationRun,
@@ -58,6 +59,13 @@ CORPORA: dict[str, dict[str, Path | None]] = {
         "overlay": REPO_ROOT / "examples/overlays/tmdb.overlay.json",
     },
 }
+#: A `-served` corpus is the same files reached through the generated server rather than the
+#: in-process harness. Which one a run uses is fixed by the registration's corpus id, so served
+#: access is registered in advance like everything else, and is not a flag on this script.
+SERVED_SUFFIX = "-served"
+CORPORA.update(
+    {f"{name}{SERVED_SUFFIX}": dict(files) for name, files in list(CORPORA.items())}
+)
 PLANNER_KINDS = {"baseline": PlannerKind.BASELINE, "semantic": PlannerKind.SEMANTIC}
 
 
@@ -134,19 +142,24 @@ def main() -> int:
     usage_total: dict[str, int] = {}
     started = time.monotonic()
 
+    served_access = registration.corpus_id.endswith(SERVED_SUFFIX)
     for arm in registration.arms:
         kind = PLANNER_KINDS[arm]
         # The overlay carries composites a reviewer approved, which are a semantic-planning
         # product. One tool per operation is what the baseline is, so it never receives one.
         planned = plan_semantic(ir, overlay) if arm == "semantic" else plan_baseline(ir)
         surface = generate_surface(ir, _approved(planned))
+        served = ServedSurface(ir, surface).__enter__() if served_access else None
         combined: list[TaskResult] = []
         for position, task in enumerate(corpus.tasks, start=1):
             attempts: list[TaskResult] = []
             for attempt in range(registration.runs_per_task):
                 driver = ModelDriver(model=registration.model)
                 try:
-                    attempts.append(run_task(task, ir, surface, None, driver))
+                    if served is not None:
+                        attempts.append(run_task_served(task, ir, surface, served, driver))
+                    else:
+                        attempts.append(run_task(task, ir, surface, None, driver))
                 except Exception as error:
                     print(f"  ! {arm}/{task.task_id} run {attempt}: {error}", flush=True)
                     attempts.append(
@@ -160,12 +173,14 @@ def main() -> int:
             print(f"  [{arm:8}] {position:2}/{len(corpus.tasks)} {task.task_id:38} {mark} "
                   f"({sum(1 for item in attempts if item.success)}/{len(attempts)} runs)",
                   flush=True)
+        if served is not None:
+            served.__exit__(None, None, None)
         runs[arm] = EvaluationRun(
             corpus_id=corpus.corpus_id,
             service_id=ir.service.service_id,
             source_digest=ir.service.source_digest,
             planner=kind,
-            driver=f"model:{registration.model}",
+            driver=f"model:{registration.model}" + (":served" if served_access else ""),
             preregistration_digest=digest,
             results=combined,
         )

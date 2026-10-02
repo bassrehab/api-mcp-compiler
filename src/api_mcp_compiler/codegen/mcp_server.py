@@ -247,6 +247,19 @@ def confirmation_gates(
     return gates
 
 
+def _docstring(text: str) -> str:
+    """A description made safe to sit between triple quotes in generated code.
+
+    Descriptions come from specifications, and specifications contain backslashes, which became
+    invalid escape sequences (a SyntaxWarning now, an error in a later Python), and could contain
+    triple quotes or end in a quote, either of which would have ended the docstring early and
+    broken the module.
+    """
+    # Every quote is escaped, not only triple ones: a single trailing quote would also run into
+    # the closing triple quote and end the string early.
+    return text.replace("\\", "\\\\").replace('"', '\\"')
+
+
 def _tool_function(
     ir: ApiSemanticIR,
     tool: ToolDescriptor,
@@ -300,7 +313,7 @@ def _tool_function(
         return f'''
 @mcp.resource({tool.uri_template!r}, name={tool.name!r}, description={tool.description!r})
 async def {tool.name}({parameters}) -> dict[str, Any]:
-    """{tool.description}"""
+    """{_docstring(tool.description)}"""
     return await _invoke(
         tool_name={tool.name!r},
         steps={[(method, route, operation) for method, route, operation in steps]!r},
@@ -321,7 +334,7 @@ async def {tool.name}({parameters}) -> dict[str, Any]:
     return f'''
 @_tool({tool.name!r}, {tool.description!r}, {annotations!r})
 async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
-    """{tool.description}"""
+    """{_docstring(tool.description)}"""
 {person_note}    return await _invoke(
         tool_name={tool.name!r},
         steps={[(method, route, operation) for method, route, operation in steps]!r},

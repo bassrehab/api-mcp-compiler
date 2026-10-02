@@ -1,0 +1,52 @@
+{
+  "arms": [
+    "baseline",
+    "semantic"
+  ],
+  "corpus_id": "restbench-tmdb-served",
+  "corpus_source_digest": "sha256:6e5a3c4ebdf2e3deeada3331ad65c7b802b0aeb58c6167704db700be49b00017",
+  "equal_budget_conditions": [
+    "Identical model and decoding settings in both arms.",
+    "Identical system prompt, describing the job and never the shape of the surface.",
+    "Identical maximum tool calls per task, at twice the reference length, never below six.",
+    "Identical fixtures and starting state per task and per run.",
+    "Both arms approved identically, so the emission gate cannot advantage either.",
+    "Only executable tools offered in both arms.",
+    "The same store, honouring paging and filtering identically for both arms.",
+    "Every operation remains individually available in both arms. The composites join the semantic surface rather than replacing their steps, so no task is reachable in one arm and unreachable in the other; the arms differ in what is offered, not in what can be done.",
+    "Both arms reach the surface through a server emitted from it by this compiler's default target, started fresh for each arm, over stdio.",
+    "A tool the plan reclassified as an MCP resource is bridged to a callable tool named after the resource, described by the server's own template listing, and executed through the server's resources/read. Identical bridging in both arms.",
+    "The server's upstream is an in-process stand-in applying each request to the same store, through the same effect rules, as the in-process harness; under the reference driver the two agree exactly on all 116 task runs of both corpora and both arms."
+  ],
+  "falsification": "Six or more discordant pairs with the majority favouring the baseline falsifies the hypothesis. So does equal task success with no reduction in calls for the semantic arm, since a composite that saves nothing is a tool nobody needed.",
+  "hypothesis": "The comparison registered as tmdb-baseline-vs-semantic-002 holds when the agent reaches the surface the way a deployed agent would: through the generated MCP server, shown what tools/list returns and receiving what tools/call returns, rather than through the in-process harness, which handed the model each tool's planned schema. An audit found that generated servers had advertised an opaque schema until 0.12.0, so every earlier run measured a surface no deployed server presented. The primary hypothesis is unchanged from tmdb-baseline-vs-semantic-002: a semantically designed surface produces a higher task success rate than one operation per tool. Stated in advance: the expected primary outcome is inconclusive, because this corpus could not resolve the hypothesis in-process either. The question this registration exists for is the secondary one: whether served access changes what is measured.",
+  "inconclusive_condition": "Fewer than 6 discordant pairs, reported as inconclusive whatever the raw difference. The pre-committed response is to report the primary result as inconclusive, as in tmdb-baseline-vs-semantic-002, and to report the agreement with it as the finding: a served surface that agrees with the in-process measurement means the earlier runs were not invalidated by the opaque schema; one that disagrees means they were.",
+  "model": "claude-sonnet-5",
+  "null_hypothesis": "The two surfaces produce the same task success rate; any observed difference is consistent with run-to-run variation.",
+  "primary_metric": "Task success rate over the 34-task corpus.",
+  "primary_test": "McNemar's exact test on discordant pairs, the design being paired.",
+  "prohibited_after_seeing_results": [
+    "Promoting a secondary metric to primary.",
+    "Adding, removing or re-authoring any task or oracle.",
+    "Changing either planner, the model, the call budget, or the success definition.",
+    "Changing which composites the semantic arm carries.",
+    "Changing the harness, including the store and the oracle evaluators.",
+    "Expanding the corpus without a new pre-registration stating the rule in advance.",
+    "Reading the annotated solution paths for this task set, which would make any later registration against it worthless.",
+    "Changing how resources are bridged, or whether they are.",
+    "Re-running with a different compiler version or SDK major to obtain a different result."
+  ],
+  "registration_id": "tmdb-served-001",
+  "runs_per_task": 3,
+  "schema_version": "0.1.0",
+  "secondary_metrics": [
+    "Calls made, which is where a composite should show first: one call where the baseline needs two.",
+    "Invalid-argument calls.",
+    "Unnecessary calls beyond the reference solution length.",
+    "Context bytes returned.",
+    "Tokens consumed, as a cost of the surface rather than of the task.",
+    "Agreement with tmdb-baseline-vs-semantic-002: for each arm, how many of the 34 tasks have the same success outcome served as in-process. Descriptive only, with no test, because the two runs are separate samples of a stochastic agent."
+  ],
+  "significance_threshold": "Two-sided, alpha 0.05: at least 6 discordant pairs all favouring one surface. With 34 tasks this is reachable at a discordance rate of about 18 percent. The Spotify runs produced 4 percent, on a treatment that contained no composition.",
+  "success_definition": "A task counts as a success only when all three runs satisfy every one of its oracles."
+}
