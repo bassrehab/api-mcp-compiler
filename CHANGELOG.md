@@ -1,8 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.15.0
 
-List caching and routing headers are derived by policy and rendered by 2.x servers.
+Released 2026-10-02. List caching and routing headers are derived by policy and rendered by 2.x
+servers.
+
+Minor, because the policy manifest's contract moves to 0.4.0, and a 2.x server's list results now
+carry a TTL a client may cache them for.
 
 ### Policy
 
