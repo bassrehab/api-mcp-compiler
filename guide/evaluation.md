@@ -88,6 +88,21 @@ path. It is turn-based: the driver returns the next call given the trace so far,
 agent can name an identifier that a lookup has not yet returned. Only executable tools are
 offered, and parallel tool use is disabled so that one turn maps to one decision.
 
+## In-process and served
+
+By default a run is in-process: the harness hands the model each tool's planned schema and
+simulates what a generated server would do. A served run reaches the surface the way a deployed
+agent would. `evaluation/served.py` emits the server, runs it as a subprocess over stdio, and
+points its base URL at an in-process HTTP stand-in that applies each request to the same store,
+through the same effect rules, so the oracles judge state identically. The model is shown what
+`tools/list` returned and receives what `tools/call` returned.
+
+A read the planner made a resource is not in `tools/list`. The harness offers each resource
+template as a callable tool named after it, described by the server's own listing, and executes
+it through `resources/read`, the same way in both arms.
+
+A registration chooses served access with a `-served` corpus id; the runner has no flag for it.
+
 ## Pre-registration
 
 Before a model-backed comparison runs, a document fixes the hypothesis, corpus, arms, model,
@@ -114,6 +129,9 @@ inconclusive whatever the raw difference.
 | `spotify-003` | Inconclusive. Corrected harness and oracles, wider budget. Baseline 17 of 24, semantic 16 of 24, one discordant pair. |
 | `spotify-004` | Inconclusive. Store honours paging and filtering. Baseline 20 of 24, semantic 21 of 24, one discordant pair. |
 | `tmdb-002` | Inconclusive. Baseline 28 of 34, semantic 28 of 34, **zero** discordant pairs. |
+| `spotify-served-001` | Inconclusive, served. Baseline 19 of 24, semantic 20 of 24, one discordant pair. |
+| `tmdb-served-001` | **Baseline favoured**, served, p = 0.001. Baseline 27 of 34, semantic 16 of 34, 11 discordant pairs. Caused by a defect in the generated server; see below. |
+| `tmdb-served-002` | Inconclusive, served, after the fix. Baseline 27 of 34, semantic 26 of 34, one discordant pair. |
 
 The nominal direction reversed across the Spotify runs, which is the clearest available
 evidence that a one-task gap is noise. The TMDB run is a stronger null still: the arms agreed
@@ -125,6 +143,34 @@ the registration's second falsification condition, equal success with **no** red
 calls, is not met. Composition changed what the agent did without changing what it achieved.
 Context bytes rose 20 percent, because a composite returns the last step's payload while the
 baseline agent often stopped at the smaller one it needed.
+
+## What served access changed
+
+Every comparison above the served rows measured the planned surface. Until 0.12.0 a generated
+server advertised an opaque schema instead, so those runs measured something no deployed server
+presented. The served registrations asked whether the shipped server performs like the measured
+one.
+
+On Spotify it does: in each arm, served and in-process success agree on 23 of 24 tasks.
+
+On TMDB it did not. The semantic arm fell from 28 of 34 to 16 of 34, with 166 invalid-argument
+calls against none in-process. Every one was the same defect: a resource template's values arrive
+as text, and the generated server validated them against the planned integer schema, so no client
+could read any TMDB resource. Spotify's identifiers are strings, which is why it was unaffected.
+The registration had committed to reporting this result, and it is reported as what the shipped
+server did.
+
+A check run before any tokens were spent had not caught it. Under the replay driver, served and
+in-process runs agreed on all 116 task runs. But the recorded TMDB solutions call each resource
+with no arguments, since the identifiers come from earlier responses, so both routes refused
+every resource step for a missing argument before the type was ever checked. Refusal agreed with
+refusal.
+
+With resource values read as their declared types, `tmdb-served-002` agrees with the in-process
+measurement: served and in-process success agree on 33 of 34 tasks in the baseline and 32 of 34
+in the semantic arm. Calls fell 4.2 percent, from 330 to 316, against 7.4 percent in-process.
+Context bytes roughly doubled in both arms. That is the envelope, not the data: a served call
+returns the status code around the body, about 50 bytes a call, and these responses are small.
 
 ## What the runs did establish
 

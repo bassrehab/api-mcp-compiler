@@ -29,6 +29,10 @@ a `-served` corpus id; the runner has no flag for it.
 
 ### Fixed
 
+- A generated resource with a numeric identifier could not be read. Every value in a URI is text,
+  and the server validated it against the planned integer schema, so `api://person/1217` was
+  refused whatever the client sent. Values are now read as their declared types. The first served
+  comparison on TMDB found it: every resource on that surface was unreadable.
 - A description containing a backslash or a quote is escaped when written into a generated
   docstring. TMDB's specification produced an invalid escape sequence, a SyntaxWarning now and an
   error in a later Python, and a quote could end the docstring early.
