@@ -1,4 +1,24 @@
 {
+  "list_cache": {
+    "provenance": [
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "ttl_ms",
+        "rule": "policy.list_cache.ttl_ms: a tool here changes state, so a revocation must reach clients quickly",
+        "source_pointer": "openapi:#"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "scope",
+        "rule": "policy.list_cache.scope: no tool here needs a credential",
+        "source_pointer": "openapi:#"
+      }
+    ],
+    "scope": "public",
+    "ttl_ms": 60000
+  },
   "policies": [
     {
       "allowed_environments": [
@@ -167,6 +187,28 @@
       "required_scopes": [],
       "retry": "safe",
       "rollback_guidance": null,
+      "routing_headers": [
+        {
+          "argument": "customer_id",
+          "header": "Customer-Id",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "argument",
+              "rule": "policy.routing_header.argument: a path identifier of type string",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "header",
+              "rule": "policy.routing_header.header: the argument name, hyphenated",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}/get"
+            }
+          ]
+        }
+      ],
       "sensitivity": "personal",
       "tool_name": "look_up_customer",
       "unresolved": []
@@ -328,6 +370,28 @@
       "required_scopes": [],
       "retry": "safe",
       "rollback_guidance": null,
+      "routing_headers": [
+        {
+          "argument": "customer_id",
+          "header": "Customer-Id",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "argument",
+              "rule": "policy.routing_header.argument: a path identifier of type string",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "header",
+              "rule": "policy.routing_header.header: the argument name, hyphenated",
+              "source_pointer": "openapi:#/paths/~1customers~1{customer_id}~1orders/get"
+            }
+          ]
+        }
+      ],
       "sensitivity": "personal",
       "tool_name": "list_customer_orders",
       "unresolved": []
@@ -511,6 +575,7 @@
       "required_scopes": [],
       "retry": "with_idempotency_key",
       "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
+      "routing_headers": [],
       "sensitivity": "financial",
       "tool_name": "create_refund_request",
       "unresolved": [
@@ -687,6 +752,28 @@
       "required_scopes": [],
       "retry": "with_idempotency_key",
       "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
+      "routing_headers": [
+        {
+          "argument": "refund_id",
+          "header": "Refund-Id",
+          "provenance": [
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "argument",
+              "rule": "policy.routing_header.argument: a path identifier of type string",
+              "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+            },
+            {
+              "confidence": 1.0,
+              "derivation": "normalized",
+              "field": "header",
+              "rule": "policy.routing_header.header: the argument name, hyphenated",
+              "source_pointer": "openapi:#/paths/~1refunds~1{refund_id}~1approve/post"
+            }
+          ]
+        }
+      ],
       "sensitivity": "financial",
       "tool_name": "approve_refund_and_release_payment",
       "unresolved": [
@@ -890,6 +977,7 @@
       "required_scopes": [],
       "retry": "with_idempotency_key",
       "rollback_guidance": "No automated compensation exists. Confirm the effect can be reversed manually before enabling in production.",
+      "routing_headers": [],
       "sensitivity": "financial",
       "tool_name": "refund_order",
       "unresolved": [
@@ -897,7 +985,7 @@
       ]
     }
   ],
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "service_id": "synthetic-order-and-refund-service",
   "source_digest": "sha256:02e9bb0eda3e8a5509763c1ad20d4d853cacff3c88e28032cd29240cdb90e935"
 }

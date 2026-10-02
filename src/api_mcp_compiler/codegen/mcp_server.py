@@ -191,6 +191,29 @@ def _annotations(tool: ToolDescriptor) -> dict[str, bool]:
     return described
 
 
+def advertised_schemas(
+    tools: list[ToolDescriptor], manifest: PolicyManifest | None, sdk: int
+) -> dict[str, dict[str, object]]:
+    """Each tool's input schema as `tools/list` carries it.
+
+    On the 2.x target the arguments the policy chose for routing gain `x-mcp-header`, so a
+    client mirrors them into `Mcp-Param-*` headers a gateway can route or enforce on. The
+    surface artifact is unchanged: which arguments are mirrored is a governance decision and
+    lives in the manifest, and this only renders it.
+    """
+    schemas: dict[str, dict[str, object]] = {}
+    for tool in tools:
+        schema = json.loads(json.dumps(tool.input_schema))
+        policy = manifest.policy_for(tool.tool_id) if manifest else None
+        properties = schema.get("properties")
+        if sdk >= 2 and policy is not None and isinstance(properties, dict):
+            for routed in policy.routing_headers:
+                if isinstance(properties.get(routed.argument), dict):
+                    properties[routed.argument]["x-mcp-header"] = routed.header
+        schemas[tool.name] = schema
+    return schemas
+
+
 def confirmation_gates(
     tools: list[ToolDescriptor], manifest: PolicyManifest | None
 ) -> dict[str, dict[str, object]]:
@@ -351,6 +374,8 @@ _TOOL_SCHEMES: dict[str, list[str]] = json.loads({tool_schemes!r})
 _CONFIRM: dict[str, dict[str, Any]] = json.loads({confirm!r})
 #: The environment variable holding the key that seals confirmation state.
 _STATE_KEY_ENV = {state_key_env!r}
+#: List freshness the policy derived: `ttl_ms` and `scope`. Read by the 2.x surface.
+_LIST_CACHE: dict[str, Any] = json.loads({list_cache!r})
 {registration}
 
 mcp = _Surface({service_id!r}, instructions={instructions!r})
@@ -782,7 +807,12 @@ def emit_server(
         auth=json.dumps(placements(ir, slug)),
         tool_schemes=json.dumps(tool_schemes(registered, manifest)),
         budgets=json.dumps(_budgets(registered, manifest)),
-        schemas=json.dumps({item.name: item.input_schema for item in registered}),
+        schemas=json.dumps(advertised_schemas(registered, manifest, sdk)),
+        list_cache=json.dumps(
+            manifest.list_cache.model_dump(mode="json", exclude={"provenance"})
+            if sdk >= 2 and manifest is not None and manifest.list_cache is not None
+            else {}
+        ),
         withheld=json.dumps(withheld),
     )
     body = "".join(_tool_function(ir, item, manifest, sdk) for item in registered)

@@ -1,4 +1,24 @@
 {
+  "list_cache": {
+    "provenance": [
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "ttl_ms",
+        "rule": "policy.list_cache.ttl_ms: every tool here is a read",
+        "source_pointer": "wsdl:#"
+      },
+      {
+        "confidence": 1.0,
+        "derivation": "normalized",
+        "field": "scope",
+        "rule": "policy.list_cache.scope: no tool here needs a credential",
+        "source_pointer": "wsdl:#"
+      }
+    ],
+    "scope": "public",
+    "ttl_ms": 300000
+  },
   "policies": [
     {
       "allowed_environments": [
@@ -157,12 +177,13 @@
       "required_scopes": [],
       "retry": "safe",
       "rollback_guidance": null,
+      "routing_headers": [],
       "sensitivity": "personal",
       "tool_name": "get_customer",
       "unresolved": []
     }
   ],
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "service_id": "customerservice",
   "source_digest": "sha256:e9987232a33e2b7ec302e1763ba06263428d67813448c8048a7be720eb179554"
 }
