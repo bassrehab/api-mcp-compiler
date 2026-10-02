@@ -20,6 +20,7 @@ from api_mcp_compiler.codegen.credentials import placements, tool_schemes, varia
 from api_mcp_compiler.codegen.mcp_server import (
     _annotations,
     _budgets,
+    _docstring,
     _instructions,
     advertised_schemas,
     confirmation_gates,
@@ -127,7 +128,7 @@ def _tool_function(
     return f'''
 @_tool({tool.name!r}, {tool.description!r}, {annotations!r})
 async def {tool.name}(arguments: dict[str, Any]) -> dict[str, Any]:
-    """{tool.description}"""
+    """{_docstring(tool.description)}"""
 {person_note}    return await _invoke(
         tool_name={tool.name!r},
         operation={operation.operation_id!r},
