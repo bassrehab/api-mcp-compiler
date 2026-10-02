@@ -18,6 +18,21 @@ imported only when a record is configured, so single-process deployments do not 
 The `dev` extra adds `redis` and `fakeredis`. CI runs the tests against a real Redis service;
 elsewhere fakeredis serves the protocol over TCP so separate server processes share one record.
 
+### Comparisons through the served server
+
+`evaluation/served.py` runs a comparison against the server a user would deploy: the generated
+server runs as a subprocess, the model is shown what `tools/list` returned, and each call goes
+through `tools/call` (or `resources/read`, for reads the planner made resources) to an in-process
+upstream over the same store the oracles read. Under the replay driver it agrees with the
+in-process harness on all 116 task runs of both RestBench corpora. A registration selects it with
+a `-served` corpus id; the runner has no flag for it.
+
+### Fixed
+
+- A description containing a backslash or a quote is escaped when written into a generated
+  docstring. TMDB's specification produced an invalid escape sequence, a SyntaxWarning now and an
+  error in a later Python, and a quote could end the docstring early.
+
 ## 0.15.0
 
 Released 2026-10-02. List caching and routing headers are derived by policy and rendered by 2.x

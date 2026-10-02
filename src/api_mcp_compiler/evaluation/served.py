@@ -181,7 +181,8 @@ class _Upstream:
             matched = self.match(request.method, request.url.path)
             if matched is None:
                 return JSONResponse({"error": "no such route"}, status_code=404)
-            route, arguments = matched
+            route, path_values = matched
+            arguments: dict[str, Any] = dict(path_values)
             for item in route.operation.inputs:
                 if item.location is ParameterLocation.QUERY and item.name in request.query_params:
                     raw_values = request.query_params.getlist(item.name)
@@ -332,10 +333,11 @@ class ServedSurface:
                         continue
                     structured = _field(result, "structured_content", "structuredContent")
                     if structured is None and result.content:
+                        text = getattr(result.content[0], "text", "")
                         try:
-                            structured = json.loads(result.content[0].text)
-                        except (ValueError, AttributeError):
-                            structured = {"text": getattr(result.content[0], "text", "")}
+                            structured = json.loads(text)
+                        except ValueError:
+                            structured = {"text": text}
                     is_error = bool(_field(result, "is_error", "isError"))
                     answer.set_result(ServedCall(structured, is_error))
         except Exception as error:
@@ -495,16 +497,17 @@ def run_task_served(
                 and derive_effect(operation).kind is not EffectKind.READ
             ):
                 unsafe += 1
-        common = {
-            "index": index,
-            "operation_id": operation_id,
-            "tool": tool.name,
-            "arguments": arguments,
-            "outcome": StepOutcome.OK,
-            "response_bytes": size,
-        }
-        trace.append(TraceStep(**common, response=body))
-        seen.append(TraceStep(**common, response=payload))
+        step = TraceStep(
+            index=index,
+            operation_id=operation_id,
+            tool=tool.name,
+            arguments=arguments,
+            outcome=StepOutcome.OK,
+            response=body,
+            response_bytes=size,
+        )
+        trace.append(step)
+        seen.append(step.model_copy(update={"response": payload}))
 
     final_state = store.snapshot()
     mutating = _mutating_operations(ir)

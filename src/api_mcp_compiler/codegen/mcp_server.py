@@ -318,7 +318,7 @@ async def {tool.name}({parameters}) -> dict[str, Any]:
         tool_name={tool.name!r},
         steps={[(method, route, operation) for method, route, operation in steps]!r},
         threading={threading!r},
-        arguments={{{forwarded}}},
+        arguments=_from_uri({{{forwarded}}}, _SCHEMAS[{tool.name!r}]),
         schema=_SCHEMAS[{tool.name!r}],
         bindings={_binding_map(tool)!r},
         requires_confirmation=False,
@@ -635,6 +635,31 @@ def withheld_tools() -> dict[str, str]:
     the service offers.
     """
     return _WITHHELD
+
+
+def _from_uri(values: dict[str, str], schema: dict[str, Any]) -> dict[str, Any]:
+    """Read a resource address's values as the types its schema declares.
+
+    Every value in a URI is text. Validating `api://person/1217` against an integer schema
+    refused every read of every resource with a numeric identifier, whatever the client sent.
+    A value that does not parse is passed on unchanged, so validation still reports it.
+    """
+    properties = schema.get("properties", {{}})
+    typed: dict[str, Any] = {{}}
+    for name, value in values.items():
+        kind = properties.get(name, {{}}).get("type")
+        try:
+            if kind == "integer":
+                typed[name] = int(value)
+            elif kind == "number":
+                typed[name] = float(value)
+            elif kind == "boolean" and value.lower() in ("true", "false"):
+                typed[name] = value.lower() == "true"
+            else:
+                typed[name] = value
+        except ValueError:
+            typed[name] = value
+    return typed
 
 
 async def _invoke(

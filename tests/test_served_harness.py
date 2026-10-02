@@ -7,6 +7,7 @@ under a model is attributable to what the server presents rather than to the har
 
 from __future__ import annotations
 
+import importlib.metadata
 import json
 import logging
 from pathlib import Path
@@ -26,6 +27,9 @@ from tests.conftest import ORDER_SERVICE
 
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS = ROOT / "examples/evals/order_tasks.json"
+#: Emit for the SDK installed, so the 1.x CI job measures the 1.x target rather than failing to
+#: import the 2.x one.
+SDK = int(importlib.metadata.version("mcp").split(".")[0])
 
 
 def _approved(plan: ToolPlan) -> ToolPlan:
@@ -53,7 +57,7 @@ def test_served_and_in_process_agree_under_the_reference_driver(arm: str) -> Non
     plan = plan_semantic(ir) if arm == "semantic" else plan_baseline(ir)
     surface = generate_surface(ir, _approved(plan))
     corpus = EvalCorpus.model_validate(json.loads(CORPUS.read_text(encoding="utf-8")))
-    with ServedSurface(ir, surface) as served:
+    with ServedSurface(ir, surface, sdk=SDK) as served:
         for task in corpus.tasks:
             local = run_task(task, ir, surface, None, ReferenceDriver())
             remote = run_task_served(task, ir, surface, served, ReferenceDriver())
@@ -68,7 +72,7 @@ def test_the_semantic_surface_offers_its_resources_through_the_server() -> None:
     """A read the planner made a resource is reached by `resources/read`, not dropped."""
     ir = parse_openapi(Path(ORDER_SERVICE))
     surface = generate_surface(ir, _approved(plan_semantic(ir)))
-    with ServedSurface(ir, surface) as served:
+    with ServedSurface(ir, surface, sdk=SDK) as served:
         assert "get_customer" not in served.tools()
         assert "get_customer" in served.templates()
 
@@ -95,3 +99,43 @@ def test_a_description_survives_being_written_into_a_docstring(text: str) -> Non
     namespace: dict[str, Any] = {}
     exec(compile(f'def f():\n    """{_docstring(text)}"""\n', "generated", "exec"), namespace)
     assert namespace["f"].__doc__ == text
+
+
+WIDGETS = """
+openapi: 3.0.3
+info: {title: Widgets, version: "1"}
+servers: [{url: "https://widgets.example.com"}]
+paths:
+  /widgets/{widget_id}:
+    get:
+      operationId: getWidget
+      summary: Get one widget by its numeric id.
+      parameters:
+        - {name: widget_id, in: path, required: true, schema: {type: integer}}
+      responses:
+        "200":
+          description: The widget.
+          content:
+            application/json:
+              schema: {type: object, properties: {id: {type: integer}}}
+"""
+
+
+def test_a_resource_with_a_numeric_identifier_can_be_read(tmp_path: Path) -> None:
+    """Every URI value is text; the server reads it as the type its schema declares.
+
+    Until this was fixed, `api://widget/7` was validated as the string "7" against an integer
+    schema, so no client could read any resource with a numeric identifier. A served comparison
+    on TMDB found it; no bundled example had such a resource.
+    """
+    from api_mcp_compiler.evaluation.state import ServiceStore
+
+    spec = tmp_path / "widgets.yaml"
+    spec.write_text(WIDGETS, encoding="utf-8")
+    ir = parse_openapi(spec)
+    surface = generate_surface(ir, _approved(plan_semantic(ir)))
+    with ServedSurface(ir, surface, sdk=SDK) as served:
+        (name,) = [key for key, (uri, _) in served.templates().items() if "{" in uri]
+        served.use(ServiceStore.from_fixture({"widgets": {"7": {"id": 7}}}))
+        result = served.call(name, {"widget_id": 7})
+    assert result.payload == {"status_code": 200, "body": {"id": 7}}
