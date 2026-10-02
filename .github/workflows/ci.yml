@@ -12,6 +12,16 @@ jobs:
       matrix:
         sdk: ['2', '1']
     name: verify (MCP SDK ${{ matrix.sdk }}.x)
+    # A real Redis for the shared record of spent confirmations. Without REDIS_URL the tests fall
+    # back to fakeredis, which is how they run on a machine without Redis.
+    services:
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      REDIS_URL: redis://localhost:6379/0
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

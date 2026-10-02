@@ -93,10 +93,17 @@ bytes on every replica, or to `ephemeral` when exactly one process serves the su
 prints the variable's name.
 
 **Replay across replicas.** A sealed confirmation is valid on any replica holding the key until
-it expires, and the record of honoured confirmations is per process. For an idempotent operation
-that is tolerable. For one that is not, only a shared record of spent confirmations makes it at
-most once, and this server does not have one yet, so with a shared key it refuses to start and
-names the tools. Run one process with `ephemeral` for those.
+it expires. Within one process the server records each confirmation it honours. Across replicas
+that takes a shared record: set `<SERVICE>_CONFIRMATION_RECORD` to a Redis URL every replica
+shares, and install `redis>=5`. Each confirmation is then spent with Redis's atomic set-if-absent,
+once across all replicas, with a key that outlives the sealed state. The server checks the record
+is reachable when it starts, and refuses a call whose confirmation it cannot record rather than
+honour it.
+
+With a shared key and a gated tool that is not idempotent, the record is required: the server
+refuses to start without it and names the tools. For idempotent tools it is optional, and without
+it a confirmation could be replayed on another replica until it expires. `serve` prints the
+variable's name.
 
 **On the 1.x target, confirmation is friction.** A first call returns `confirmation_required`
 with a token bound to a digest of the arguments, and an identical call to the same process inside

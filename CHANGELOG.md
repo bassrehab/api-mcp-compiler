@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+A shared record of spent confirmations, so a destructive call is confirmed once across replicas.
+
+### What changed
+
+Set `<SERVICE>_CONFIRMATION_RECORD` to a Redis URL every replica shares, and a 2.x server spends
+each honoured confirmation there with an atomic set-if-absent, so one answer cannot be replayed on
+another replica. The server checks the record is reachable when it starts, and refuses a call whose
+confirmation it cannot record. A gated tool that is not idempotent can now run on several replicas
+with a shared key, given a record; without one it still refuses to start. The Redis client is
+imported only when a record is configured, so single-process deployments do not need it.
+
+### Testing
+
+The `dev` extra adds `redis` and `fakeredis`. CI runs the tests against a real Redis service;
+elsewhere fakeredis serves the protocol over TCP so separate server processes share one record.
+
 ## 0.15.0
 
 Released 2026-10-02. List caching and routing headers are derived by policy and rendered by 2.x

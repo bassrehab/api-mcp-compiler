@@ -73,6 +73,9 @@ class EmittedServer:
     #: The variable holding the key that seals confirmation state, when the server has a gated
     #: tool on the 2.x target and will not start without it.
     state_key_env: str | None = None
+    #: The variable naming a shared record of spent confirmations, when the server has a gated
+    #: tool on the 2.x target. Needed for several replicas when a gated tool is not idempotent.
+    record_env: str | None = None
 
 
 def _base_url(ir: ApiSemanticIR) -> str:
@@ -374,6 +377,10 @@ _TOOL_SCHEMES: dict[str, list[str]] = json.loads({tool_schemes!r})
 _CONFIRM: dict[str, dict[str, Any]] = json.loads({confirm!r})
 #: The environment variable holding the key that seals confirmation state.
 _STATE_KEY_ENV = {state_key_env!r}
+#: The environment variable naming a shared record of spent confirmations (a Redis URL), and
+#: the prefix of the keys this surface writes there.
+_RECORD_ENV = {record_env!r}
+_RECORD_PREFIX = {record_prefix!r}
 #: List freshness the policy derived: `ttl_ms` and `scope`. Read by the 2.x surface.
 _LIST_CACHE: dict[str, Any] = json.loads({list_cache!r})
 {registration}
@@ -799,6 +806,8 @@ def emit_server(
         registration=SURFACE_CLASSES[check_sdk(sdk)],
         confirm=json.dumps(confirmation_gates(registered, manifest) if sdk >= 2 else {}),
         state_key_env=f"{slug}_REQUEST_STATE_KEY",
+        record_env=f"{slug}_CONFIRMATION_RECORD",
+        record_prefix=f"api-mcp-compiler:{ir.service.service_id}:spent:",
         sdk_imports=SDK_IMPORTS[sdk],
         service_id=ir.service.service_id,
         instructions=_instructions(ir),
@@ -827,6 +836,11 @@ def emit_server(
         requirements=REQUIREMENTS[sdk],
         state_key_env=(
             f"{slug}_REQUEST_STATE_KEY"
+            if sdk >= 2 and confirmation_gates(registered, manifest)
+            else None
+        ),
+        record_env=(
+            f"{slug}_CONFIRMATION_RECORD"
             if sdk >= 2 and confirmation_gates(registered, manifest)
             else None
         ),
